@@ -49,7 +49,7 @@ experience/
 5. `?skipintro=1` skips the opening film. The film is also skipped automatically after the first visit in a session.
 
 GitHub Pages serves `.js` modules with the right MIME type. No server configuration is required.
-The favicon link in `index.html` points to `../Aivric-favicon-logo.ico`, which resolves once the folder lives inside the site.
+A copy of the site favicon ships in the folder so the page is self-contained.
 
 ## Add or change content
 
