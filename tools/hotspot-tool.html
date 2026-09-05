@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hotspot tool — AiVRIC experience</title>
+<style>
+  body { margin: 0; background: #0b1626; color: #e2e8f0; font: 14px/1.5 Inter, system-ui, sans-serif; }
+  header { padding: 10px 16px; display: flex; gap: 16px; align-items: center; border-bottom: 1px solid #1f3247; flex-wrap: wrap; }
+  header b { color: #00d1ff; }
+  #wrap { position: relative; display: inline-block; max-width: 100%; }
+  #img { display: block; max-width: 100vw; }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .pin { position: absolute; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,209,255,0.5); pointer-events: none; }
+  .pin span { position: absolute; left: 18px; top: -4px; white-space: nowrap; font-size: 12px; background: rgba(8,15,28,0.8); padding: 2px 6px; border-radius: 4px; }
+  pre { margin: 0; padding: 12px 16px; background: #030a12; color: #94a3b8; white-space: pre-wrap; }
+  button { background: none; border: 1px solid #94a3b8; color: #e2e8f0; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <b>Hotspot tool</b>
+  <span>Click: print normalized pin coords.</span>
+  <span>Shift+click: add a stream path point (pixel coords).</span>
+  <button id="finish">Finish path</button>
+  <button id="clear">Clear</button>
+  <span id="status"></span>
+</header>
+<div id="wrap">
+  <img id="img" src="../media/scene/master.jpg" alt="">
+  <svg id="svg"></svg>
+</div>
+<pre id="out">Loading manifest…</pre>
+<script>
+  const img = document.getElementById('img'), wrap = document.getElementById('wrap'), svg = document.getElementById('svg'), out = document.getElementById('out');
+  let W = 0, H = 0, pts = [], manifest = null;
+  fetch('../content/experience.json').then(r => r.json()).then(m => { manifest = m; draw(); });
+  img.onload = () => { W = img.naturalWidth; H = img.naturalHeight; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); draw(); };
+  function draw() {
+    if (!manifest || !W) return;
+    svg.innerHTML = manifest.streams.map(s => `<path d="${s.d}" fill="none" stroke="${{blue:'#00d1ff',coral:'#f87171',gold:'#ffd63a'}[s.color]}" stroke-width="4" vector-effect="non-scaling-stroke"/>`).join('')
+      + (pts.length ? `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="#fff" stroke-width="3" vector-effect="non-scaling-stroke"/>` : '');
+    wrap.querySelectorAll('.pin').forEach(p => p.remove());
+    for (const r of manifest.rooms) {
+      const d = document.createElement('div'); d.className = 'pin';
+      d.style.left = (r.hotspot.x * 100) + '%'; d.style.top = (r.hotspot.y * 100) + '%';
+      d.innerHTML = `<span>${r.name}</span>`; wrap.appendChild(d);
+      if (r.zoomTo) { const z = document.createElement('div'); z.className = 'pin'; z.style.borderColor = '#ffd63a'; z.style.background = 'transparent'; z.style.left = (r.zoomTo.x*100)+'%'; z.style.top = (r.zoomTo.y*100)+'%'; z.innerHTML = `<span>zoom → ${r.name}</span>`; wrap.appendChild(z); }
+    }
+    out.textContent = `Master ${W}×${H}. White pins = hotspots, gold rings = zoom targets, colored lines = streams.\n`;
+  }
+  img.addEventListener('click', (e) => {
+    const rect = img.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width, ny = (e.clientY - rect.top) / rect.height;
+    const px = Math.round(nx * W), py = Math.round(ny * H);
+    if (e.shiftKey) { pts.push([px, py]); draw(); out.textContent += `point ${px} ${py}\n`; return; }
+    out.textContent += `"hotspot": { "x": ${nx.toFixed(3)}, "y": ${ny.toFixed(3)} }   (pixel ${px}, ${py})\n`;
+  });
+  document.getElementById('finish').addEventListener('click', () => {
+    if (pts.length < 2) return;
+    const d = 'M ' + pts[0].join(' ') + ' ' + pts.slice(1).map(p => 'L ' + p.join(' ')).join(' ');
+    out.textContent += `"d": "${d}"\n`; pts = []; draw();
+  });
+  document.getElementById('clear').addEventListener('click', () => { pts = []; draw(); });
+</script>
+</body>
+</html>

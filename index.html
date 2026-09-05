@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inside AiVRIC — explore the operations floor</title>
+<meta name="description" content="Step inside the AiVRIC operations floor. Explore the Defense and Offense wings, the Client Vision chamber, and the executive table where 3HUE advisors turn findings into decisions.">
+<meta name="theme-color" content="#080f1c">
+<link rel="icon" href="../Aivric-favicon-logo.ico" onerror="this.remove()">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/experience.css">
+</head>
+<body>
+
+<div id="boot" aria-live="polite">Loading the floor</div>
+
+<!-- Scene -->
+<div id="stage" aria-hidden="true">
+  <div id="parallax" class="layer">
+    <div id="master" class="layer master"><img class="scene" id="master-img" alt=""></div>
+    <div id="overlays" class="layer master-overlays">
+      <svg id="streams" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+    </div>
+  </div>
+  <div id="room" class="layer room"><img class="scene" id="room-img" alt=""></div>
+</div>
+<div id="pins" aria-label="Rooms on the floor" role="navigation"></div>
+
+<!-- HUD -->
+<header id="hud">
+  <a class="brand" href="#/" aria-label="AiVRIC, back to the building">
+    <svg viewBox="0 0 22 24" fill="none" aria-hidden="true"><path d="M11 1.5 20 5v6.3c0 5.2-3.6 9.5-9 11.2-5.4-1.7-9-6-9-11.2V5l9-3.5Z" stroke="#e2e8f0" stroke-width="1.6"/><path d="m5.5 10.5 5.5 4.8V21" stroke="#00d1ff" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <b>AiVRIC</b><span>Inside the operations floor</span>
+  </a>
+  <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+  <div class="nav" id="nav"></div>
+</header>
+
+<div id="legend" aria-hidden="true">
+  <div><i class="blue"></i>Defense findings</div>
+  <div><i class="coral"></i>Offense findings</div>
+  <div><i class="gold"></i>Executive insight</div>
+</div>
+<div id="hint">Select a room to explore</div>
+<nav id="mobile-rooms" aria-label="Rooms"></nav>
+
+<div id="room-nav">
+  <button class="btn" id="room-prev" type="button"></button>
+  <button class="btn" id="room-next" type="button"></button>
+</div>
+
+<!-- Station panel -->
+<aside id="panel" aria-label="Room details">
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="body" id="panel-body"></div>
+</aside>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Media viewer">
+  <div class="media" id="lb-media"></div>
+  <div class="cap" id="lb-cap"></div>
+  <button class="btn icon close" id="lb-close" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <button class="btn icon prev" id="lb-prev" type="button" aria-label="Previous">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <button class="btn icon next" id="lb-next" type="button" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
+<!-- Intro film -->
+<div id="intro" hidden>
+  <video id="intro-video" playsinline muted preload="auto" poster="media/film/poster.jpg">
+    <source src="media/film/aivric-fabric.mp4" type="video/mp4">
+  </video>
+  <div class="veil"></div>
+  <button class="btn outline sound" id="intro-sound" type="button" aria-pressed="false">Unmute</button>
+  <div class="copy">
+    <div class="eyebrow">AiVRIC × 3HUE</div>
+    <h1>Step inside the operations floor.</h1>
+    <p>Defense and Offense feed one Client Vision. Every thread ends at the table where decisions are made. Walk the floor and see how each room works.</p>
+    <div class="actions">
+      <button class="btn primary" id="intro-enter" type="button">Enter the building</button>
+      <button class="btn" id="intro-skip" type="button">Skip film</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
