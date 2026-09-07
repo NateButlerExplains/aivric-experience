@@ -25,18 +25,29 @@ export function buildPins(rooms, onSelect) {
   return pins;
 }
 
+// Positions only. Visibility belongs to showPins/hidePins: the layout event fires the moment a
+// transform is applied, so letting it unhide pins would pop them back at their final coordinates
+// while the building is still zooming out from a room.
 function place() {
-  const st = getState();
   for (const { room, el } of pins) {
     const p = toScreen(room.hotspot.x, room.hotspot.y);
     el.style.left = p.x + 'px';
     el.style.top = p.y + 'px';
-    el.style.visibility = st.inRoom ? 'hidden' : 'visible';
   }
 }
 onLayout(place);
 
 export function showPins(stagger = true) {
-  pins.forEach(({ el }, i) => setTimeout(() => el.classList.add('show'), stagger ? 120 * i : 0));
+  if (getState().inRoom) return; // never over a room render
+  pins.forEach(({ el }, i) => setTimeout(() => {
+    if (getState().inRoom) return;
+    el.style.visibility = 'visible';
+    el.classList.add('show');
+  }, stagger ? 120 * i : 0));
 }
-export function hidePins() { pins.forEach(({ el }) => el.classList.remove('show')); }
+
+// Immediate, not a fade: a pin lingering at 40% opacity over a room render is still a pin over a
+// room render.
+export function hidePins() {
+  pins.forEach(({ el }) => { el.classList.remove('show'); el.style.visibility = 'hidden'; });
+}

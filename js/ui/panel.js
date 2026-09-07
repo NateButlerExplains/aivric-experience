@@ -1,9 +1,15 @@
-// Station panel: tabs for the room's stations, body with copy, media gallery, capabilities, CTAs.
+// Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
 import { openLightbox } from './lightbox.js';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');
 const STATUS_LABEL = { live: 'Live', beta: 'Beta', alpha: 'Alpha', roadmap: 'Roadmap', 'coming-soon': 'Coming soon', service: '3HUE Advisory', platform: 'Platform' };
+// Maintainer affordance. The dashed "add media" card is an instruction to whoever fills the
+// manifest, not something a prospect should ever read, so it only appears on ?edit URLs.
+const EDIT = new URLSearchParams(location.search).has('edit');
+// Two rows of tiles keeps the CTAs above the fold on a 1280x720 laptop; anything past that
+// collapses into a single "+N more" tile that opens the lightbox at the first hidden item.
+const MAX_TILES = 4;
 let onSelectStation = () => {};
 const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -28,31 +34,66 @@ export function showRoom(room, stationId) {
   return station;
 }
 
+const PLAY = '<span class="play" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>';
+
+// The visible face of one media item: poster or first frame for video, the image otherwise.
+function face(m, alt = '') {
+  if (m.type === 'video') {
+    return m.poster
+      ? `<img src="${esc(m.poster)}" alt="${esc(alt)}" loading="lazy">`
+      : `<video src="${esc(m.src)}#t=0.5" muted preload="metadata" playsinline></video>`;
+  }
+  return `<img src="${esc(m.src)}" alt="${esc(alt)}" loading="lazy">`;
+}
+
+// Returns the gallery markup, or '' when there is nothing to show (no media, no edit flag) so
+// the panel closes up instead of leaving a hole where the grid used to be.
+function galleryHtml(s, media) {
+  // Each cell is a function of an extra class, so the last one can be widened after the fact.
+  const cells = [];
+  const overflowing = media.length > MAX_TILES;
+  const shown = overflowing ? media.slice(0, MAX_TILES - 1) : media;
+
+  shown.forEach((m, i) => {
+    const label = m.caption || (m.type === 'video' ? 'Play video' : 'Open image');
+    const cap = m.caption ? `<span class="cap">${esc(m.caption)}</span>` : '';
+    cells.push((x) => `<button class="thumb${x}" type="button" data-i="${i}" aria-label="${esc(label)}">${face(m, m.caption || '')}${m.type === 'video' ? PLAY : ''}${cap}</button>`);
+  });
+
+  if (overflowing) {
+    const rest = media.length - shown.length;
+    const next = media[shown.length];
+    cells.push((x) => `<button class="thumb more${x}" type="button" data-i="${shown.length}" aria-label="Show ${rest} more item${rest === 1 ? '' : 's'}">${face(next)}<span class="count"><b>+${rest}</b>more</span></button>`);
+  }
+
+  if (EDIT) {
+    cells.push((x) => `<div class="empty${x}"><span><b>+</b>Add screenshot or video<br><small>media/${esc(s.id)}/ · see README</small></span></div>`);
+  }
+
+  if (!cells.length) return '';
+  // Odd count: the last tile spans the grid rather than sitting next to a filler card.
+  const last = cells.length - 1;
+  return `<div class="gallery">${cells.map((f, i) => f(i === last && cells.length % 2 === 1 ? ' wide' : '')).join('')}</div>`;
+}
+
 function renderStation(room, s) {
   const media = s.media || [];
-  const thumbs = media.map((m, i) => {
-    const inner = m.type === 'video'
-      ? `${m.poster ? `<img src="${esc(m.poster)}" alt="">` : `<video src="${esc(m.src)}#t=0.5" muted preload="metadata" playsinline></video>`}
-         <span class="play" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>`
-      : `<img src="${esc(m.src)}" alt="${esc(m.caption)}" loading="lazy">`;
-    return `<button class="thumb" type="button" data-i="${i}" aria-label="${esc(m.caption || (m.type === 'video' ? 'Play video' : 'Open image'))}">${inner}${m.caption ? `<span class="cap">${esc(m.caption)}</span>` : ''}</button>`;
-  });
-  const slots = Math.max(0, (media.length === 0 ? 2 : (media.length % 2)) );
-  for (let i = 0; i < slots; i++) thumbs.push(`<div class="empty"><span><b>+</b>Add screenshot or video<br><small>media/${esc(s.id)}/ · see README</small></span></div>`);
-
-  const ctas = (s.links || []).map((l) =>
+  const links = s.links || [];
+  const ctas = links.map((l) =>
     `<a class="btn ${l.primary ? 'primary' : 'outline'}" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)}
       ${l.primary ? '' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>'}
     </a>`).join('');
 
+  // Order: pitch, then the ask, then the evidence. The CTA row sits above the gallery so the
+  // one button that matters is on screen without scrolling at 1280x720 and up.
   bodyEl.innerHTML = `
     ${room.stations.length < 2 ? `<p class="room-intro">${esc(room.name)} · ${esc(room.tagline)}</p>` : ''}
     <div class="meta"><span class="badge ${esc(s.status)}">${esc(STATUS_LABEL[s.status] || s.status)}</span><span>${esc(s.suite || '')}</span></div>
     <h2>${esc(s.headline)}</h2>
     <p class="summary">${esc(s.summary)}</p>
-    <div class="gallery">${thumbs.join('')}</div>
-    ${s.capabilities?.length ? `<h3>Capabilities</h3><ul class="caps">${s.capabilities.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
-    <div class="ctas">${ctas}</div>`;
+    ${links.length ? `<div class="ctas">${ctas}</div>` : ''}
+    ${galleryHtml(s, media)}
+    ${s.capabilities?.length ? `<h3>Capabilities</h3><ul class="caps">${s.capabilities.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}`;
 
   bodyEl.querySelectorAll('.thumb').forEach((b) => b.addEventListener('click', () => openLightbox(media, Number(b.dataset.i))));
 }

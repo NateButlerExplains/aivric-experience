@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quad tool — AiVRIC experience</title>
+<style>
+  :root { --line: #1f3247; --ink: #e2e8f0; --dim: #94a3b8; --blue: #00d1ff; --gold: #ffd63a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0b1626; color: var(--ink); font: 14px/1.5 Inter, system-ui, sans-serif; }
+  header { padding: 10px 16px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header b { color: var(--blue); }
+  header .sep { width: 1px; height: 20px; background: var(--line); }
+  label { color: var(--dim); display: inline-flex; gap: 6px; align-items: center; }
+  select, button { background: #0f1f33; border: 1px solid var(--dim); color: var(--ink); border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; }
+  select:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  button:disabled { opacity: .4; cursor: default; }
+  #status { color: var(--dim); margin-left: auto; }
+  #status b { color: var(--gold); font-weight: 500; }
+
+  /* The stage mirrors the real one: #scaler is the transformed layer whose own coordinate
+     system is IMAGE PIXELS, exactly like #master / #room in the experience. The tool mounts
+     screens into it, so a quad captured here is the same quad the experience will use. */
+  #wrap { position: relative; margin: 16px; overflow: hidden; }
+  #scaler { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #img { position: absolute; left: 0; top: 0; display: block; user-select: none; -webkit-user-drag: none; }
+  #marks { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; cursor: crosshair; }
+  #marks .edge { fill: rgba(0,209,255,.10); stroke: var(--blue); stroke-width: 2; vector-effect: non-scaling-stroke; }
+  #marks .open { fill: none; stroke: var(--blue); stroke-width: 2; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+  #marks .h { fill: rgba(11,22,38,.85); stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; cursor: grab; }
+  #marks .h.sel { fill: var(--gold); stroke: #0b1626; }
+  #marks text { fill: #fff; font: 600 13px Inter, system-ui, sans-serif; paint-order: stroke; stroke: #0b1626; stroke-width: 4px; pointer-events: none; }
+
+  /* Placeholder mounted through screens.js — deliberately high contrast so the perspective reads. */
+  .qt-demo { width: 100%; height: 100%; background: linear-gradient(160deg, #0d2036, #071322); color: var(--ink);
+             font: 500 var(--fs, 34px)/1.25 Jost, Inter, system-ui, sans-serif; padding: 3% 4%; display: flex; flex-direction: column; gap: .5em;
+             border: 3px solid rgba(0,209,255,.55); }
+  .qt-demo .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .qt-demo .eyebrow { color: var(--blue); letter-spacing: .12em; text-transform: uppercase; font-size: .55em; }
+  .qt-demo .big { font-size: 1.5em; }
+  .qt-demo .grid { flex: 1; min-height: 0;
+    background-image: linear-gradient(rgba(0,209,255,.34) 1px, transparent 1px), linear-gradient(90deg, rgba(0,209,255,.34) 1px, transparent 1px);
+    background-size: 10% 20%; border: 1px solid rgba(0,209,255,.4); }
+
+  pre { margin: 0; padding: 12px 16px; background: #030a12; color: var(--dim); white-space: pre-wrap; border-top: 1px solid var(--line); }
+  pre b { color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <b>Quad tool</b>
+  <label>Scene <select id="scene"></select></label>
+  <label>Zoom <select id="zoom">
+    <option value="fit" selected>Fit</option>
+    <option value="0.5">50%</option>
+    <option value="1">100%</option>
+    <option value="2">200%</option>
+  </select></label>
+  <span class="sep"></span>
+  <label>Content <select id="content">
+    <option value="demo" selected>Test panel</option>
+    <option value="checker">Checkerboard</option>
+    <option value="none">Empty (outline only)</option>
+  </select></label>
+  <button id="toggle" type="button">Hide preview</button>
+  <span class="sep"></span>
+  <button id="undo" type="button">Undo point</button>
+  <button id="clear" type="button">Clear</button>
+  <button id="copy" type="button">Copy JSON</button>
+  <span id="status"></span>
+</header>
+
+<div id="wrap">
+  <div id="scaler"><img id="img" alt=""></div>
+  <svg id="marks" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<pre id="out">Loading…</pre>
+
+<script type="module">
+import { mountScreen, retargetScreen, updateScreen, showScreen, hideScreen, unmountScreen, quadSize } from '../js/screens.js';
+
+const sceneSel = document.getElementById('scene');
+const zoomSel = document.getElementById('zoom');
+const contentSel = document.getElementById('content');
+const wrap = document.getElementById('wrap');
+const scaler = document.getElementById('scaler');
+const img = document.getElementById('img');
+const marks = document.getElementById('marks');
+const out = document.getElementById('out');
+const statusEl = document.getElementById('status');
+
+const NAMES = ['TL', 'TR', 'BR', 'BL'];
+let W = 0, H = 0, k = 1;            // natural size, and displayed scale
+let pts = [];                        // captured corners, in IMAGE PIXELS
+let sel = -1, dragging = -1;
+let screenId = null, visible = true;
+
+/* ---------- scene list (same manifest the experience runs on) ---------- */
+
+const FALLBACK = [
+  { label: 'Master floor', src: 'media/scene/master.jpg', layer: 'master' },
+  ...['defense', 'offense', 'vision', 'decisions', 'fabric'].map((id) => (
+    { label: id, src: `media/scene/rooms/${id}.jpg`, layer: id })),
+  { label: 'aire-bridge', src: 'media/scene/rooms/aire.jpg', layer: 'aire-bridge' },
+];
+
+fetch('../content/experience.json')
+  .then((r) => r.json())
+  .then((m) => {
+    const list = [{ label: 'Master floor', src: m.scene?.master || 'media/scene/master.jpg', layer: 'master' }];
+    for (const r of m.rooms || []) if (r.render) list.push({ label: `${r.name || r.id} (${r.id})`, src: r.render, layer: r.id });
+    fillScenes(list.length > 1 ? list : FALLBACK);
+  })
+  .catch(() => fillScenes(FALLBACK));
+
+function fillScenes(list) {
+  sceneSel.innerHTML = list
+    .map((s, i) => `<option value="${i}" data-src="${s.src}" data-layer="${s.layer}">${s.label}</option>`).join('');
+  sceneSel.scenes = list;
+  loadScene();
+}
+
+function scene() { return (sceneSel.scenes || FALLBACK)[+sceneSel.value] || FALLBACK[0]; }
+
+function loadScene() {
+  const s = scene();
+  pts = []; sel = -1;
+  if (screenId) { unmountScreen(screenId); screenId = null; }
+  img.removeAttribute('width'); img.removeAttribute('height');
+  img.src = '../' + s.src;
+}
+
+img.addEventListener('load', () => {
+  W = img.naturalWidth; H = img.naturalHeight;
+  img.width = W; img.height = H;
+  scaler.style.width = W + 'px'; scaler.style.height = H + 'px';
+  marks.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  layout(); render();
+});
+img.addEventListener('error', () => { out.textContent = `Could not load ../${scene().src}`; });
+
+/* ---------- layout: one scale factor, applied like the stage applies its own ---------- */
+
+function layout() {
+  if (!W) return;
+  const avail = wrap.parentElement.clientWidth - 32;
+  const mode = zoomSel.value;
+  k = mode === 'fit' ? Math.min(1, avail / W) : +mode;
+  scaler.style.transform = `scale(${k})`;
+  wrap.style.width = Math.round(W * k) + 'px';
+  wrap.style.height = Math.round(H * k) + 'px';
+  // The SVG overlay sits on top in image coordinates, so handles track the same pixels.
+  marks.setAttribute('width', W * k); marks.setAttribute('height', H * k);
+}
+zoomSel.addEventListener('change', () => { layout(); render(); });
+window.addEventListener('resize', () => { layout(); render(); });
+sceneSel.addEventListener('change', loadScene);
+
+/* ---------- capturing corners ---------- */
+
+function toImage(e) {
+  const r = marks.getBoundingClientRect();
+  return [
+    Math.max(0, Math.min(W, Math.round((e.clientX - r.left) / k))),
+    Math.max(0, Math.min(H, Math.round((e.clientY - r.top) / k))),
+  ];
+}
+
+function hitHandle(p) {
+  const tol = 12 / k; // 12 screen px, whatever the zoom
+  for (let i = 0; i < pts.length; i++) if (Math.hypot(pts[i][0] - p[0], pts[i][1] - p[1]) <= tol) return i;
+  return -1;
+}
+
+marks.addEventListener('pointerdown', (e) => {
+  const p = toImage(e);
+  const hit = hitHandle(p);
+  if (hit >= 0) { sel = dragging = hit; marks.setPointerCapture(e.pointerId); render(); return; }
+  if (pts.length < 4) { pts.push(p); sel = pts.length - 1; render(); }
+});
+marks.addEventListener('pointermove', (e) => {
+  if (dragging < 0) { statusEl.innerHTML = W ? `<b>${toImage(e).join(', ')}</b> px` : ''; return; }
+  pts[dragging] = toImage(e); render();
+});
+marks.addEventListener('pointerup', () => { dragging = -1; });
+marks.addEventListener('pointercancel', () => { dragging = -1; });
+
+window.addEventListener('keydown', (e) => {
+  if (sel < 0 || !pts[sel]) return;
+  const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (!d) return;
+  e.preventDefault();
+  const step = e.shiftKey ? 10 : 1;
+  pts[sel] = [pts[sel][0] + d[0] * step, pts[sel][1] + d[1] * step];
+  render();
+});
+
+document.getElementById('undo').addEventListener('click', () => { pts.pop(); sel = pts.length - 1; render(); });
+document.getElementById('clear').addEventListener('click', () => { pts = []; sel = -1; render(); });
+document.getElementById('copy').addEventListener('click', () => {
+  navigator.clipboard?.writeText(json()).then(
+    () => { statusEl.innerHTML = '<b>copied</b>'; },
+    () => { statusEl.innerHTML = '<b>clipboard blocked — select the JSON below</b>'; });
+});
+document.getElementById('toggle').addEventListener('click', (e) => {
+  visible = !visible;
+  e.currentTarget.textContent = visible ? 'Hide preview' : 'Show preview';
+  if (screenId) (visible ? showScreen : hideScreen)(screenId);
+});
+contentSel.addEventListener('change', () => { if (screenId) updateScreen(screenId, demo()); });
+
+/* ---------- the preview, mounted through screens.js itself ---------- */
+
+function demo() {
+  const s = quadSize(pts) || { width: 100, height: 100 };
+  if (contentSel.value === 'none') return '';
+  if (contentSel.value === 'checker') {
+    return `<div class="qt-demo" style="padding:0;border-color:#fff"><div class="grid" style="margin:0;background-size:12.5% 12.5%;
+      background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)"></div></div>`;
+  }
+  // Font size scales with the quad so the placeholder reads the same at any surface size.
+  return `<div class="qt-demo" style="--fs:${Math.max(10, Math.round(s.height / 9))}px">
+      <div class="row"><span class="eyebrow">Quad preview</span><span class="eyebrow">${s.width}×${s.height}</span></div>
+      <div class="row"><span class="big">TL</span><span class="big">TR</span></div>
+      <div class="grid"></div>
+      <div class="row"><span class="big">BL</span><span class="big">BR</span></div>
+    </div>`;
+}
+
+function syncPreview() {
+  if (pts.length !== 4) {
+    if (screenId) { unmountScreen(screenId); screenId = null; }
+    return;
+  }
+  // layer is the #scaler element itself: screens.js mounts into any element you hand it.
+  if (screenId && retargetScreen(screenId, pts)) { updateScreen(screenId, demo()); return; }
+  if (screenId) { unmountScreen(screenId); screenId = null; }
+  screenId = mountScreen({ layer: scaler, quad: pts, content: demo(), id: 'quad-tool-preview' });
+  if (screenId && !visible) hideScreen(screenId);
+}
+
+/* ---------- draw + report ---------- */
+
+function json() {
+  return pts.length === 4 ? JSON.stringify(pts) : '';
+}
+
+// The report is written with innerHTML so a few words can be highlighted, so every piece of
+// it that is code — including the sample markup in the snippet — has to be escaped first.
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+function render() {
+  const r = 7 / k;
+  let s = '';
+  if (pts.length >= 2) {
+    const d = pts.map((p) => p.join(',')).join(' ');
+    s += pts.length === 4 ? `<polygon class="edge" points="${d}"/>` : `<polyline class="open" points="${d}"/>`;
+  }
+  pts.forEach((p, i) => {
+    s += `<circle class="h${i === sel ? ' sel' : ''}" cx="${p[0]}" cy="${p[1]}" r="${r}"/>`;
+    s += `<text x="${p[0] + r * 1.6}" y="${p[1] - r}" style="font-size:${14 / k}px;stroke-width:${4 / k}px">${NAMES[i]}</text>`;
+  });
+  marks.innerHTML = s;
+  syncPreview();
+  report();
+}
+
+function report() {
+  const s = scene();
+  const head = `${s.label} — ${W}×${H} image px, shown at ${(k * 100).toFixed(0)}%.\n`
+    + `Click four corners in order: top-left, top-right, bottom-right, bottom-left (clockwise around the surface).\n`
+    + `Drag a handle to adjust; arrow keys nudge the selected corner 1px, Shift+arrow 10px.\n\n`;
+  if (pts.length < 4) {
+    out.innerHTML = esc(head) + `<b>${pts.length}/4 corners.</b> Next: <b>${NAMES[pts.length]}</b>`
+      + (pts.length ? esc(`\nSo far: ${JSON.stringify(pts)}`) : '');
+    return;
+  }
+  const size = quadSize(pts);
+  const mounted = screenId ? 'mapped' : 'REJECTED by screens.js — corners are crossed or degenerate, reorder them';
+  const snippet = `mountScreen({\n`
+    + `  layer: '${s.layer}',\n`
+    + (s.layer !== 'master' ? `  render: '${s.src}',\n` : '')
+    + `  quad: ${json()},\n`
+    + `  content: '<div class="dashboard">…</div>',\n`
+    + `});`;
+  out.innerHTML = esc(head)
+    + `<b>${esc(`Quad (${mounted}), source rectangle ${size.width}×${size.height} px:`)}</b>\n\n`
+    + `<b>${esc(`"quad": ${json()}`)}</b>\n\n`
+    + esc(snippet);
+}
+</script>
+</body>
+</html>

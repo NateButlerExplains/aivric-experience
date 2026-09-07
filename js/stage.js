@@ -34,6 +34,49 @@ function panelWidth() {
   return Math.min(640, Math.max(360, w));
 }
 
+function cssPx(name, fallback) {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+  return Number.isFinite(v) ? v : fallback;
+}
+
+// The part of the viewport the visitor can actually see while a room is open: the HUD bar sits
+// on top, and the panel takes either the right edge (desktop) or everything below 40vh (phone,
+// where it is a bottom sheet). Everything a room wants seen has to land inside this rectangle.
+function visibleRect() {
+  const { vw, vh } = viewport();
+  const hudH = cssPx('--hud-h', 56);
+  const panelW = vw < 768 ? 0 : panelWidth();
+  const bottom = vw < 768 ? vh * 0.4 : vh;
+  const r = { x: 0, y: hudH, w: vw - panelW, h: Math.max(120, bottom - hudH) };
+  r.cx = r.x + r.w / 2; r.cy = r.y + r.h / 2;
+  return r;
+}
+
+// How far past a plain cover-fit a room render may be pushed to bring its focus point into the
+// visible band. The phone band is short (about a third of the screen), so honouring the focus
+// exactly would crop the room down to one desk; the cap trades a little accuracy for context.
+const MAX_ROOM_ZOOM = 1.6;
+
+// Place a room render so its focus point sits at the middle of the visible band while the image
+// still covers the whole viewport — the panel is translucent, so an uncovered strip behind it
+// would read as a seam. Cover-fit alone pins the image to the viewport edges and throws the
+// focus value away, which is what used to hide every room's subject under the panel or sheet.
+function fitRoom(Wr, Hr, view, band, focus) {
+  const fx = Math.min(0.98, Math.max(0.02, (focus && focus.x) != null ? focus.x : 0.5));
+  const fy = Math.min(0.98, Math.max(0.02, (focus && focus.y) != null ? focus.y : 0.5));
+  const cover = Math.max(view.vw / Wr, view.vh / Hr);
+  // Smallest scale at which the focus point can sit at the band centre without uncovering an edge.
+  const need = Math.max(
+    band.cx / (fx * Wr), (view.vw - band.cx) / ((1 - fx) * Wr),
+    band.cy / (fy * Hr), (view.vh - band.cy) / ((1 - fy) * Hr)
+  );
+  const s = Math.min(Math.max(cover, need), cover * MAX_ROOM_ZOOM);
+  let ox = band.cx - fx * Wr * s, oy = band.cy - fy * Hr * s;
+  ox = Math.min(0, Math.max(view.vw - Wr * s, ox));
+  oy = Math.min(0, Math.max(view.vh - Hr * s, oy));
+  return { s, ox, oy };
+}
+
 function applyMaster(s, ox, oy, animate) {
   state.s = s; state.ox = ox; state.oy = oy;
   const t = `translate3d(${ox}px, ${oy}px, 0) scale(${s})`;
@@ -74,9 +117,34 @@ export function toScreen(nx, ny) {
 }
 export function getState() { return state; }
 
+// ---- Room renders ----
+// One fetch + decode per render, shared by the warm-up pass in main.js and by goRoom, so a room
+// that was warmed while the visitor read the building view opens without a load wait.
+const roomCache = new Map(); // src -> Promise<HTMLImageElement|null>
+export function warmRoom(src) {
+  if (!src) return Promise.resolve(null);
+  let p = roomCache.get(src);
+  if (!p) {
+    p = new Promise((res) => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        const d = img.decode ? img.decode() : null;
+        if (d && d.then) d.then(() => res(img), () => res(img)); else res(img);
+      };
+      img.onerror = () => res(null);
+      img.src = src;
+    });
+    roomCache.set(src, p);
+  }
+  return p;
+}
+
 // ---- Building view <-> room view ----
+let roomToken = 0;
 export function goBuilding(animate = true) {
   state.inRoom = false;
+  roomToken++; // any room render still loading is now stale — it must not paint over the building
   stage.classList.remove('in-room');
   document.body.classList.remove('in-room');
   applyMaster(state.s0, state.ox0, state.oy0, animate);
@@ -85,55 +153,54 @@ export function goBuilding(animate = true) {
   emit();
 }
 
-let roomToken = 0;
 export async function goRoom(room, animate = true) {
   state.inRoom = true;
   state.panelW = panelWidth();
-  const { vw, vh } = viewport();
-  const mobile = vw < 768;
-  // Desktop: panel covers the right side, so center in the remaining width.
-  // Mobile: panel is a bottom sheet from 40vh down, so center in the visible top band (below the HUD).
-  const hudH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hud-h')) || 56;
-  const cx = mobile ? vw / 2 : (vw - state.panelW) / 2;
-  const cy = mobile ? hudH + (vh * 0.4 - hudH) / 2 : vh / 2;
+  const view = viewport();
+  const band = visibleRect();
   const z = room.hotspot.zoom || 2.6;
   const s1 = state.s0 * z;
-  const ox1 = cx - room.hotspot.x * state.W * s1;
-  const oy1 = cy - room.hotspot.y * state.H * s1;
   stage.classList.add('in-room');
   document.body.classList.add('in-room');
-  applyMaster(s1, ox1, oy1, animate);
+  applyMaster(s1, band.cx - room.hotspot.x * state.W * s1, band.cy - room.hotspot.y * state.H * s1, animate);
 
-  // Room render (optional). Cover-fit so the focus point lands at the visible center.
+  // Room render (optional). Every await below is followed by a staleness check: the visitor can
+  // leave, or jump to another room, long before a 600 KB render finishes loading.
   const token = ++roomToken;
-  if (room.render) {
-    const ok = await new Promise((res) => { roomImg.onload = () => res(true); roomImg.onerror = () => res(false); roomImg.src = room.render; });
-    if (token !== roomToken) return;
-    if (ok) {
-      const Wr = roomImg.naturalWidth, Hr = roomImg.naturalHeight;
-      const f = room.focus || { x: 0.5, y: 0.5 };
-      const sR = Math.max(vw / Wr, vh / Hr);
-      let oxR = cx - f.x * Wr * sR, oyR = cy - f.y * Hr * sR;
-      oxR = Math.min(0, Math.max(vw - Wr * sR, oxR));
-      oyR = Math.min(0, Math.max(vh - Hr * sR, oyR));
-      roomImg.width = Wr; roomImg.height = Hr;
-      roomEl.style.transition = 'none';
-      roomEl.style.transform = `translate3d(${oxR}px, ${oyR}px, 0) scale(${sR})`;
-      // settle-in on the image itself: start slightly larger around the focus point, ease to 1
-      roomImg.style.transition = 'none';
-      roomImg.style.transformOrigin = `${f.x * 100}% ${f.y * 100}%`;
-      roomImg.style.transform = 'scale(1.06)';
-      void roomEl.offsetWidth;
-      roomEl.style.transition = animate && !state.reduced ? 'opacity var(--dur) var(--ease)' : 'none';
-      roomImg.style.transition = animate && !state.reduced ? 'transform 1600ms var(--ease)' : 'none';
-      roomImg.style.transform = 'scale(1)';
-      roomEl.style.opacity = '1';
-    } else {
-      roomEl.style.opacity = '0';
+  const stale = () => token !== roomToken || !state.inRoom;
+  if (!room.render) { roomEl.style.opacity = '0'; emit(); return; }
+
+  const decoded = await warmRoom(room.render);
+  if (stale()) return;
+  if (!decoded) { roomEl.style.opacity = '0'; emit(); return; }
+
+  if (roomImg.getAttribute('src') !== room.render) {
+    roomImg.setAttribute('src', room.render); // decoded already: this paints straight from cache
+    if (!roomImg.complete) {
+      await new Promise((res) => {
+        const done = () => { roomImg.removeEventListener('load', done); roomImg.removeEventListener('error', done); res(); };
+        roomImg.addEventListener('load', done); roomImg.addEventListener('error', done);
+      });
+      if (stale()) return;
     }
-  } else {
-    roomEl.style.opacity = '0';
   }
+
+  const Wr = decoded.naturalWidth || roomImg.naturalWidth;
+  const Hr = decoded.naturalHeight || roomImg.naturalHeight;
+  const f = room.focus || { x: 0.5, y: 0.5 };
+  const fit = fitRoom(Wr, Hr, view, band, f);
+  roomImg.width = Wr; roomImg.height = Hr;
+  roomEl.style.transition = 'none';
+  roomEl.style.transform = `translate3d(${fit.ox}px, ${fit.oy}px, 0) scale(${fit.s})`;
+  // settle-in on the image itself: start slightly larger around the focus point, ease to 1
+  roomImg.style.transition = 'none';
+  roomImg.style.transformOrigin = `${f.x * 100}% ${f.y * 100}%`;
+  roomImg.style.transform = 'scale(1.06)';
+  void roomEl.offsetWidth;
+  roomEl.style.transition = animate && !state.reduced ? 'opacity var(--dur) var(--ease)' : 'none';
+  roomImg.style.transition = animate && !state.reduced ? 'transform 1600ms var(--ease)' : 'none';
+  roomImg.style.transform = 'scale(1)';
+  roomEl.style.opacity = '1';
   emit();
 }
 

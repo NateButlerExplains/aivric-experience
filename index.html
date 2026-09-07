@@ -74,7 +74,8 @@
 
 <!-- Intro film -->
 <div id="intro" hidden>
-  <video id="intro-video" playsinline muted preload="auto" poster="media/film/poster.jpg">
+  <!-- preload="none" and no poster: the film costs nothing until runIntro() asks for it (js/ui/intro.js). -->
+  <video id="intro-video" playsinline muted preload="none">
     <source src="media/film/aivric-fabric.mp4" type="video/mp4">
   </video>
   <div class="veil"></div>
@@ -83,8 +84,9 @@
     <div class="eyebrow">AiVRIC × 3HUE</div>
     <h1>Step inside the operations floor.</h1>
     <p>Defense and Offense feed one Client Vision. Every thread ends at the table where decisions are made. Walk the floor and see how each room works.</p>
-    <div class="actions">
+    <div class="actions" style="flex-wrap: wrap">
       <button class="btn primary" id="intro-enter" type="button">Enter the building</button>
+      <button class="btn outline" id="intro-sound-cta" type="button" aria-pressed="false">Play with sound</button>
       <button class="btn" id="intro-skip" type="button">Skip film</button>
     </div>
   </div>

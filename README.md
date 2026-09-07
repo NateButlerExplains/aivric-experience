@@ -35,7 +35,17 @@ experience/
 
 ## Embed into aivric.com
 
-1. Copy this whole folder into the website repo as `experience/` (next to `index.html`).
+1. Copy this folder into the website repo as `experience/` (next to its `index.html`) **without the
+   git history**. `aivric-experience/.git` is a real repository of about 26 MB; `cp -r` followed by
+   `git add` records a gitlink (a submodule pointer) instead of files, and the deployed `experience/`
+   directory ends up empty. Run this from the directory that holds both checkouts:
+   ```bash
+   rsync -a --exclude .git --exclude .gitignore aivric-experience/ AiVRIC-Website/experience/
+   cd AiVRIC-Website && git add experience && git status
+   ```
+   `git status` must list individual files (`experience/index.html`, `experience/js/main.js`, …). If it
+   shows one entry reading `new file: experience` with no trailing slash, a `.git` came along: delete
+   `AiVRIC-Website/experience/`, `git rm --cached experience`, and run the `rsync` again.
 2. Add a nav link. In the header mega-menu of each page (or just `index.html`), add:
    ```html
    <a href="experience/">Explore the floor</a>
@@ -50,6 +60,27 @@ experience/
 
 GitHub Pages serves `.js` modules with the right MIME type. No server configuration is required.
 A copy of the site favicon ships in the folder so the page is self-contained.
+
+### Where to commit
+
+**Commit `experience/` to `gh-pages`.** In `AiVRIC/AiVRIC-Website`, `gh-pages` is both the repository
+default branch and the GitHub Pages source (Pages settings: branch `gh-pages`, path `/`, custom domain
+`aivric.com`). The host repo's own `CLAUDE.md` says `main` is production — it is wrong. `main` is a
+stale stub, last committed in October 2025 and several hundred commits behind `gh-pages`; pushing
+there deploys nothing.
+
+```bash
+cd AiVRIC-Website && git checkout gh-pages
+git add experience && git commit -m "Add the operations floor experience" && git push origin gh-pages
+```
+
+- Expect `https://aivric.com/experience/` to be live a minute or two after the push, once the Pages
+  build finishes. Check it with `gh api repos/AiVRIC/AiVRIC-Website/pages/builds/latest --jq .status`.
+- **Never name a file or folder inside `experience/` starting with `_` or `.`.** The site uses the
+  classic (Jekyll) Pages build with no `.nojekyll` at the site root, and Jekyll drops underscore- and
+  dot-prefixed paths from the output. A `media/_clips/` or `media/.cache/` folder would work perfectly
+  on a local static server and 404 in production. The `.nojekyll` shipped in this folder only counts at
+  the root of a site, so it does not protect `experience/` on the host.
 
 ## Add or change content
 
@@ -107,7 +138,13 @@ master moves every pin. `tools/render-prompts/` keeps the earlier gpt-image-2 pr
 - `prefers-reduced-motion` disables parallax, stream animation, and long transitions.
 - Under 768 px the panel becomes a bottom sheet and a scrollable room strip replaces the HUD room buttons.
 - Esc closes the lightbox first, then exits the room. Browser back/forward works because routes are hash-based.
-- Media is lazy-loaded per station; the master image (≈540 KB) and film (≈3 MB) are the only up-front loads.
+- Media is lazy-loaded per station. The master render (≈1.0 MB) is the only up-front load: the `<video>`
+  in `index.html` carries `preload="none"` and no `poster`, and `js/ui/intro.js` sets both immediately
+  before it plays, so the 2.9 MB film costs nothing on a deep link, a `?skipintro=1` load, or a
+  same-session revisit.
+- When the film reaches its end it eases over ~1.5 s into a finished state — the last frame recedes and
+  the headline and "Enter the building" button take the frame. "Play with sound" sits next to
+  "Skip film" on the first frame; nothing ever autoplays with sound.
 
 ## Credits
 
