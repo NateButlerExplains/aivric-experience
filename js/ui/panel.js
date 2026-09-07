@@ -13,24 +13,55 @@ const MAX_TILES = 4;
 let onSelectStation = () => {};
 const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-export function initPanel(handlers) { onSelectStation = handlers.onSelectStation || onSelectStation; }
+export function initPanel(handlers) {
+  onSelectStation = handlers.onSelectStation || onSelectStation;
+  // Arrow keys walk the strip, as a tablist should. Tab still reaches every station on its own,
+  // so this adds a way in rather than replacing one.
+  tabsEl.addEventListener('keydown', (e) => {
+    const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+    if (!step && e.key !== 'Home' && e.key !== 'End') return;
+    const tabs = [...tabsEl.querySelectorAll('.tab')];
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    const next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + step + tabs.length) % tabs.length;
+    e.preventDefault();
+    tabs[next].focus();
+    ensureTabVisible(tabs[next]);
+  });
+}
+
+// Keep a tab on screen. The strip wraps instead of scrolling at every width we support, so this
+// is normally a no-op — but it is what guarantees the open station is visible on a cold deep
+// link, whatever the strip does at a width we have not measured.
+function ensureTabVisible(tab) {
+  if (!tab || tabsEl.hidden) return;
+  const t = tab.getBoundingClientRect(), s = tabsEl.getBoundingClientRect();
+  if (t.left < s.left) tabsEl.scrollLeft -= s.left - t.left + 12;
+  else if (t.right > s.right) tabsEl.scrollLeft += t.right - s.right + 12;
+  if (t.top < s.top) tabsEl.scrollTop -= s.top - t.top + 8;
+  else if (t.bottom > s.bottom) tabsEl.scrollTop += t.bottom - s.bottom + 8;
+}
 
 export function showRoom(room, stationId) {
   const station = room.stations.find((s) => s.id === stationId) || room.stations[0];
   // tabs
   tabsEl.innerHTML = '';
+  let activeTab = null;
   for (const s of room.stations) {
     const b = document.createElement('button');
-    b.className = 'tab' + (s.id === station.id ? ' active' : '');
+    const active = s.id === station.id;
+    b.className = 'tab' + (active ? ' active' : '');
     b.type = 'button'; b.role = 'tab';
-    b.setAttribute('aria-selected', s.id === station.id ? 'true' : 'false');
+    b.setAttribute('aria-selected', active ? 'true' : 'false');
     b.textContent = s.name;
     b.addEventListener('click', () => onSelectStation(s));
     tabsEl.appendChild(b);
+    if (active) activeTab = b;
   }
   tabsEl.hidden = room.stations.length < 2;
   renderStation(room, station);
   bodyEl.scrollTop = 0;
+  ensureTabVisible(activeTab);
   return station;
 }
 

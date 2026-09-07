@@ -1,5 +1,5 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom } from './stage.js';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js';
 import { buildPins, showPins, hidePins } from './hotspots.js';
 import { buildStreams, revealStreams } from './streams.js';
 import { onRoute, go, parse } from './router.js';
@@ -15,15 +15,45 @@ const params = new URLSearchParams(location.search);
 
 // Run fn once the master layer has finished travelling. A transition that never starts (same
 // transform, or prefers-reduced-motion) fires no transitionend, so a timer backs the listener up.
-let cancelSettle = null;
 function afterMasterSettles(fn, fallback = 1200) {
-  if (cancelSettle) cancelSettle();
   const onEnd = (e) => { if (e.target === masterEl && e.propertyName === 'transform') run(); };
   const timer = setTimeout(run, fallback);
-  const cleanup = () => { masterEl.removeEventListener('transitionend', onEnd); clearTimeout(timer); cancelSettle = null; };
+  const cleanup = () => { masterEl.removeEventListener('transitionend', onEnd); clearTimeout(timer); };
   function run() { cleanup(); fn(); }
   masterEl.addEventListener('transitionend', onEnd);
-  cancelSettle = cleanup;
+  return cleanup;
+}
+
+// Bringing the pins back is a two-part wait, and both parts matter.
+//
+// The camera has to have arrived, or the pins pop in at their final coordinates over a building
+// that is still zooming out. And the room layer has to be GONE, not merely left: goBuilding
+// clears `inRoom` at the start of an exit that then spends 900 ms fading the render out, and an
+// exit at ~890 ms delivers the *enter* transition's own transitionend the instant it begins — so
+// waiting on the master alone used to fade six pins up over a room render that was still on
+// screen. The whole thing is cancellable, and every route change cancels it, so no timer or
+// listener from an earlier navigation can fire against a newer state.
+let cancelReveal = null;
+function cancelPendingReveal() { if (cancelReveal) { cancelReveal(); cancelReveal = null; } }
+
+function schedulePinReveal(stagger, { delay = 0, settle = true } = {}) {
+  cancelPendingReveal();
+  let dead = false;
+  let stopSettle = null, stopWait = null;
+  const reveal = () => { stopWait = whenRoomHidden(() => { if (!dead) showPins(stagger); }); };
+  const timer = setTimeout(() => {
+    if (dead) return;
+    // The very first reveal follows the opening choreography, not a camera move: the building is
+    // already where it belongs, so there is no transition to wait for.
+    if (!settle) { reveal(); return; }
+    stopSettle = afterMasterSettles(() => { if (!dead) reveal(); });
+  }, delay);
+  cancelReveal = () => {
+    dead = true;
+    clearTimeout(timer);
+    if (stopSettle) stopSettle();
+    if (stopWait) stopWait();
+  };
 }
 
 const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 500));
@@ -35,6 +65,7 @@ async function main() {
   const findStation = (id) => { for (const r of rooms) { const s = r.stations.find((x) => x.id === id); if (s) return { room: r, station: s }; } return null; };
 
   stage.style.opacity = '0'; stage.style.transition = 'opacity 700ms var(--ease)';
+  setPinSpread(rooms); // before the first fit: the portrait overscan is capped by it
   const st = await loadMaster(manifest.scene.master);
   buildStreams(manifest.streams, st.W, st.H);
   buildPins(rooms, (room) => go({ view: 'room', id: room.id }));
@@ -76,6 +107,10 @@ async function main() {
   if (!skipIntro) { await runIntro(); }
   sessionStorage.setItem('aivric-intro', '1');
   stage.style.opacity = '1';
+  // The composition arrives with the building rather than after it: the lockup and the room list
+  // fade up (css `body.floor-ready`) while the master eases back into its frame (settleIn).
+  document.body.classList.add('floor-ready');
+  settleIn();
 
   let revealed = false;
   let lastKey = null;
@@ -86,6 +121,7 @@ async function main() {
     const key = route.view === 'building' ? '#/' : `#/${route.view}/${route.id}`;
     if (key === lastKey) return;
     lastKey = key;
+    cancelPendingReveal();
 
     if (route.view === 'building') {
       const leavingRoom = getState().inRoom;
@@ -95,11 +131,10 @@ async function main() {
       if (!revealed) {
         revealed = true;
         setTimeout(revealStreams, 300);
-        setTimeout(() => { showPins(true); idle(warmRooms); }, 1100);
+        setTimeout(() => idle(warmRooms), 1100);
+        schedulePinReveal(true, { delay: 1100, settle: false });
       } else if (leavingRoom) {
-        // Pins come back only once the building has actually settled: showing them earlier puts
-        // them at their final coordinates over a scene that is still zooming out.
-        afterMasterSettles(() => showPins(false));
+        schedulePinReveal(false);
       }
       return;
     }

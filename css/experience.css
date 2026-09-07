@@ -84,7 +84,10 @@ a { color: inherit; }
    The DOT is what marks the coordinate, so the button is offset by exactly the dot's radius
    instead of by half its own width: the label (and the sub-label that expands on hover) can then
    grow to any length without dragging the dot off the spot it points at. Vertically the flex
-   centring keeps the dot on the coordinate whatever height the chip grows to. */
+   centring keeps the dot on the coordinate whatever height the chip grows to. Each data-place
+   value below moves the label to a different side of the dot and re-offsets the button so the
+   dot stays put. js/hotspots.js copies the side straight from the manifest, except on a portrait
+   phone, where every pin becomes a numbered dot and the room names move to the list below. */
 .pin {
   --dot-size: 30px;
   position: absolute;
@@ -110,6 +113,8 @@ a { color: inherit; }
 .pin .dot::after {
   content: ""; width: 10px; height: 10px; border-radius: 50%; background: #fff;
 }
+/* The pin's portrait label: a numeral that matches the numbered room list under the building. */
+.pin .dot i { display: none; }
 .pin .dot::before {
   content: ""; position: absolute; inset: -6px; border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.5);
@@ -134,7 +139,7 @@ a { color: inherit; }
 .pin:hover .dot, .pin:focus-visible .dot { border-color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
 .pin:focus-visible { outline: 2px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
 /* Label on the left: the dot is the last box, so anchor the button's right edge instead. */
-.pin[data-side="left"] { flex-direction: row-reverse; transform: translate(calc(var(--dot-size) / 2 - 100%), -50%); }
+.pin[data-place="left"] { flex-direction: row-reverse; transform: translate(calc(var(--dot-size) / 2 - 100%), -50%); }
 
 /* ---------- HUD ---------- */
 #hud {
@@ -182,6 +187,11 @@ a { color: inherit; }
 @media (max-width: 1280px) { #hud .crumbs { display: none; } }
 @media (max-width: 1100px) { #hud .nav .room-btn { font-size: 13px; padding: 8px 8px; } }
 
+/* Floor composition wrapper. Everywhere but a portrait phone it generates no box at all, so the
+   legend, the hint and the room strip keep the fixed positions they have always had. */
+#floor { display: contents; }
+#floor-head { display: none; }
+
 /* legend + hint */
 #legend {
   position: fixed; left: 22px; bottom: 22px; z-index: 30;
@@ -198,18 +208,54 @@ a { color: inherit; }
 }
 body.in-room #legend, body.in-room #hint { opacity: 0; pointer-events: none; }
 
-/* mobile room strip (narrow screens only) */
-#mobile-rooms {
-  display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
-  gap: 8px; overflow-x: auto; scrollbar-width: none;
-  background: linear-gradient(to top, rgba(3,10,18,0.95), rgba(3,10,18,0));
-  transition: opacity 300ms;
+/* The six rooms (phones only). One markup from ui/hud.js — numeral, name, tagline, chevron —
+   in two layouts: a numbered list under the building in portrait, a scrolling row of names along
+   the bottom edge in landscape, where there is no vertical room for a list. Both are off until
+   their own media query claims them. */
+#mobile-rooms { display: none; }
+.room-item {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--font-head); font-weight: 500; font-size: 13px; color: var(--text);
+  border: 1px solid var(--line-strong); border-radius: 8px;
+  background: rgba(8,15,28,0.7);
+  transition: background 160ms, border-color 160ms;
 }
-#mobile-rooms::-webkit-scrollbar { display: none; }
-#mobile-rooms .btn { flex: none; border: 1px solid var(--line-strong); background: rgba(8,15,28,0.7); font-size: 13px; padding: 8px 12px; }
-#mobile-rooms .btn::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--text-muted)); }
+.room-item .idx { font-style: normal; flex: none; }
+.room-item:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.room-item.active { border-color: rgba(0,209,255,0.5); background: rgba(0,209,255,0.12); color: #fff; }
 body.in-room #mobile-rooms { opacity: 0; pointer-events: none; }
+
+/* Landscape phone: a scrolling strip. The edge fades follow the scroll position (ui/hud.js sets
+   the classes) — painted unconditionally, the trailing fade left the last room permanently half
+   dissolved at the end of the strip with nothing behind it to scroll to. */
+@media (max-width: 767px) and (orientation: landscape) {
+  #mobile-rooms {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    gap: 8px; overflow-x: auto; scrollbar-width: none;
+    background: linear-gradient(to top, rgba(3,10,18,0.95), rgba(3,10,18,0));
+    transition: opacity 300ms;
+  }
+  #mobile-rooms::-webkit-scrollbar { display: none; }
+  #mobile-rooms .room-item { flex: none; padding: 8px 12px; }
+  #mobile-rooms .rtag, #mobile-rooms .go { display: none; }
+  #mobile-rooms .idx {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--dot, var(--text-muted)); font-size: 0;
+  }
+  #mobile-rooms.fade-start {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px);
+    mask-image: linear-gradient(to right, transparent 0, #000 40px);
+  }
+  #mobile-rooms.fade-end {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent 100%);
+  }
+  #mobile-rooms.fade-start.fade-end {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 44px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 44px), transparent 100%);
+  }
+}
 
 /* room nav arrows (bottom of scene while in room) */
 #room-nav {
@@ -235,17 +281,28 @@ body.in-room #room-nav { opacity: 1; pointer-events: auto; }
   overflow: hidden;
 }
 body.in-room #panel { transform: translateX(0); }
+/* Station switcher. It WRAPS rather than scrolls: a fourth station arrived in the Client Vision
+   room and a single scrolling row cut it off with nothing to say it was there — at 1280 the last
+   tab read "Fab". Pills, because an underline that lands mid-panel on a second row reads as an
+   accident where a filled chip reads as a choice. */
 #panel .tabs {
-  display: flex; gap: 4px; padding: 10px 14px 0; border-bottom: 1px solid var(--line);
-  overflow-x: auto; scrollbar-width: none;
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--line);
+  /* Wrapping is what keeps every station visible; the scroll container is the backstop for a
+     station list long enough that the flex column squeezes this row (ui/panel.js then keeps the
+     open one in view). Scrollbars stay hidden either way. */
+  overflow: auto; scrollbar-width: none;
 }
 #panel .tabs::-webkit-scrollbar { display: none; }
 #panel .tab {
-  padding: 10px 12px; font-family: var(--font-head); font-weight: 500; font-size: 14px; color: var(--text-muted);
-  border-bottom: 2px solid transparent; white-space: nowrap; margin-bottom: -1px;
+  padding: 7px 11px; border-radius: 999px;
+  font-family: var(--font-head); font-weight: 500; font-size: 13px; color: var(--text-muted);
+  border: 1px solid var(--line); background: rgba(226, 232, 240, 0.03);
+  white-space: nowrap;
+  transition: background 160ms, border-color 160ms, color 160ms;
 }
-#panel .tab:hover { color: var(--text); }
-#panel .tab.active { color: var(--text); border-bottom-color: var(--blue); }
+#panel .tab:hover { color: var(--text); border-color: var(--line-strong); }
+#panel .tab.active { color: #fff; background: rgba(0, 209, 255, 0.14); border-color: rgba(0, 209, 255, 0.55); }
+#panel .tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 #panel .body { padding: 22px 26px 28px; overflow-y: auto; flex: 1; }
 #panel .meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px; }
 .badge {
@@ -389,7 +446,7 @@ body.in-room #panel { transform: translateX(0); }
 @media (prefers-reduced-motion: reduce) {
   #streams path, .pin .dot::before { animation: none; }
   :root { --dur: 1ms; }
-  #panel, #intro, .pin, #stage .layer { transition-duration: 1ms !important; }
+  #panel, #intro, .pin, #stage .layer, #floor-head, #floor-foot { transition-duration: 1ms !important; }
 }
 @media (max-width: 767px) {
   :root { --panel-w: 100vw; --hud-h: 52px; }
@@ -398,12 +455,152 @@ body.in-room #panel { transform: translateX(0); }
   #hud .nav .room-btn { display: none; }
   #legend { display: none; }
   #hint { font-size: 13px; bottom: 64px; }
-  #mobile-rooms { display: flex; }
   #panel { min-width: 0; max-width: none; top: 40vh; border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; }
   #panel h2 { font-size: 22px; }
   #panel .body { padding: 18px; }
   #room-nav { right: 24px; bottom: auto; top: calc(40vh - 52px); }
-  .pin { --dot-size: 24px; }
-  .pin .chip { font-size: 12.5px; padding: 4px 9px; }
+  #panel .tabs { padding: 10px 12px; gap: 5px; }
+  #panel .tab { font-size: 12.5px; padding: 7px 10px; }
+  /* Smaller than on the desktop: a phone gives the whole building a 375-390 px band to stand in,
+     and six full-size chips would cover the thing they are pointing at. (In portrait they are
+     dropped altogether — see the composed view at the end of this file.) */
   .pin .sub { display: none; }
+  /* Thumb-sized targets. Only the side placements need padding: the flex centring keeps the dot
+     on its coordinate as the button grows, while a stacked pin is already tall enough. */
+  .pin[data-place="right"], .pin[data-place="left"] { padding: 11px 0; }
+}
+
+/* Shrinking the pins is a PORTRAIT concession: there the building is fitted to a band a third of
+   the screen tall, so full-size chips would blanket it. A landscape phone gives the building the
+   whole width and has room for the normal metrics, so it keeps them. */
+@media (max-width: 767px) and (orientation: portrait) {
+  .pin { --dot-size: 20px; gap: 7px; }
+  .pin .dot::after { width: 7px; height: 7px; }
+  .pin .chip { font-size: 11.5px; padding: 3px 8px; }
+}
+
+/* Portrait phone: the master is fitted to a reserved band rather than covering the screen
+   (js/stage.js), so the floor is framed the way the film frames it. The gradient keeps the
+   ground around it from reading as a flat void, and the fade dissolves the render's own top and
+   bottom edges into that ground. */
+body.floor-portrait #stage {
+  background:
+    radial-gradient(120% 52% at 50% 42%, #0c1a2e 0%, #071120 48%, var(--bg-deep) 100%);
+}
+/* Kept on while a room is open too: the fade travels with the layer, so the edges stay soft as
+   they fly off screen instead of snapping to full opacity when the camera starts to move. */
+body.floor-portrait #master,
+body.floor-portrait #overlays {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+/* ---------- Portrait phone: the composed building view ----------
+   A 16:9 building in a 9:19.5 phone always leaves space, so the space is composed rather than
+   left over: lockup and thesis line above, the building in a band of its own, the colour key and
+   the six rooms below. #floor-band is the only thing js/stage.js reads — it fits the master into
+   whatever height this layout leaves, so the copy and the list can change without a constant in
+   the JS going stale. Everything is off the flow of the page (position: fixed) because the scene
+   underneath is. */
+@media (max-width: 767px) and (orientation: portrait) {
+  #floor {
+    display: flex; flex-direction: column;
+    position: fixed; left: 0; right: 0; top: var(--hud-h); bottom: 0;
+    z-index: 30;
+    pointer-events: none; /* the band is a hole: the pins under it stay clickable */
+  }
+  #floor-head, #floor-foot {
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 800ms var(--ease), transform 800ms var(--ease);
+  }
+  /* Arrival: the copy rises into place while the master eases back into its frame (stage.js
+     settleIn), so leaving the full-bleed film reads as a layout assembling, not as the picture
+     shrinking. */
+  body.floor-ready #floor-head { opacity: 1; transform: none; transition-delay: 140ms; }
+  body.floor-ready #floor-foot { opacity: 1; transform: none; transition-delay: 300ms; }
+  body.in-room #floor-head, body.in-room #floor-foot {
+    opacity: 0; transform: none; pointer-events: none;
+    transition-duration: 300ms; transition-delay: 0ms;
+  }
+
+  #floor-head { display: block; flex: none; text-align: center; padding: 15px 24px 9px; }
+  #floor-head .eyebrow {
+    margin: 0 0 7px;
+    font-family: var(--font-head); font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim);
+  }
+  #floor-head .thesis {
+    margin: 0 auto; max-width: 19ch;
+    font-family: var(--font-head); font-weight: 500; font-size: 19px; line-height: 1.26;
+    color: var(--text);
+  }
+
+  /* The building's slot. min-height is the floor under it: on a short phone the list gives way
+     (below) rather than the picture. */
+  #floor-band { flex: 1 1 auto; min-height: 168px; }
+
+  #floor-foot { flex: none; pointer-events: auto; padding: 0 14px calc(10px + env(safe-area-inset-bottom)); }
+  /* Colour key: it explains the streams in the picture, so it sits directly under the picture. */
+  #legend {
+    display: flex; position: static; justify-content: center; flex-wrap: wrap;
+    gap: 7px 16px; margin: 0; font-size: 11px;
+  }
+  #legend div { gap: 7px; white-space: nowrap; }
+  #legend i { width: 14px; }
+  /* And the hint becomes the list's own label, on the far side of a hairline. */
+  #hint {
+    position: static; transform: none; margin: 12px 2px 8px; padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-head); font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim);
+  }
+
+  #mobile-rooms { display: grid; gap: 5px; }
+  #mobile-rooms .room-item {
+    display: grid; grid-template-columns: 28px 1fr 14px; align-items: center;
+    column-gap: 12px; min-height: 44px; padding: 5px 12px 5px 10px;
+    border-radius: 10px; border-color: var(--line); background: rgba(11,22,38,0.62);
+    text-align: left;
+  }
+  #mobile-rooms .idx {
+    grid-column: 1; grid-row: 1 / span 2;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--dot, var(--line-strong)); color: var(--dot, var(--text-muted));
+    display: grid; place-items: center; font-size: 12px; font-weight: 500; line-height: 1;
+  }
+  #mobile-rooms .rname { grid-column: 2; font-size: 14.5px; line-height: 1.15; }
+  #mobile-rooms .rtag {
+    grid-column: 2;
+    font-family: var(--font-body); font-weight: 400; font-size: 11.5px; line-height: 1.25;
+    color: var(--text-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #mobile-rooms .go { grid-column: 3; grid-row: 1 / span 2; width: 14px; height: 14px; color: var(--text-dim); }
+
+  /* Pins carry no labels here: six chips blanketed the artwork they pointed at. The dot keeps a
+     44 px target (26 + 9 padding each side) and wears the number its row in the list wears. */
+  .pin { --dot-size: 26px; padding: 9px; gap: 0; }
+  .pin[data-place="dot"] { transform: translate(-50%, -50%); }
+  .pin .chip { display: none; }
+  .pin .dot::after { display: none; }
+  .pin .dot i {
+    display: block; font-style: normal;
+    font-family: var(--font-head); font-weight: 500; font-size: 12.5px; line-height: 1; color: #fff;
+  }
+}
+
+/* Short phones (a 667 or 640 pt screen). Six rows of name-and-tagline would take 300 px of a
+   667 px screen and leave the building a strip, so the list pairs up into three rows of two and
+   drops the taglines — still six rooms, still a 44 px target each, in half the height. */
+@media (max-width: 767px) and (orientation: portrait) and (max-height: 750px) {
+  #floor-head { padding: 11px 24px 7px; }
+  #floor-head .thesis { font-size: 17px; }
+  #legend { font-size: 10px; gap: 6px 12px; }
+  #legend i { width: 12px; }
+  #hint { margin: 10px 2px 7px; padding-top: 10px; }
+  #mobile-rooms { grid-template-columns: 1fr 1fr; }
+  #mobile-rooms .room-item { grid-template-columns: 24px 1fr; column-gap: 9px; padding: 5px 10px; }
+  #mobile-rooms .idx { grid-row: 1; width: 24px; height: 24px; font-size: 11.5px; }
+  #mobile-rooms .rname { font-size: 13px; }
+  #mobile-rooms .rtag, #mobile-rooms .go { display: none; }
 }

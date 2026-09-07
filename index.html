@@ -38,13 +38,27 @@
   <div class="nav" id="nav"></div>
 </header>
 
-<div id="legend" aria-hidden="true">
-  <div><i class="blue"></i>Defense findings</div>
-  <div><i class="coral"></i>Offense findings</div>
-  <div><i class="gold"></i>Executive insight</div>
+<!-- Floor composition.
+     On every viewport but a portrait phone this is `display: contents` and the three fixed
+     children below sit exactly where they always have. On a portrait phone it becomes the page:
+     a flex column of lockup+thesis, the band the building is fitted into (js/stage.js measures
+     #floor-band), and the colour key plus the six-room list. -->
+<div id="floor">
+  <div id="floor-head">
+    <p class="eyebrow">AiVRIC &#215; 3HUE</p>
+    <p class="thesis">Defense and Offense feed one Client Vision.</p>
+  </div>
+  <div id="floor-band" aria-hidden="true"></div>
+  <div id="floor-foot">
+    <div id="legend" aria-hidden="true">
+      <div><i class="blue"></i>Defense findings</div>
+      <div><i class="coral"></i>Offense findings</div>
+      <div><i class="gold"></i>Executive insight</div>
+    </div>
+    <div id="hint">Select a room to explore</div>
+    <nav id="mobile-rooms" aria-label="Rooms"></nav>
+  </div>
 </div>
-<div id="hint">Select a room to explore</div>
-<nav id="mobile-rooms" aria-label="Rooms"></nav>
 
 <div id="room-nav">
   <button class="btn" id="room-prev" type="button"></button>
