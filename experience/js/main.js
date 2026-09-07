@@ -1,12 +1,13 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js';
-import { buildPins, showPins, hidePins } from './hotspots.js';
-import { buildStreams, revealStreams } from './streams.js';
-import { onRoute, go, parse } from './router.js';
-import { initHud, updateHud } from './ui/hud.js';
-import { initPanel, showRoom } from './ui/panel.js';
-import { runIntro } from './ui/intro.js';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-07q';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-07q';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-07q';
+import { onRoute, go, parse } from './router.js?v=2026-09-07q';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-07q';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-07q';
+import { runIntro } from './ui/intro.js?v=2026-09-07q';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-07q';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-07q';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -93,9 +94,14 @@ async function main() {
   prevBtn.addEventListener('click', () => current && go({ view: 'room', id: neighbor(-1).id }));
   nextBtn.addEventListener('click', () => current && go({ view: 'room', id: neighbor(1).id }));
 
-  // Keyboard: Esc closes lightbox, then exits room.
+  // The panel's active thumbnail follows whatever the left-hand stage is showing.
+  initViewer({ onChange: setActiveMedia });
+  document.addEventListener('viewer:close', closeViewer);
+
+  // Keyboard: Escape unwinds one layer at a time — media, then lightbox, then the room itself.
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (isViewerOpen()) { closeViewer(); return; }
     if (isLightboxOpen()) { closeLightbox(); return; }
     if (getState().inRoom) go({ view: 'building' });
   });
@@ -116,6 +122,7 @@ async function main() {
   let lastKey = null;
 
   onRoute((route) => {
+    if (isViewerOpen()) closeViewer();   // never survive a navigation
     // The router re-fires on an unchanged hash (clicking the open station's own tab, or a pin for
     // the room you are already in). Handling it would restart the camera for nothing.
     const key = route.view === 'building' ? '#/' : `#/${route.view}/${route.id}`;

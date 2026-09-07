@@ -74,98 +74,118 @@
             {
               "type": "image",
               "src": "media/cloudsignals/posture-command.png",
-              "caption": "Posture Command: threat signals, failed checks, assets, and open findings"
+              "caption": "Posture Command: threat signals, failed checks, assets, and open findings",
+              "group": "Posture & findings"
             },
             {
               "type": "video",
               "src": "media/cloudsignals/cs-session-1.mp4",
               "poster": "media/cloudsignals/cs-session-1-poster.jpg",
-              "caption": "Platform walkthrough"
+              "caption": "Platform walkthrough",
+              "group": "Walkthrough"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/remediation-plan.png",
-              "caption": "ThreatSignals control plane: regional risk replay and top contributors"
+              "caption": "ThreatSignals control plane: regional risk replay and top contributors",
+              "group": "Posture & findings"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/scan-findings.png",
-              "caption": "Cloud scan finding: organization-aware risk and remediation guidance"
+              "caption": "Cloud scan finding: organization-aware risk and remediation guidance",
+              "group": "Posture & findings"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/finding-detail.png",
-              "caption": "Remediation steps, resource details, and framework references"
+              "caption": "Remediation steps, resource details, and framework references",
+              "group": "Posture & findings"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/compliance-dashboard.png",
-              "caption": "Compliance results across frameworks: CIS, PCI, ISO 27001, SOC 2, NIS2"
+              "caption": "Compliance results across frameworks: CIS, PCI, ISO 27001, SOC 2, NIS2",
+              "group": "Compliance"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/compliance-posture.png",
-              "caption": "Framework checks with per-control findings and cloud provider"
+              "caption": "Framework checks with per-control findings and cloud provider",
+              "group": "Compliance"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/risk-governance.png",
-              "caption": "Risk Governance Command Center: the live risk fabric"
+              "caption": "Risk Governance Command Center: the live risk fabric",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/portfolio-analytics.png",
-              "caption": "Portfolio analytics: exposure engine and coverage maturity"
+              "caption": "Portfolio analytics: exposure engine and coverage maturity",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/scenario-library.png",
-              "caption": "Scenario Intelligence Studio: risk scenario template library"
+              "caption": "Scenario Intelligence Studio: risk scenario template library",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/project-center.png",
-              "caption": "RiskOps Project Center: execution flow from intake to verified"
+              "caption": "RiskOps Project Center: execution flow from intake to verified",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/sla-governance.png",
-              "caption": "Risk-aware SLA orchestration"
+              "caption": "Risk-aware SLA orchestration",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/third-party-register.png",
-              "caption": "Third-party risk register"
+              "caption": "Third-party risk register",
+              "group": "Risk operations"
             },
             {
               "type": "video",
               "src": "../academy/screenshots/clip-findings-triage.webm",
-              "caption": "Findings triage"
+              "caption": "Findings triage",
+              "group": "Walkthrough",
+              "poster": "media/cloudsignals/clip-findings-triage-poster.jpg"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/ai-security-brief.png",
-              "caption": "AI Security Intelligence Brief: the executive readout"
+              "caption": "AI Security Intelligence Brief: the executive readout",
+              "group": "Vision AI"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/riskops-insights.png",
-              "caption": "RiskOps Insights: driver analysis and treatment strategy"
+              "caption": "RiskOps Insights: driver analysis and treatment strategy",
+              "group": "Risk operations"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/vision-chat.png",
-              "caption": "Vision Chat: your AI CISO and risk advisor"
+              "caption": "Vision Chat: your AI CISO and risk advisor",
+              "group": "Vision AI"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/vision-model-insights.png",
-              "caption": "Vision model insights: security-native telemetry"
+              "caption": "Vision model insights: security-native telemetry",
+              "group": "Vision AI"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/risk-landscape.png",
-              "caption": "Risk landscape: composite risk matrix by category"
+              "caption": "Risk landscape: composite risk matrix by category",
+              "group": "Risk operations"
             }
           ],
           "links": [
@@ -203,67 +223,80 @@
               "type": "video",
               "src": "media/ai-signals/ai-signals-clickthrough.mp4",
               "poster": "media/ai-signals/command-center.png",
-              "caption": "AI Signals click-through: Command Center to red teaming, tracing, and governance (90 s)"
+              "caption": "AI Signals click-through: Command Center to red teaming, tracing, and governance (90 s)",
+              "group": "Walkthrough"
             },
             {
               "type": "image",
               "src": "media/ai-signals/command-center.png",
-              "caption": "AI Trust Command Center: one trust index across six AI domains"
+              "caption": "AI Trust Command Center: one trust index across six AI domains",
+              "group": "Trust & governance"
             },
             {
               "type": "image",
               "src": "media/ai-signals/security-reports.png",
-              "caption": "OWASP LLM Top 10 evidence reports and framework coverage"
+              "caption": "OWASP LLM Top 10 evidence reports and framework coverage",
+              "group": "Trust & governance"
             },
             {
               "type": "image",
               "src": "media/ai-signals/red-teaming.png",
-              "caption": "Red teaming: safe-mode campaigns and readiness"
+              "caption": "Red teaming: safe-mode campaigns and readiness",
+              "group": "Red teaming"
             },
             {
               "type": "image",
               "src": "media/ai-signals/red-teaming-scenarios.png",
-              "caption": "Scenario packs: prompt injection, jailbreak, exfiltration, tool abuse"
+              "caption": "Scenario packs: prompt injection, jailbreak, exfiltration, tool abuse",
+              "group": "Red teaming"
             },
             {
               "type": "image",
               "src": "media/ai-signals/model-security.png",
-              "caption": "Model security posture and inventory"
+              "caption": "Model security posture and inventory",
+              "group": "AI attack surface"
             },
             {
               "type": "image",
               "src": "media/ai-signals/mcp-security.png",
-              "caption": "MCP security: server inventory, policy coverage, threat posture"
+              "caption": "MCP security: server inventory, policy coverage, threat posture",
+              "group": "AI attack surface"
             },
             {
               "type": "image",
               "src": "media/ai-signals/ai-operations.png",
-              "caption": "AI Operations Center: requests, latency, error rate, token usage"
+              "caption": "AI Operations Center: requests, latency, error rate, token usage",
+              "group": "Observability"
             },
             {
               "type": "image",
               "src": "media/ai-signals/tracing.png",
-              "caption": "Tracing: sessions, spans, and model calls"
+              "caption": "Tracing: sessions, spans, and model calls",
+              "group": "Observability"
             },
             {
               "type": "image",
               "src": "media/ai-signals/observability-trace.png",
-              "caption": "Trace detail with input, output, and metadata"
+              "caption": "Trace detail with input, output, and metadata",
+              "group": "Observability"
             },
             {
               "type": "image",
               "src": "media/ai-signals/finops.png",
-              "caption": "AI FinancialOps: spend trend, cost efficiency, spend by model"
+              "caption": "AI FinancialOps: spend trend, cost efficiency, spend by model",
+              "group": "Cost"
             },
             {
               "type": "image",
               "src": "media/ai-signals/governance-hub.png",
-              "caption": "AI Governance Hub: governance score, open risks, policy violations, controls"
+              "caption": "AI Governance Hub: governance score, open risks, policy violations, controls",
+              "group": "Trust & governance"
             },
             {
               "type": "image",
               "src": "media/ai-signals/assets.png",
-              "caption": "AI Assets Inventory: agents, models, prompts, datasets, MCP servers"
+              "caption": "AI Assets Inventory: agents, models, prompts, datasets, MCP servers",
+              "group": "AI attack surface"
             }
           ],
           "links": [
@@ -626,12 +659,14 @@
             {
               "type": "image",
               "src": "media/cloudsignals/ai-security-brief.png",
-              "caption": "AI Security Intelligence Brief: the executive readout"
+              "caption": "AI Security Intelligence Brief: the executive readout",
+              "group": "Vision AI"
             },
             {
               "type": "image",
               "src": "media/cloudsignals/risk-landscape.png",
-              "caption": "Risk landscape: what the 90-day plan is built from"
+              "caption": "Risk landscape: what the 90-day plan is built from",
+              "group": "Risk operations"
             }
           ],
           "links": [

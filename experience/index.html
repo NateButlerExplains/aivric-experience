@@ -10,7 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/experience.css">
+<!-- Bump ?v= on every deploy: without it a CSS or JS fix sits behind the CDN cache for hours. -->
+<link rel="stylesheet" href="css/experience.css?v=2026-09-07q">
 </head>
 <body>
 
@@ -71,6 +72,25 @@
   <div class="body" id="panel-body"></div>
 </aside>
 
+<!-- Inline media viewer: fills the left-hand stage, never covers the station panel -->
+<div id="viewer" hidden>
+  <div id="viewer-media"></div>
+  <div id="viewer-bar">
+    <button class="btn outline" id="viewer-back" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Back to the room
+    </button>
+    <p id="viewer-cap"></p>
+    <div class="viewer-steps">
+      <button class="btn icon" id="viewer-prev" type="button" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <button class="btn icon" id="viewer-next" type="button" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Lightbox -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Media viewer">
   <div class="media" id="lb-media"></div>
@@ -106,6 +126,6 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=2026-09-07q"></script>
 </body>
 </html>

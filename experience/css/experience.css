@@ -604,3 +604,186 @@ body.floor-portrait #overlays {
   #mobile-rooms .rname { font-size: 13px; }
   #mobile-rooms .rtag, #mobile-rooms .go { display: none; }
 }
+
+/* ---------- Grouped media sections ---------- */
+/* Each labelled section is one area of the product. The count sits next to the label so the
+   size of each area is legible before anything is clicked. */
+#panel .media-sections { margin-bottom: 20px; }
+#panel .mgroup {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-head); font-weight: 500; font-size: 12px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line);
+}
+#panel .media-sections > .mgroup:first-child { margin-top: 0; }
+#panel .mgroup span {
+  font-size: 11px; letter-spacing: 0; color: var(--text-dim);
+  border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px;
+}
+#panel .thumb.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue), 0 0 18px rgba(0, 209, 255, 0.28);
+}
+#panel .thumb.active .cap { opacity: 1; }
+
+/* ---------- Inline viewer ---------- */
+/* Sits over the stage only, never over #panel: the station navigation stays put and the
+   visitor keeps their place. The room render stays visible behind it, dimmed, so the viewer
+   reads as looking at something IN the room rather than as a modal on top of the page. */
+#viewer {
+  position: fixed; z-index: 32;
+  top: var(--hud-h); left: 0; bottom: 0; right: var(--panel-w);
+  display: grid; grid-template-rows: 1fr auto;
+  padding: 20px 20px 0;
+  animation: viewer-in 260ms var(--ease);
+}
+@keyframes viewer-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+#stage.viewing .layer.room { filter: brightness(0.34) saturate(0.7); transition: filter 300ms var(--ease); }
+/* The room's prev/next arrows live at the bottom of the same space the viewer bar needs, and
+   they navigate to a different room — the wrong offer while you are looking at a screenshot. */
+body.viewing #room-nav { opacity: 0; pointer-events: none; }
+#viewer-media { display: grid; place-items: center; min-height: 0; min-width: 0; }
+#viewer-media img, #viewer-media video {
+  max-width: 100%; max-height: 100%; width: auto; height: auto;
+  border-radius: 8px; border: 1px solid var(--line);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6);
+  background: var(--bg-deep);
+}
+#viewer-bar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 2px 16px;
+}
+#viewer-cap {
+  flex: 1; min-width: 0; margin: 0;
+  font-size: 13.5px; color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.viewer-steps { display: flex; gap: 6px; flex: none; }
+#viewer-back { flex: none; }
+
+@media (max-width: 767px) {
+  /* The sheet owns the bottom of the screen, so the viewer takes the band above it. */
+  /* The sheet's top edge is at 40vh, so the viewer gets the band between the HUD and it —
+     40vh MINUS the HUD, not 40vh from below the HUD, or it runs under the sheet. */
+  #viewer { right: 0; bottom: auto; height: calc(40vh - var(--hud-h)); padding: 12px 12px 0; }
+  #viewer-bar { padding: 8px 0 10px; gap: 10px; }
+  #viewer-cap { display: none; }
+  #viewer-back { font-size: 13px; padding: 7px 10px; }
+}
+
+/* ---------- Reveal the remaining areas ---------- */
+/* Two areas are open on arrival so the capabilities list and the CTAs stay reachable. The rest
+   are named here rather than hidden, so the depth is advertised: a visitor can see there are
+   three more areas and what they cover before deciding to open them. */
+/* No box. The peek above it is the surface doing the inviting; a bordered card competes with
+   the thumbnails it sits under and makes the panel read as stacked chrome. This is just a line
+   of type that moves. */
+.reveal-areas {
+  display: block; width: 100%; margin: 12px 0 4px; padding: 4px 2px;
+  text-align: left; border: 0; background: none;
+}
+.reveal-areas:hover .reveal-cue { color: #5fe3ff; }
+.reveal-areas:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+
+.reveal-names { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.reveal-names i {
+  font-style: normal;
+  font-family: var(--font-head); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px;
+}
+.reveal-areas:hover .reveal-names i { color: var(--text); border-color: var(--line-strong); }
+
+.reveal-cue {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--font-head); font-weight: 500; font-size: 13.5px; color: var(--blue);
+  transition: color 180ms;
+}
+.reveal-cue svg { width: 16px; height: 16px; }
+
+/* The nudge. Two soft dips then a long rest — the same restrained cadence as the streams on the
+   floor, rather than a loop that keeps tugging at the eye. The glow breathes with it so the
+   whole control reads as "there is more here", not as a spinner. */
+.reveal-areas .reveal-cue svg { animation: area-nudge 3.4s var(--ease) infinite; }
+.reveal-areas:hover .reveal-cue svg { animation-play-state: paused; }
+
+@keyframes area-nudge {
+  0%, 62%, 100% { transform: translateY(0); }
+  8%  { transform: translateY(3.5px); }
+  16% { transform: translateY(0); }
+  24% { transform: translateY(2.5px); }
+  32% { transform: translateY(0); }
+}
+
+/* The areas that were behind the control, arriving. */
+.more-areas { animation: areas-open 420ms var(--ease); }
+@keyframes areas-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* .more-inner carries the peek drift — the fold still peeks, it just holds still. */
+  .reveal-areas, .reveal-areas .reveal-cue svg, .more-areas, .more-areas .more-inner { animation: none; }
+  .more-areas.is-folded:hover .more-inner { transition: none; }
+}
+
+/* The control is a toggle, so it swaps its own label and flips the chevron rather than
+   disappearing after one use. */
+.reveal-shut { display: none; }
+.reveal-areas.is-open .reveal-open { display: none; }
+.reveal-areas.is-open .reveal-shut { display: inline; }
+.reveal-areas.is-open .reveal-cue svg { transform: rotate(180deg); }
+/* Once it is open there is nothing left to advertise: stop nudging and let it sit quiet. */
+.reveal-areas.is-open, .reveal-areas.is-open .reveal-cue svg { animation: none; }
+
+/* ---------- The fold peeks instead of hiding ---------- */
+/* Collapsed, the next area is clipped to a strip: its heading and the top edge of its real
+   thumbnails, dissolving at the cut. The strip drifts up and settles on the same slow cycle as
+   the cue, so a little more of it shows on each rise — the content does the inviting, rather
+   than a label claiming there is something worth opening. */
+.more-areas { position: relative; }
+.more-areas.is-folded {
+  /* About half of the first row of real thumbnails, then gone. Enough to read what kind of
+     thing is down there without showing so much that there is no reason to open it. */
+  max-height: 104px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-mask-image: linear-gradient(to bottom, #000 46%, rgba(0,0,0,0.32) 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 46%, rgba(0,0,0,0.32) 76%, transparent 100%);
+}
+.more-areas.is-folded .more-inner { animation: peek-rise 3.4s var(--ease) infinite; }
+.more-areas.is-folded:hover .more-inner { animation-play-state: paused; transform: translateY(-8px); transition: transform 260ms var(--ease); }
+.more-areas.is-folded .mgroup { margin-top: 0; }
+/* The strip only shows the top of each tile, and the top of a dashboard screenshot is its dark
+   chrome — which reads as an empty box. Pull the image down inside the tile so the sliver that
+   survives the clip is the part with charts and colour in it. */
+.more-areas.is-folded .thumb img { object-position: center 68%; }
+.more-areas.is-folded .thumb .cap { display: none; }
+
+/* The rise shows roughly a thumbnail's worth more at the top of each cycle, then settles back. */
+@keyframes peek-rise {
+  0%, 62%, 100% { transform: translateY(0); }
+  14% { transform: translateY(-9px); }
+  30% { transform: translateY(-3px); }
+  44% { transform: translateY(-6px); }
+}
+
+/* An invisible surface over the strip so a click anywhere in the peek opens it, without the
+   half-visible tiles underneath taking the click themselves. */
+.peek-hit { position: absolute; inset: 0; z-index: 2; width: 100%; background: none; border: 0; cursor: pointer; }
+.more-areas:not(.is-folded) .peek-hit { display: none; }
+
+/* Expanded, the clip and the motion are gone. */
+.more-areas:not(.is-folded) { max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; animation: areas-open 420ms var(--ease); }
+
+/* The cue reads first now, with the remaining area names under it as the menu. */
+.reveal-areas .reveal-cue { margin-bottom: 0; }
+
+/* Kept last on purpose: these have to win over the peek and reveal rules defined above, which
+   are equally specific, so source order is what decides it. */
+@media (prefers-reduced-motion: reduce) {
+  .more-areas .more-inner,
+  .more-areas.is-folded .more-inner,
+  .reveal-areas,
+  .reveal-areas .reveal-cue svg,
+  .more-areas:not(.is-folded) { animation: none !important; }
+  .more-areas.is-folded:hover .more-inner { transition: none; transform: none; }
+}
