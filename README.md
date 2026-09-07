@@ -25,7 +25,7 @@ experience/
   js/ui/intro.js             opening film overlay
   content/experience.json    THE manifest
   media/scene/master.jpg     master wide shot (2560×1440)
-  media/scene/rooms/*.jpg    per-room close-ups (2048×1152)
+  media/scene/rooms/*.jpg    per-room close-ups (2048×1152): defense, offense, vision, aire, decisions, fabric
   media/<station-id>/        screenshots and clips per station
   media/film/                intro film + poster
   tools/hotspot-tool.html    click-to-get-coordinates helper (dev only)
@@ -89,15 +89,17 @@ Everything is in `content/experience.json`.
 
 `streams` are SVG paths in master-image pixels (2560×1440). `color` picks the palette, `room` links the stream to a room so it brightens on hover, `delay` offsets the dash animation so parallel streams don't move in lockstep.
 
-## Regenerate scene renders
+## Scene renders
 
-The renders were produced with OpenAI `gpt-image-2` using the prompts in `tools/render-prompts/`. The shared
-style block is `tools/render-style-block.txt`; each room prompt appends its own SCENE paragraph. Regenerate a room
-by re-running its prompt at 2048×1152 (master at 2560×1440) and replacing the file in `media/scene/`. Renders
-must contain **no text or UI**; the interface is real HTML drawn on top.
+The seven scene images come from the **Inside AiVRIC photographic image library** (produced 2026-09-07). That
+package holds the native renders, 8K/4K PNG masters, per-image checksums, a cast and continuity reference sheet,
+and the prompt history. `media/scene/` carries its web copies at the exact sizes this app loads:
+`master.jpg` 2560×1440 and each room 2048×1152.
 
-If a new master is generated, re-check `hotspot`, `zoomTo`, and `streams` with the hotspot tool. Everything else
-is independent of the images.
+Renders must contain **no text or UI**; the interface is real HTML drawn on top. To swap in a new set, copy the
+library's `web/master.jpg` and `web/rooms/*.jpg` over `media/scene/`, then re-check `hotspot`, `zoomTo`, and the
+`streams` paths with `tools/hotspot-tool.html` — those coordinates are tied to the master's composition, so a new
+master moves every pin. `tools/render-prompts/` keeps the earlier gpt-image-2 prompts for reference.
 
 ## Behaviour notes
 
@@ -109,5 +111,5 @@ is independent of the images.
 
 ## Credits
 
-Scene renders: generated imagery, direction by 3HUE. Product screenshots: AiVRIC CloudSignals+RiskOps.
+Scene renders: Inside AiVRIC photographic image library, direction by 3HUE. Product screenshots: AiVRIC CloudSignals+RiskOps.
 Fonts: Jost and Inter via Google Fonts (same as aivric.com).

@@ -9,29 +9,41 @@
     {
       "color": "blue",
       "room": "defense",
-      "d": "M 530 598 C 720 594, 880 640, 1035 690"
+      "d": "M 372 545 C 500 538, 640 540, 772 556"
     },
     {
       "color": "blue",
       "room": "defense",
-      "d": "M 510 948 C 700 938, 860 976, 1030 960",
-      "delay": 0.6
+      "d": "M 318 946 C 460 962, 600 972, 736 970",
+      "delay": 0.5
+    },
+    {
+      "color": "blue",
+      "room": "fabric",
+      "d": "M 792 900 C 900 928, 1030 948, 1196 956",
+      "delay": 0.9
     },
     {
       "color": "coral",
       "room": "offense",
-      "d": "M 2030 598 C 1840 594, 1680 640, 1525 690"
+      "d": "M 2188 545 C 2060 538, 1920 540, 1788 556"
     },
     {
       "color": "coral",
       "room": "offense",
-      "d": "M 2050 948 C 1860 938, 1700 976, 1530 960",
-      "delay": 0.6
+      "d": "M 2242 946 C 2100 962, 1960 972, 1824 970",
+      "delay": 0.5
+    },
+    {
+      "color": "coral",
+      "room": "fabric",
+      "d": "M 1768 900 C 1660 928, 1530 948, 1364 956",
+      "delay": 0.9
     },
     {
       "color": "gold",
       "room": "decisions",
-      "d": "M 1280 880 L 1280 1092"
+      "d": "M 1278 838 L 1278 1052"
     }
   ],
   "rooms": [
@@ -41,18 +53,18 @@
       "tagline": "Visibility, protection, and oversight",
       "streamColor": "blue",
       "hotspot": {
-        "x": 0.15,
-        "y": 0.34,
+        "x": 0.215,
+        "y": 0.183,
         "side": "right"
       },
       "zoomTo": {
-        "x": 0.16,
-        "y": 0.47
+        "x": 0.215,
+        "y": 0.315
       },
-      "zoom": 2.2,
+      "zoom": 2.4,
       "render": "media/scene/rooms/defense.jpg",
       "focus": {
-        "x": 0.42,
+        "x": 0.5,
         "y": 0.5
       },
       "stations": [
@@ -213,15 +225,15 @@
       "tagline": "Holistic context across every environment",
       "streamColor": "blue",
       "hotspot": {
-        "x": 0.5,
-        "y": 0.4,
+        "x": 0.372,
+        "y": 0.505,
         "side": "right"
       },
       "zoomTo": {
-        "x": 0.5,
-        "y": 0.54
+        "x": 0.498,
+        "y": 0.485
       },
-      "zoom": 2.4,
+      "zoom": 2.2,
       "render": "media/scene/rooms/vision.jpg",
       "focus": {
         "x": 0.5,
@@ -337,18 +349,18 @@
       "tagline": "Authorized testing and assessment",
       "streamColor": "coral",
       "hotspot": {
-        "x": 0.85,
-        "y": 0.34,
+        "x": 0.795,
+        "y": 0.183,
         "side": "left"
       },
       "zoomTo": {
-        "x": 0.84,
-        "y": 0.47
+        "x": 0.795,
+        "y": 0.315
       },
-      "zoom": 2.2,
+      "zoom": 2.4,
       "render": "media/scene/rooms/offense.jpg",
       "focus": {
-        "x": 0.6,
+        "x": 0.5,
         "y": 0.5
       },
       "stations": [
@@ -435,19 +447,19 @@
       "tagline": "Coordinate approved remediation and verify changes",
       "streamColor": "gold",
       "hotspot": {
-        "x": 0.5,
-        "y": 0.235,
+        "x": 0.497,
+        "y": 0.112,
         "side": "right"
       },
       "zoomTo": {
-        "x": 0.5,
-        "y": 0.27
+        "x": 0.497,
+        "y": 0.283
       },
-      "zoom": 2.6,
+      "zoom": 2.8,
       "render": "media/scene/rooms/aire.jpg",
       "focus": {
         "x": 0.45,
-        "y": 0.42
+        "y": 0.45
       },
       "stations": [
         {
@@ -490,19 +502,19 @@
       "tagline": "3HUE advisors help leaders set priorities",
       "streamColor": "gold",
       "hotspot": {
-        "x": 0.5,
-        "y": 0.79,
+        "x": 0.486,
+        "y": 0.882,
         "side": "right"
       },
       "zoomTo": {
-        "x": 0.5,
-        "y": 0.78
+        "x": 0.486,
+        "y": 0.775
       },
-      "zoom": 2.1,
+      "zoom": 2.0,
       "render": "media/scene/rooms/decisions.jpg",
       "focus": {
         "x": 0.5,
-        "y": 0.42
+        "y": 0.5
       },
       "stations": [
         {
@@ -577,16 +589,16 @@
       "tagline": "The shared data layer under every suite",
       "streamColor": "blue",
       "hotspot": {
-        "x": 0.335,
-        "y": 0.665,
+        "x": 0.398,
+        "y": 0.678,
         "side": "right"
       },
       "zoomTo": {
-        "x": 0.5,
-        "y": 0.64
+        "x": 0.498,
+        "y": 0.66
       },
-      "zoom": 1.9,
-      "render": null,
+      "zoom": 2.2,
+      "render": "media/scene/rooms/fabric.jpg",
       "stations": [
         {
           "id": "fabric-pillars",
@@ -621,7 +633,11 @@
             }
           ]
         }
-      ]
+      ],
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      }
     }
   ]
 }
