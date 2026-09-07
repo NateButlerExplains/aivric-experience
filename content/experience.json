@@ -475,7 +475,7 @@
     {
       "id": "aire-bridge",
       "name": "AIRE",
-      "tagline": "Coordinate approved remediation and verify changes",
+      "tagline": "Approve remediation and verify the fix",
       "streamColor": "gold",
       "hotspot": {
         "x": 0.497,
