@@ -1,0 +1,700 @@
+{
+  "scene": {
+    "master": "media/scene/master.jpg",
+    "width": 2560,
+    "height": 1440,
+    "credit": "Scene renders generated with gpt-image-2 from tools/render-prompts. Product screenshots are shared with the main site (../academy/screenshots and ../assets). Coordinates below are normalized 0-1 against the master image; stream paths are in master pixels."
+  },
+  "streams": [
+    {
+      "color": "blue",
+      "room": "defense",
+      "d": "M 530 598 C 720 594, 880 640, 1035 690"
+    },
+    {
+      "color": "blue",
+      "room": "defense",
+      "d": "M 510 948 C 700 938, 860 976, 1030 960",
+      "delay": 0.6
+    },
+    {
+      "color": "coral",
+      "room": "offense",
+      "d": "M 2030 598 C 1840 594, 1680 640, 1525 690"
+    },
+    {
+      "color": "coral",
+      "room": "offense",
+      "d": "M 2050 948 C 1860 938, 1700 976, 1530 960",
+      "delay": 0.6
+    },
+    {
+      "color": "gold",
+      "room": "decisions",
+      "d": "M 1280 880 L 1280 1092"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "defense",
+      "name": "Defense",
+      "tagline": "Visibility, protection, and oversight",
+      "streamColor": "blue",
+      "hotspot": {
+        "x": 0.15,
+        "y": 0.34,
+        "side": "right"
+      },
+      "zoomTo": {
+        "x": 0.16,
+        "y": 0.47
+      },
+      "zoom": 2.2,
+      "render": "media/scene/rooms/defense.jpg",
+      "focus": {
+        "x": 0.42,
+        "y": 0.5
+      },
+      "stations": [
+        {
+          "id": "cloudsignals",
+          "name": "CloudSignals+RiskOps™",
+          "status": "live",
+          "suite": "Defense suite · Available now",
+          "headline": "See your cloud exposure. Prioritize risk. Prove compliance.",
+          "summary": "AI-native cloud security posture, risk operations, and continuous compliance across AWS, Azure, GCP, and OCI. 350+ checks, a GRC-grade risk register, and evidence mapped to 20+ frameworks, delivered as SaaS, self-hosted, or air-gapped.",
+          "capabilities": [
+            "Multi-cloud CSPM with real-time drift detection",
+            "Findings ranked with business-context risk scoring",
+            "Risk register, treatments, POA&Ms, and third-party risk",
+            "Continuous compliance: SOC 2, ISO 27001, PCI DSS, CMMC, HIPAA",
+            "Vision AI narratives and natural-language risk chat"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "media/cloudsignals/posture-command.png",
+              "caption": "Posture Command: threat signals, failed checks, assets, and open findings"
+            },
+            {
+              "type": "video",
+              "src": "media/cloudsignals/cs-session-1.mp4",
+              "poster": "media/cloudsignals/cs-session-1-poster.jpg",
+              "caption": "Platform walkthrough"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/remediation-plan.png",
+              "caption": "ThreatSignals control plane: regional risk replay and top contributors"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/scan-findings.png",
+              "caption": "Cloud scan finding: organization-aware risk and remediation guidance"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/finding-detail.png",
+              "caption": "Remediation steps, resource details, and framework references"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/compliance-dashboard.png",
+              "caption": "Compliance results across frameworks: CIS, PCI, ISO 27001, SOC 2, NIS2"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/compliance-posture.png",
+              "caption": "Framework checks with per-control findings and cloud provider"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/risk-governance.png",
+              "caption": "Risk Governance Command Center: the live risk fabric"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/portfolio-analytics.png",
+              "caption": "Portfolio analytics: exposure engine and coverage maturity"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/scenario-library.png",
+              "caption": "Scenario Intelligence Studio: risk scenario template library"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/project-center.png",
+              "caption": "RiskOps Project Center: execution flow from intake to verified"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/sla-governance.png",
+              "caption": "Risk-aware SLA orchestration"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/third-party-register.png",
+              "caption": "Third-party risk register"
+            },
+            {
+              "type": "video",
+              "src": "../academy/screenshots/clip-findings-triage.webm",
+              "caption": "Findings triage"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/ai-security-brief.png",
+              "caption": "AI Security Intelligence Brief: the executive readout"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/riskops-insights.png",
+              "caption": "RiskOps Insights: driver analysis and treatment strategy"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/vision-chat.png",
+              "caption": "Vision Chat: your AI CISO and risk advisor"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/vision-model-insights.png",
+              "caption": "Vision model insights: security-native telemetry"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/risk-landscape.png",
+              "caption": "Risk landscape: composite risk matrix by category"
+            }
+          ],
+          "links": [
+            {
+              "label": "Product overview",
+              "href": "../cspm-cloudsignals.html"
+            },
+            {
+              "label": "Plans and pricing",
+              "href": "../cloudsignals-pricing.html"
+            },
+            {
+              "label": "Start free",
+              "href": "https://gcp-defense.aivric.com/sign-up?plan=pkg-cloudsignals-free&source=experience",
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "ai-signals",
+          "name": "AI Signals™",
+          "status": "beta",
+          "suite": "Defense suite · Beta",
+          "headline": "Understand AI activity, performance, and governance.",
+          "summary": "LLM observability, evaluations, and prompt management for production AI applications. OTEL-native telemetry becomes security-native compliance signals, with MCP governance and OWASP LLM Top 10 coverage.",
+          "capabilities": [
+            "OTEL-native LLM signal collection: traces, evals, prompt versions, token cost",
+            "Repeatable AI control testing and red-team evaluations",
+            "MCP trust-boundary enforcement with human approval gates",
+            "Langfuse and OpenAI-compatible endpoint integration",
+            "Governance-ready reporting for ISO 42001 and NIST AI RMF"
+          ],
+          "media": [
+            {
+              "type": "video",
+              "src": "media/ai-signals/ai-signals-clickthrough.mp4",
+              "poster": "media/ai-signals/command-center.png",
+              "caption": "AI Signals click-through: Command Center to red teaming, tracing, and governance (90 s)"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/command-center.png",
+              "caption": "AI Trust Command Center: one trust index across six AI domains"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/security-reports.png",
+              "caption": "OWASP LLM Top 10 evidence reports and framework coverage"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/red-teaming.png",
+              "caption": "Red teaming: safe-mode campaigns and readiness"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/red-teaming-scenarios.png",
+              "caption": "Scenario packs: prompt injection, jailbreak, exfiltration, tool abuse"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/model-security.png",
+              "caption": "Model security posture and inventory"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/mcp-security.png",
+              "caption": "MCP security: server inventory, policy coverage, threat posture"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/ai-operations.png",
+              "caption": "AI Operations Center: requests, latency, error rate, token usage"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/tracing.png",
+              "caption": "Tracing: sessions, spans, and model calls"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/observability-trace.png",
+              "caption": "Trace detail with input, output, and metadata"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/finops.png",
+              "caption": "AI FinancialOps: spend trend, cost efficiency, spend by model"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/governance-hub.png",
+              "caption": "AI Governance Hub: governance score, open risks, policy violations, controls"
+            },
+            {
+              "type": "image",
+              "src": "media/ai-signals/assets.png",
+              "caption": "AI Assets Inventory: agents, models, prompts, datasets, MCP servers"
+            }
+          ],
+          "links": [
+            {
+              "label": "Defense suite",
+              "href": "../defense-suite.html"
+            },
+            {
+              "label": "Join the beta",
+              "href": "../pricing.html",
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "aire",
+          "name": "AIRE Agentic Mesh™",
+          "status": "coming-soon",
+          "suite": "Defense suite · Coming soon",
+          "headline": "Autonomous remediation. Verified. Auditable.",
+          "summary": "Policy-guided remediation agents route findings to the right playbook, execute approved fixes with dry-run preview and rollback, re-scan to verify, and leave a signed evidence trail.",
+          "capabilities": [
+            "Orchestration: policy-based playbook assignment and role-aware routing",
+            "Execution: cloud-native fixes on AWS, Azure, and GCP with dry-run and rollback",
+            "Verification: automated post-fix re-scan, before/after diff, signed evidence",
+            "Human approval gates via email, Slack, or Teams",
+            "Two-way Jira and ServiceNow sync"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "AIRE Agentic Mesh",
+              "href": "../air-remediation.html"
+            },
+            {
+              "label": "Get notified",
+              "href": "../air-remediation.html",
+              "primary": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vision",
+      "name": "Client Vision",
+      "tagline": "Holistic context across every environment",
+      "streamColor": "blue",
+      "hotspot": {
+        "x": 0.5,
+        "y": 0.4,
+        "side": "right"
+      },
+      "zoomTo": {
+        "x": 0.5,
+        "y": 0.54
+      },
+      "zoom": 2.4,
+      "render": "media/scene/rooms/vision.jpg",
+      "focus": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "stations": [
+        {
+          "id": "vision-ai-optics",
+          "name": "Vision AI Optics™",
+          "status": "coming-soon",
+          "suite": "Vision suite · Coming soon",
+          "headline": "One view of your entire risk posture.",
+          "summary": "Unified dashboards and AI-generated narratives for security and compliance leaders. Vision aggregates Defense and Offense signal into one data truth and explains it in plain language.",
+          "capabilities": [
+            "Cross-suite posture dashboards",
+            "AI-generated risk narratives and executive summaries",
+            "Natural-language chat over findings, evidence, and compliance state",
+            "Trend analysis by control, environment, owner, or framework"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "Vision AI and narratives",
+              "href": "../cloudsignals-vision-ai.html"
+            },
+            {
+              "label": "Get notified",
+              "href": "../pricing.html",
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "vision-enterprise",
+          "name": "Vision Enterprise",
+          "status": "coming-soon",
+          "suite": "Vision suite · GA target Q3 2026",
+          "headline": "Enterprise governance at every scale.",
+          "summary": "Multi-tenant governance for complex, multi-region programs. Separate data, policies, and visibility by business unit, with centralized rollup, data residency controls, and board-ready reporting.",
+          "capabilities": [
+            "Multi-tenant governance across business units",
+            "Custom analytics and advanced reporting",
+            "Multi-region data residency with retention, export, and purge policies",
+            "SSO, SCIM provisioning, and granular RBAC"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "../academy/screenshots/provider-clients-list.png",
+              "caption": "Multi-tenant client list"
+            },
+            {
+              "type": "image",
+              "src": "../academy/screenshots/provider-branding-config.png",
+              "caption": "White-label branding"
+            }
+          ],
+          "links": [
+            {
+              "label": "Vision Enterprise",
+              "href": "../aivric-vision-enterprise.html"
+            }
+          ]
+        },
+        {
+          "id": "fabric-center",
+          "name": "Fabric Intelligence Center",
+          "status": "roadmap",
+          "suite": "Vision suite · Roadmap",
+          "headline": "Ask. See. Act. One command interface.",
+          "summary": "Context-aware AI chat, contextual dashboards, and on-demand intelligence reports in one place, with agentic task execution through AIRE.",
+          "capabilities": [
+            "Context-aware chat across all suites with cited sources",
+            "Role-aware answers for analysts, auditors, and executives",
+            "Launch investigations and remediation from a prompt",
+            "Custom intelligence views"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "../academy/screenshots/integration-hub.png",
+              "caption": "Integration hub feeding the Fabric"
+            },
+            {
+              "type": "image",
+              "src": "../academy/screenshots/vision-config-page.png",
+              "caption": "AI provider configuration for the Fabric"
+            }
+          ],
+          "links": [
+            {
+              "label": "Fabric Intelligence Center",
+              "href": "../fabric-intelligence-center.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "offense",
+      "name": "Offense",
+      "tagline": "Authorized testing and assessment",
+      "streamColor": "coral",
+      "hotspot": {
+        "x": 0.85,
+        "y": 0.34,
+        "side": "left"
+      },
+      "zoomTo": {
+        "x": 0.84,
+        "y": 0.47
+      },
+      "zoom": 2.2,
+      "render": "media/scene/rooms/offense.jpg",
+      "focus": {
+        "x": 0.6,
+        "y": 0.5
+      },
+      "stations": [
+        {
+          "id": "rogueagent",
+          "name": "RogueAgent ASPM™",
+          "status": "beta",
+          "suite": "Offense suite · Beta · GA target Q3 2026",
+          "headline": "Your enterprise attack surface. Continuously mapped.",
+          "summary": "External asset discovery, multi-mode reconnaissance, and vulnerability signal collection across cloud, web, and infrastructure, normalized into one CVSS-scored finding schema and synced to the CloudSignals risk register.",
+          "capabilities": [
+            "Subdomain, IP range, and cloud asset discovery with delta tracking",
+            "OSINT, DNS, port, and service fingerprinting pipelines",
+            "Nmap, Nuclei, Subfinder, FFUF, plus commercial scanner connectors",
+            "Scoped workspaces per client, business unit, or engagement",
+            "Audit-ready evidence export, RBAC, and SSO"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "../assets/images/brand/Threat-Signals-1.png",
+              "caption": "External exposure map (concept render)"
+            }
+          ],
+          "links": [
+            {
+              "label": "RogueAgent ASPM",
+              "href": "../rogueagent.html"
+            },
+            {
+              "label": "Join the beta",
+              "href": "../rogueagent.html",
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "red-teaming",
+          "name": "Red Teaming Scans",
+          "status": "roadmap",
+          "suite": "Offense suite · Roadmap",
+          "headline": "Validate defenses before the real thing.",
+          "summary": "Continuous adversary simulation with MITRE ATT&CK-aligned scenarios. Verify controls at scale and hand executives an attack report they can act on.",
+          "capabilities": [
+            "MITRE ATT&CK scenario library",
+            "Control verification at scale",
+            "Executive-ready attack reports",
+            "Findings flow directly to AIRE for remediation"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "Red teaming",
+              "href": "../red-teaming.html"
+            }
+          ]
+        },
+        {
+          "id": "digital-risk",
+          "name": "Digital Risk Monitoring",
+          "status": "roadmap",
+          "suite": "Offense suite · Roadmap",
+          "headline": "See external threats before they escalate.",
+          "summary": "Track leaked credentials, brand exposure, dark-web mentions, and supply chain risk. Early-warning intelligence with actionable remediation paths.",
+          "capabilities": [
+            "Dark web and leaked asset monitoring",
+            "Brand and domain exposure tracking",
+            "Supply chain risk signals",
+            "Early-warning alerts routed to your SIEM"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "Digital risk",
+              "href": "../digital-risk.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aire-bridge",
+      "name": "AIRE",
+      "tagline": "Coordinate approved remediation and verify changes",
+      "streamColor": "gold",
+      "hotspot": {
+        "x": 0.5,
+        "y": 0.235,
+        "side": "right"
+      },
+      "zoomTo": {
+        "x": 0.5,
+        "y": 0.27
+      },
+      "zoom": 2.6,
+      "render": "media/scene/rooms/aire.jpg",
+      "focus": {
+        "x": 0.45,
+        "y": 0.42
+      },
+      "stations": [
+        {
+          "id": "aire-workflow",
+          "name": "Proposed work → Approval → Action → Verification",
+          "status": "coming-soon",
+          "suite": "AIRE Agentic Mesh™ · Coming soon",
+          "headline": "Every fix traceable from trigger to close.",
+          "summary": "The AIRE bridge is where operators watch agent playbooks move through four stages: proposed work, human approval, execution, and verification, with an immutable audit trail behind each step.",
+          "capabilities": [
+            "Proposed work: finding routed to a playbook with a dry-run summary",
+            "Approval: reviewer authorizes via Teams, Slack, or email; timestamped and attributed",
+            "Action: agents execute within policy scope, rollback ready",
+            "Verification: automatic re-scan, before/after diff, signed evidence bundle"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "AIRE Agentic Mesh",
+              "href": "../air-remediation.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "decisions",
+      "name": "Executive Decisions",
+      "tagline": "3HUE advisors help leaders set priorities",
+      "streamColor": "gold",
+      "hotspot": {
+        "x": 0.5,
+        "y": 0.79,
+        "side": "right"
+      },
+      "zoomTo": {
+        "x": 0.5,
+        "y": 0.78
+      },
+      "zoom": 2.1,
+      "render": "media/scene/rooms/decisions.jpg",
+      "focus": {
+        "x": 0.5,
+        "y": 0.42
+      },
+      "stations": [
+        {
+          "id": "human-decisions",
+          "name": "Human in the loop",
+          "status": "service",
+          "suite": "3HUE Advisory · Every engagement",
+          "headline": "Findings become priorities. Priorities become decisions.",
+          "summary": "Every stream ends here. 3HUE advisors sit with client executives to translate Defense and Offense findings into business impact, approve remediation, and set the next 90 days.",
+          "capabilities": [
+            "Business-impact framing of technical findings",
+            "Approval gates for agentic remediation, timestamped and attributed",
+            "Priority risks, progress, and decisions in one table view",
+            "Board-ready readouts"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "Book a walkthrough",
+              "href": "https://calendly.com/aivric-sales/aivric-walkthrough-demo",
+              "primary": true
+            },
+            {
+              "label": "3hue.net",
+              "href": "https://3hue.net"
+            }
+          ]
+        },
+        {
+          "id": "snapshot",
+          "name": "AI Risk & Readiness Snapshot",
+          "status": "service",
+          "suite": "3HUE Advisory · 10 business days",
+          "headline": "10 business days. Executive readout. A 90-day action plan.",
+          "summary": "Identify priority AI opportunities, uncover governance and security gaps, and establish practical next steps. Delivered by 3HUE, powered by AiVRIC.",
+          "capabilities": [
+            "Discovery across cloud, AI workloads, and governance",
+            "Executive readout with prioritized risks",
+            "90-day action plan mapped to AiVRIC capabilities",
+            "Optional continuation into CloudSignals+RiskOps"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "media/cloudsignals/ai-security-brief.png",
+              "caption": "AI Security Intelligence Brief: the executive readout"
+            },
+            {
+              "type": "image",
+              "src": "media/cloudsignals/risk-landscape.png",
+              "caption": "Risk landscape: what the 90-day plan is built from"
+            }
+          ],
+          "links": [
+            {
+              "label": "Start with the Snapshot",
+              "href": "https://3hue.net",
+              "primary": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fabric",
+      "name": "Fabric",
+      "tagline": "The shared data layer under every suite",
+      "streamColor": "blue",
+      "hotspot": {
+        "x": 0.335,
+        "y": 0.665,
+        "side": "right"
+      },
+      "zoomTo": {
+        "x": 0.5,
+        "y": 0.64
+      },
+      "zoom": 1.9,
+      "render": null,
+      "stations": [
+        {
+          "id": "fabric-pillars",
+          "name": "Six capabilities. One intelligence layer.",
+          "status": "platform",
+          "suite": "AiVRIC Platform Fabric",
+          "headline": "Everything your suites need, built in.",
+          "summary": "The Fabric is the shared foundation: unified data, AI, compute, governance, and privacy across the entire ecosystem, so every dashboard, agent, and answer draws from the same verified truth.",
+          "capabilities": [
+            "GenAI Chat: cited, role-aware answers for analysts, auditors, and executives",
+            "Shared Data Layer: one schema, one index, one truth",
+            "Agentic Design: policy-gated AIRE agents with full audit trails",
+            "Efficient Compute: model routing and token optimization",
+            "Data Localization: region pinning and residency reports",
+            "AI Model Inspection: safety, bias, and hallucination monitoring"
+          ],
+          "media": [
+            {
+              "type": "image",
+              "src": "../academy/screenshots/integration-hub.png",
+              "caption": "Integration Hub: SIEM, ticketing, notifications, and storage exports feeding the Fabric"
+            }
+          ],
+          "links": [
+            {
+              "label": "Platform overview",
+              "href": "../services.html"
+            },
+            {
+              "label": "Integrations",
+              "href": "../integrations.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
