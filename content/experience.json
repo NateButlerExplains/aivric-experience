@@ -112,7 +112,8 @@
             {
               "type": "video",
               "src": "media/cloudsignals/clip-findings-triage.webm",
-              "caption": "Findings triage"
+              "caption": "From the posture dashboard into findings triage, grouped and ranked by ThreatScore drag",
+              "poster": "media/cloudsignals/clip-findings-triage-poster.jpg"
             },
             {
               "type": "image",
@@ -187,12 +188,13 @@
             {
               "type": "image",
               "src": "media/aire/pending-decisions.png",
-              "caption": "Pending decisions queue"
+              "caption": "Treatment execution workspace: mitigation plans with owners, due dates, and status"
             },
             {
               "type": "video",
               "src": "media/aire/clip-treatments.webm",
-              "caption": "Treatments workflow"
+              "caption": "RiskOps flow from detection through verification, then into the risk treatment workspace",
+              "poster": "media/aire/clip-treatments-poster.jpg"
             },
             {
               "type": "image",
@@ -241,33 +243,35 @@
       },
       "stations": [
         {
-          "id": "vision-ai-optics",
-          "name": "Vision AI Optics™",
-          "status": "coming-soon",
-          "suite": "Vision suite · Coming soon",
-          "headline": "One view of your entire risk posture.",
-          "summary": "Unified dashboards and AI-generated narratives for security and compliance leaders. Vision aggregates Defense and Offense signal into one data truth and explains it in plain language.",
+          "id": "vision-ai-narratives",
+          "name": "Vision AI & Narratives",
+          "status": "live",
+          "suite": "Included in CloudSignals+RiskOps™ Premium and Enterprise",
+          "headline": "AI that explains your risk, not just reports it.",
+          "summary": "CloudSignals Vision AI generates plain-language risk narratives, executive summaries, and remediation guidance from your live posture data, with AI models running in your environment. No data exports, no manual uploads.",
           "capabilities": [
-            "Cross-suite posture dashboards",
-            "AI-generated risk narratives and executive summaries",
-            "Natural-language chat over findings, evidence, and compliance state",
-            "Trend analysis by control, environment, owner, or framework"
+            "Risk narratives: plain-language explanations of your highest-priority findings, written for non-technical stakeholders and audit reviewers",
+            "Executive summaries: board-ready risk summaries, on demand or on a schedule",
+            "Remediation guidance: step-by-step instructions for your specific cloud environment, generated from the raw finding evidence",
+            "AI chat: ask about posture, findings, and compliance status in natural language and get answers in plain English",
+            "Trend analysis: how risk posture is improving or degrading by control, environment, owner, or framework",
+            "Evidence narratives: auto-generated control narrative text for auditors, drawn from your evidence artifacts"
           ],
           "media": [
             {
               "type": "image",
               "src": "media/vision-ai-optics/vision-chat-entry.jpg",
-              "caption": "Vision AI chat"
+              "caption": "Vision AI chat, with suggested questions across findings, compliance, and IAM"
             },
             {
               "type": "image",
               "src": "media/vision-ai-optics/vision-chat-qanda.jpg",
-              "caption": "Ask about your posture in plain English"
+              "caption": "Ask for your top risks; get a plain-language answer with remediation steps"
             },
             {
               "type": "image",
               "src": "media/vision-ai-optics/findings-risk-plot.jpg",
-              "caption": "Risk plot"
+              "caption": "Risk plot: severity-weighted ThreatScore against failed findings"
             }
           ],
           "links": [
@@ -276,7 +280,39 @@
               "href": "https://aivric.com/cloudsignals-vision-ai.html"
             },
             {
-              "label": "Get notified",
+              "label": "Plans and pricing",
+              "href": "https://aivric.com/cloudsignals-pricing.html"
+            },
+            {
+              "label": "Request a demo",
+              "href": "https://aivric.com/request-demo.html",
+              "primary": true
+            }
+          ]
+        },
+        {
+          "id": "vision-ai-optics",
+          "name": "Vision AI Optics™",
+          "status": "coming-soon",
+          "suite": "Vision suite · Coming soon · Planned GA 2026",
+          "headline": "Unified security intelligence for leaders.",
+          "summary": "The standalone reporting layer. Vision AI Optics surfaces executive-ready insight from across the AiVRIC platform, combining AI-generated risk narratives, cross-suite dashboards, and always-current audit evidence into one lens. In design and early development; the core GenAI reporting capability is already live inside CloudSignals+RiskOps™.",
+          "capabilities": [
+            "Cross-suite security dashboards spanning CloudSignals, AI Signals, and RogueAgent",
+            "AI-generated risk narratives and executive board reporting",
+            "Compliance posture summaries",
+            "KPI tracking and trend analysis",
+            "Evidence linking back to findings",
+            "Stakeholder-level access tiers"
+          ],
+          "media": [],
+          "links": [
+            {
+              "label": "Vision AI Optics",
+              "href": "https://aivric.com/aivric-vision-professional.html"
+            },
+            {
+              "label": "Get notified at launch",
               "href": "https://aivric.com/pricing.html",
               "primary": true
             }
@@ -300,11 +336,6 @@
               "type": "image",
               "src": "media/vision-enterprise/provider-clients-list.png",
               "caption": "Multi-tenant client list"
-            },
-            {
-              "type": "image",
-              "src": "media/vision-enterprise/provider-branding-config.png",
-              "caption": "White-label branding"
             }
           ],
           "links": [
@@ -479,12 +510,13 @@
             {
               "type": "image",
               "src": "media/aire/pending-decisions.png",
-              "caption": "Approvals waiting on a human"
+              "caption": "Treatment plans created from the risk register, tracked through execution"
             },
             {
               "type": "video",
               "src": "media/aire/clip-treatments.webm",
-              "caption": "Treatment execution"
+              "caption": "RiskOps flow from detection through verification, then into the risk treatment workspace",
+              "poster": "media/aire/clip-treatments-poster.jpg"
             }
           ],
           "links": [
@@ -534,12 +566,7 @@
             {
               "type": "image",
               "src": "media/aire/pending-decisions.png",
-              "caption": "Decisions waiting on leadership"
-            },
-            {
-              "type": "image",
-              "src": "media/decisions/projects-exceptions.png",
-              "caption": "Security exceptions with approvals"
+              "caption": "Treatment plans with owners, due dates, and projected loss reduction"
             },
             {
               "type": "image",
@@ -549,8 +576,8 @@
           ],
           "links": [
             {
-              "label": "Book a walkthrough",
-              "href": "https://calendly.com/aivric-sales/aivric-walkthrough-demo",
+              "label": "Request a demo",
+              "href": "https://aivric.com/request-demo.html",
               "primary": true
             },
             {

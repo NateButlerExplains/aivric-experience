@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clock test — AiVRIC experience</title>
+<style>
+  :root { --ink: #e2e8f0; --dim: #94a3b8; --line: #1f3247; --blue: #00d1ff; }
+  body { margin: 0; background: #0b1626; color: var(--ink); font: 14px/1.5 Inter, system-ui, sans-serif; }
+  header { padding: 12px 20px; border-bottom: 1px solid var(--line); display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+  header b { color: var(--blue); }
+  header span { color: var(--dim); }
+  main { padding: 20px; display: grid; gap: 20px; max-width: 900px; }
+  #track { position: relative; height: 76px; border: 1px solid var(--line); border-radius: 10px; background: #08111f; overflow: hidden; }
+  #track::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed #16283c; }
+  #dot { position: absolute; top: 50%; left: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+         background: radial-gradient(circle at 35% 32%, #7fe9ff, var(--blue)); box-shadow: 0 0 18px rgba(0,209,255,0.45); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { background: none; border: 1px solid var(--dim); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer; font: inherit; }
+  button:hover { border-color: var(--blue); color: var(--blue); }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 4px 18px 4px 0; }
+  th { color: var(--dim); font-weight: 500; }
+  td b { color: var(--blue); font-weight: 600; }
+  p.note { color: var(--dim); max-width: 62ch; margin: 0; }
+</style>
+</head>
+<body>
+<header>
+  <b>Clock test</b>
+  <span>js/clock.js driving one element. Every control below is the public API.</span>
+</header>
+
+<main>
+  <div id="track"><div id="dot"></div></div>
+
+  <div class="row">
+    <button id="play">play()</button>
+    <button id="pause">pause()</button>
+    <button id="seek0">seek(0)</button>
+    <button id="seek5">seek(5)</button>
+    <button id="step">step(1/60)</button>
+    <button id="stepback">step(-1/60)</button>
+    <button id="r1">setRate(1)</button>
+    <button id="rquarter">setRate(0.25)</button>
+    <button id="r0">setRate(0)</button>
+    <button id="rback">setRate(-1)</button>
+    <button id="boom">throwing subscriber</button>
+  </div>
+
+  <table>
+    <tr><th>now()</th><td><b id="v-t">0.000</b> s</td><th>last dt</th><td id="v-dt">0.000</td></tr>
+    <tr><th>ticks</th><td id="v-ticks">0</td><th>rate</th><td id="v-rate">1</td></tr>
+    <tr><th>running</th><td id="v-running">false</td><th>reducedMotion</th><td id="v-reduced">false</td></tr>
+    <tr><th>errors caught</th><td id="v-errors">0</td><th>visibility</th><td id="v-vis">visible</td></tr>
+  </table>
+
+  <p class="note">The dot's position is a pure function of clock time — it has no animation of its own.
+  Pause and the dot freezes; seek and it teleports; a negative rate walks it backwards; step advances it exactly one frame.</p>
+</main>
+
+<script type="module">
+import clock, { createClock } from '../js/clock.js';
+
+const dot = document.getElementById('dot'), track = document.getElementById('track');
+const el = (id) => document.getElementById(id);
+const state = { ticks: 0, lastDt: 0, errors: 0 };
+
+function render() {
+  const t = clock.now();
+  const w = track.clientWidth || 1;
+  const span = 4;                                   // seconds for one sweep
+  const u = ((t / span) % 1 + 1) % 1;               // wraps for negative time too
+  dot.style.transform = `translateX(${11 + u * (w - 22)}px)`;
+  el('v-t').textContent = t.toFixed(3);
+  el('v-dt').textContent = state.lastDt.toFixed(4);
+  el('v-ticks').textContent = state.ticks;
+  el('v-rate').textContent = String(clock.rate);
+  el('v-running').textContent = String(clock.running);
+  el('v-reduced').textContent = String(clock.reducedMotion);
+  el('v-errors').textContent = state.errors;
+  el('v-vis').textContent = document.hidden ? 'hidden' : 'visible';
+}
+
+// The one animated element: its position is a function of clock time, nothing else.
+const off = clock.subscribe((t, dt) => { state.ticks++; state.lastDt = dt; render(); });
+
+// Every control is a bare call into the public API; render() only repaints the readouts,
+// which matters for the controls that do not themselves emit a tick (pause, setRate).
+const wire = (id, fn) => { el(id).onclick = () => { fn(); render(); }; };
+wire('play', () => clock.play());
+wire('pause', () => clock.pause());
+wire('seek0', () => clock.seek(0));
+wire('seek5', () => clock.seek(5));
+wire('step', () => clock.step(1 / 60));
+wire('stepback', () => clock.step(-1 / 60));
+wire('r1', () => clock.setRate(1));
+wire('rquarter', () => clock.setRate(0.25));
+wire('r0', () => clock.setRate(0));
+wire('rback', () => clock.setRate(-1));
+document.addEventListener('visibilitychange', render);
+
+// Prove a throwing subscriber cannot stop the loop: it stays subscribed and the dot keeps moving.
+let offBoom = null;
+el('boom').onclick = () => {
+  if (offBoom) { offBoom(); offBoom = null; el('boom').textContent = 'throwing subscriber'; return; }
+  offBoom = clock.subscribe(() => { throw new Error('deliberate'); });
+  el('boom').textContent = 'remove throwing subscriber';
+  clock.step(0);                                    // show the catch even while paused
+};
+const realError = console.error;
+console.error = (...args) => { state.errors++; realError.apply(console, args); };
+
+clock.play();
+window.clockTest = { clock, createClock, state, off };
+</script>
+</body>
+</html>
