@@ -21,8 +21,7 @@ without conflict. Only the code changed.
 ## Sibling folders
 
 `academy/` and `assets/` exist here only so the manifest's seven `../` references resolve in a
-standalone preview. Some of those media files are redacted copies — see SECURITY.md, which also
-records what is exposed on the live site and how to fix it.
+standalone preview. A few of those media files are redacted copies.
 
 ## The standalone earlier version
 
