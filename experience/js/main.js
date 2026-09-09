@@ -8,6 +8,7 @@ import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-07q
 import { runIntro } from './ui/intro.js?v=2026-09-07q';
 import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-07q';
 import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-07q';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens } from './livescreens.js?v=2026-09-07q';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -76,6 +77,10 @@ async function main() {
     onFilm: async () => { await runIntro(); },
   });
   initPanel({ onSelectStation: (s) => go({ view: 'station', id: s.id }) });
+  // The painted displays inside each room render show that station's own screenshots, and a
+  // click on one goes there — the same navigation the pins and the tabs already use.
+  initLiveScreenNav((id) => go({ view: 'station', id }));
+  await initLiveScreens(rooms);
 
   // Every room render is 500-800 KB, so the first entry into a cold room stalls on the network.
   // Fetch and decode them one at a time once the floor is on screen: sequential so the six
@@ -133,6 +138,7 @@ async function main() {
     if (route.view === 'building') {
       const leavingRoom = getState().inRoom;
       current = null; setCurrentRoom(null);
+      clearScreens();
       goBuilding(true);
       updateHud({ view: 'building' });
       if (!revealed) {
@@ -168,6 +174,7 @@ async function main() {
     }
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest('#tabs');
     const station = showRoom(room, stationId);
+    showRoomScreens(room, station);
     if (keepFocus) { const tab = document.querySelector('#tabs .tab.active'); if (tab) tab.focus(); }
     updateHud({ view: route.view, room, station });
   });

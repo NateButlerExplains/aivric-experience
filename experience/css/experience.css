@@ -787,3 +787,74 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   .more-areas:not(.is-folded) { animation: none !important; }
   .more-areas.is-folded:hover .more-inner { transition: none; transform: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Living screens — real product stills perspective-mapped onto the painted
+   displays inside a room render (js/livescreens.js, js/screens.js).
+
+   Everything here paints inside the transformed .aivric-screen box, so it is
+   authored in the render's own image pixels and carried by the stage.
+   --------------------------------------------------------------------------- */
+
+.screen-live {
+  --ls-dim: 0.9;            /* per-surface, set from screens.json */
+  --ls-drift: 0;            /* -1..1, written by the clock once the room has settled */
+  background: #05080f;      /* a display that has not decoded yet reads as off, not as a hole */
+}
+
+.screen-live .ls-wrap { position: absolute; inset: 0; }
+
+.screen-live .ls-frame {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  /* The still sits in the room's own exposure. Screens in these photographs are dim, slightly
+     blue and slightly soft; a raw screenshot at full brightness reads as a sticker on the wall. */
+  filter: brightness(var(--ls-dim)) saturate(0.94) contrast(1.04);
+  transform: scale(1.06) translate3d(calc(var(--ls-drift) * 1.1%), calc(var(--ls-drift) * -0.7%), 0);
+  transition: opacity 1400ms var(--ease);
+  will-change: opacity;
+}
+.screen-live .ls-frame.is-on { opacity: 1; }
+
+/* A display is a light source. This is the cheap version of light bleed: the glass sheen that
+   sits over the picture, not the light it throws into the room. */
+.screen-live::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(148deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 44%);
+  mix-blend-mode: screen;
+}
+
+/* Bound to a station, a screen is also the way in. The halo is the room-level echo of the
+   panel's active thumbnail: it says "this is a thing, and it goes somewhere". */
+.screen-live.is-live-link { cursor: pointer; }
+.screen-live.is-live-link::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgba(90, 165, 255, 0), 0 0 0 rgba(90, 165, 255, 0);
+  transition: box-shadow 260ms var(--ease);
+}
+.screen-live.is-live-link:hover::before,
+.screen-live.is-live-link:focus-visible::before {
+  box-shadow: inset 0 0 0 2px rgba(90, 165, 255, 0.85), 0 0 26px rgba(90, 165, 255, 0.35);
+}
+.screen-live.is-live-link:hover .ls-frame { filter: brightness(calc(var(--ls-dim) + 0.12)) saturate(1) contrast(1.04); }
+
+/* ?screens=debug — the calibration grid, so a quad can be checked on the live site. */
+.screen-live.is-debug {
+  background:
+    repeating-linear-gradient(to right, rgba(0,255,200,.9) 0 2px, transparent 2px 10%),
+    repeating-linear-gradient(to bottom, rgba(0,255,200,.9) 0 2px, transparent 2px 10%),
+    rgba(255,0,120,.28);
+  outline: 3px solid rgba(255,255,0,.9); outline-offset: -3px;
+}
+.screen-live.is-debug .ls-debug {
+  position: absolute; left: 4px; top: 4px;
+  font: 600 13px/1.2 var(--font-ui, system-ui); color: #fff;
+  background: rgba(0,0,0,.7); padding: 2px 6px; border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-live .ls-frame { transition: none !important; transform: scale(1.06) !important; }
+  .screen-live.is-live-link::before { transition: none !important; }
+}

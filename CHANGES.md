@@ -56,3 +56,53 @@ before publishing.
 **Verified.** All 13 stations at 1440x900, 1280x720 and 390x844: collapse, expand, viewer open
 and close, Escape chain, no console errors, no failed requests. Capabilities is reachable without
 scrolling on every station at both desktop sizes.
+
+---
+
+## Change 02 — Living screens
+
+**Problem.** Change 01 fixed all four building-metaphor promises inside the panel, which left the
+deepest interaction in the experience sitting in a sidebar attached to a static photograph. The
+rooms themselves were inert JPEGs: you walk into Defense, and the wall display the analysts are
+standing at is dead pixels. Two substrates built in Phase A — `js/screens.js` (perspective-maps a
+DOM element onto four corner points of a painted surface) and `js/clock.js` (one timebase every
+animated module reads) — had never been imported by anything.
+
+**Change.** The painted displays inside each room render now run the product. A surface is four
+corners in the render's own image pixels; the content is that station's real screenshots from the
+manifest, slowly cross-faded; and a click on a display goes to that station, the same navigation
+the pins and the tabs already use. The room's primary display follows whichever station tab is
+open, so choosing a product changes what the wall is running — the room-level version of change
+01's "stay in the saddle".
+
+**Not readable, on purpose.** The biggest surface in the building is about 1240 image pixels wide
+and most are a fifth of that, so at any real viewport a screenshot mounted there is texture, not
+information. The screens say "this is running, and it is ours". The panel says what it is.
+
+**Occlusion.** A photograph has no depth, so a screen paints over whatever stands in front of it —
+the man pointing at the Defense wall, the heads along the AIRE board. A luminance key does not
+separate them: these displays show dark maps, so the people are no darker than the content they
+stand in front of. So the silhouettes are traced into `content/screens.json` in image pixels and
+punched back out through an SVG mask. One detail worth knowing: CSS `mask-image` reads the image's
+alpha, not its luminance, so black-on-white masks nothing — the holes have to be real
+transparency, which is what an inner SVG `<mask>` produces.
+
+**Files.**
+- `content/screens.json` — surface geometry. Mine, not the owner's manifest, which is never
+  touched. Per surface: `quad` (TL, TR, BR, BL in image pixels), `station`, optional `occluders`
+  (traced polygons), `fade` (a bottom falloff shorthand) and `dim`.
+- `js/livescreens.js` — the feature. Reads the geometry, mounts through `screens.js`, cycles on
+  `clock.js`.
+- `js/main.js` — three lines: init after the manifest loads, mount on room entry, clear on exit.
+- `css/experience.css` — the `.screen-live` block, appended at the end so the reduced-motion
+  override wins on source order.
+- `tools/calibrate.html` — the quad harness, promoted out of scratch. Solves the same homography
+  `screens.js` does and overlays a grid plus corner ticks, which is what makes a quad checkable by
+  eye. Supersedes the unused `tools/quad-tool.html`.
+
+**Switches.** `?screens=0` turns it off. `?screens=debug` mounts the calibration grid instead of
+content, so a quad can be checked against the live site. No `screens.json` is a silent no-op.
+
+**Cost.** Nothing per frame while the camera moves: drift is held for 1.7s after entering a room,
+which is the only place in this experience where frame budget is tight. The stills are the same
+files the panel already loads, so they are cache hits.
