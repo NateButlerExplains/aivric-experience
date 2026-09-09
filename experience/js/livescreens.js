@@ -29,7 +29,8 @@ const SETTLE = 1.7;     // seconds of stillness after entering a room, while the
 const DRIFT = 34;       // seconds for one full ken-burns cycle
 
 let geometry = null;              // roomId -> { imageWidth, imageHeight, surfaces: [...] }
-let mediaByStation = new Map();   // stationId -> [{ src, caption }]
+let mediaByStation = new Map();   // stationId -> [{ src, station, caption }]
+let allStills = [];               // every still in the building, in manifest order
 let onStation = () => {};
 let live = [];                    // the surfaces mounted right now
 let unsubscribe = null;
@@ -41,12 +42,13 @@ let currentRoomId = null;
  * ---------------------------------------------------------------- */
 
 // A screen shows stills only. A video's poster is its still; a video without one is skipped,
-// because pulling a multi-megabyte clip onto a 190-pixel surface buys nothing.
+// because pulling a multi-megabyte clip onto a 190-pixel surface buys nothing. Every still
+// remembers which station it came from, because that is where clicking it goes.
 function stillsOf(station) {
   const out = [];
   for (const m of station.media || []) {
     const src = m.type === 'video' ? m.poster : m.src;
-    if (src) out.push({ src, caption: m.caption || '' });
+    if (src) out.push({ src, station: station.id, caption: m.caption || '' });
   }
   return out;
 }
@@ -58,8 +60,13 @@ function stillsOf(station) {
 export async function initLiveScreens(rooms) {
   if (MODE === '0') return false;
   mediaByStation = new Map();
+  allStills = [];
   for (const r of rooms || []) {
-    for (const s of r.stations || []) mediaByStation.set(s.id, stillsOf(s));
+    for (const s of r.stations || []) {
+      const list = stillsOf(s);
+      mediaByStation.set(s.id, list);
+      allStills.push(...list);
+    }
   }
   try {
     const res = await fetch('content/screens.json', { cache: 'no-cache' });
@@ -78,12 +85,25 @@ export function initLiveScreenNav(handler) { onStation = handler || onStation; }
  * Mounting
  * ---------------------------------------------------------------- */
 
-function stillsFor(surface, selectedStationId) {
-  // The primary display follows the station you have open, so choosing a tab changes what the
-  // room's main screen is running. Everything else keeps its own binding, so the room stays lit.
-  const id = (surface.primary && selectedStationId) || surface.station;
-  const list = mediaByStation.get(id);
-  return { id, list: list && list.length ? list : null };
+// Most stations in the manifest have no media yet — including aire-workflow, which owns the
+// largest display in the building. A surface whose station is empty borrows from its own room
+// first and from the rest of the building second, so no display sits dead while real product
+// screenshots exist a room away. What it borrows is not a fiction: each still carries its own
+// station, and clicking the display goes to whatever it is currently showing, not to the station
+// the surface was nominally assigned. The real fix is media for those stations; this is what the
+// building looks like until there is some.
+function stillsFor(surface, room, selectedStationId, taken) {
+  const own = mediaByStation.get((surface.primary && selectedStationId) || surface.station);
+  if (own && own.length) { for (const m of own) taken.add(m.src); return own; }
+
+  const roomFirst = [];
+  for (const st of room.stations || []) roomFirst.push(...(mediaByStation.get(st.id) || []));
+  const pool = [...roomFirst, ...allStills];
+  // Prefer stills no other surface in this room has claimed, so two displays are not twins.
+  const fresh = pool.filter((m) => !taken.has(m.src));
+  const picked = (fresh.length ? fresh : pool).slice(0, 4);
+  for (const m of picked) taken.add(m.src);
+  return picked.length ? picked : null;
 }
 
 function buildContent(stills) {
@@ -186,9 +206,11 @@ export function showRoomScreens(room, station) {
   if (!spec || !Array.isArray(spec.surfaces)) return;
 
   const selected = station ? station.id : null;
+  const taken = new Set();
   spec.surfaces.forEach((surface, i) => {
-    const { id: stationId, list } = stillsFor(surface, selected);
+    const list = stillsFor(surface, room, selected, taken);
     if (!DEBUG && !list) return;                        // nothing real to show: leave it dark
+    const stationId = list[0].station;
 
     const clickable = !DEBUG && !!stationId;
     const screenId = mountScreen({
@@ -213,7 +235,8 @@ export function showRoomScreens(room, station) {
 
     if (clickable) {
       el.dataset.station = stationId;
-      el.addEventListener('click', () => onStation(stationId));
+      // Read at click time, not at mount: the display may have cross-faded to another product.
+      el.addEventListener('click', () => onStation(el.dataset.station));
     }
 
     live.push({
@@ -262,9 +285,11 @@ function advance(s) {
   const [a, b] = s.el.querySelectorAll('.ls-frame');
   const incoming = a.classList.contains('is-on') ? b : a;
   const outgoing = incoming === a ? b : a;
-  incoming.src = s.stills[s.frame].src;
+  const next = s.stills[s.frame];
+  incoming.src = next.src;
   incoming.classList.add('is-on');
   outgoing.classList.remove('is-on');
+  if (next.station) { s.stationId = next.station; s.el.dataset.station = next.station; }
 }
 
 function tick(t) {
