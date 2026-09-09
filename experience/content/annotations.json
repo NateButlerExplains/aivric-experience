@@ -6,39 +6,1624 @@
       "title": "Posture Command",
       "regions": [
         {
-          "x": 0.0725, "y": 0.099, "w": 0.145, "h": 0.19,
+          "x": 0.0725,
+          "y": 0.099,
+          "w": 0.145,
+          "h": 0.19,
           "label": "ThreatScore",
           "note": "One posture number for the whole estate, so a leader has something to track between reviews rather than a list that only an engineer can read."
         },
         {
-          "x": 0.225, "y": 0.099, "w": 0.748, "h": 0.163,
+          "x": 0.225,
+          "y": 0.099,
+          "w": 0.748,
+          "h": 0.163,
           "label": "The command strip",
           "note": "Findings, failed checks, assets monitored, open POA&Ms and scan freshness on one line. Scan freshness is the one that matters most: it tells you whether everything else on this screen is current."
         },
         {
-          "x": 0.069, "y": 0.415, "w": 0.325, "h": 0.055,
+          "x": 0.069,
+          "y": 0.415,
+          "w": 0.325,
+          "h": 0.055,
           "label": "Four lenses on one graph",
           "note": "Exposure, identity, threats and compliance are views of the same underlying data, not four separate products. Switching lens re-weights what the map emphasises."
         },
         {
-          "x": 0.075, "y": 0.5, "w": 0.685, "h": 0.38,
+          "x": 0.075,
+          "y": 0.5,
+          "w": 0.685,
+          "h": 0.38,
           "label": "Threat map",
           "note": "Regions sized by severity-weighted risk rather than by finding count, so one critical exposure outweighs a hundred low ones. The arcs are correlated pathways between regions."
         },
         {
-          "x": 0.78, "y": 0.407, "w": 0.2, "h": 0.29,
+          "x": 0.78,
+          "y": 0.407,
+          "w": 0.2,
+          "h": 0.29,
           "label": "Regional intelligence",
           "note": "Drilling into one provider and region: its own risk score, seven-day trend, and the assets behind it. This is the bridge from a picture to something you can assign."
         },
         {
-          "x": 0.783, "y": 0.775, "w": 0.192, "h": 0.115,
+          "x": 0.783,
+          "y": 0.775,
+          "w": 0.192,
+          "h": 0.115,
           "label": "Finding severity mix",
           "note": "The shape of the risk, not just its size. A region scoring 85 on seven medium findings is a different conversation from one scoring 85 on a single critical."
         },
         {
-          "x": 0.075, "y": 0.905, "w": 0.37, "h": 0.045,
+          "x": 0.075,
+          "y": 0.905,
+          "w": 0.37,
+          "h": 0.045,
           "label": "Top regions",
           "note": "Ranked by contribution to the score, so remediation starts where it moves the number."
+        }
+      ]
+    },
+    "media/ai-signals/ai-operations.png": {
+      "title": "AI Operations Center",
+      "regions": [
+        {
+          "x": 0.836,
+          "y": 0.13,
+          "w": 0.155,
+          "h": 0.055,
+          "label": "Workspace score",
+          "note": "One rollup for the workspace's AI posture, with a verdict attached, so a governance review opens on a single position rather than on five separate dashboards."
+        },
+        {
+          "x": 0.154,
+          "y": 0.203,
+          "w": 0.314,
+          "h": 0.043,
+          "label": "Analysis tabs",
+          "note": "Same operational data at increasing depth, from aggregate health down to individual traces and sessions, so an incident is followed inside the product instead of exported to another tool."
+        },
+        {
+          "x": 0.153,
+          "y": 0.262,
+          "w": 0.839,
+          "h": 0.228,
+          "label": "Live operating metrics",
+          "note": "Throughput, latency, failure rate and token spend sit on one row with their trend, so a spike is read as cost, breakage or ordinary growth before anyone opens a trace."
+        },
+        {
+          "x": 0.153,
+          "y": 0.503,
+          "w": 0.481,
+          "h": 0.35,
+          "label": "Request volume",
+          "note": "Traffic shape over the selected window is how unattended agent loops, retry storms and abandoned workloads announce themselves, usually before the invoice or the incident does."
+        },
+        {
+          "x": 0.644,
+          "y": 0.503,
+          "w": 0.348,
+          "h": 0.35,
+          "label": "Top models by usage",
+          "note": "Shows where requests actually land across models, which is what approval, deprecation and consolidation decisions need; a model inventory on paper rarely matches what traffic does."
+        },
+        {
+          "x": 0.153,
+          "y": 0.855,
+          "w": 0.839,
+          "h": 0.122,
+          "label": "Quick actions",
+          "note": "Registering a model, running an evaluation or opening an investigation sits one click from the operational view, so a signal seen here becomes an action without hunting through menus."
+        }
+      ]
+    },
+    "media/ai-signals/assets.png": {
+      "title": "AI asset inventory",
+      "regions": [
+        {
+          "x": 0.155,
+          "y": 0.204,
+          "w": 0.341,
+          "h": 0.044,
+          "label": "Asset type tabs",
+          "note": "Agents, models, prompts, datasets and tool servers are held as separate classes, so an agent with tool access is governed on its own terms instead of being folded into a generic model list."
+        },
+        {
+          "x": 0.15,
+          "y": 0.262,
+          "w": 0.842,
+          "h": 0.228,
+          "label": "Inventory counters",
+          "note": "Counts per asset class, each with its own trend line, answer whether the AI estate is growing faster than the review process meant to cover it."
+        },
+        {
+          "x": 0.15,
+          "y": 0.499,
+          "w": 0.206,
+          "h": 0.221,
+          "label": "MCP server registry",
+          "note": "Tool servers that agents reach through are counted and mapped to policy here, so what an agent can actually touch has an answer that does not depend on asking the team that built it."
+        },
+        {
+          "x": 0.879,
+          "y": 0.126,
+          "w": 0.112,
+          "h": 0.066,
+          "label": "Workspace score",
+          "note": "Posture for the whole workspace as a graded band rather than a raw figure, which is what keeps it comparable between reviews while the asset counts underneath it change."
+        },
+        {
+          "x": 0.15,
+          "y": 0.74,
+          "w": 0.483,
+          "h": 0.107,
+          "label": "Recently updated assets",
+          "note": "New and changed assets appear as they are observed, so a model swapped into production or a prompt edited overnight is visible without waiting for the next inventory sweep."
+        },
+        {
+          "x": 0.64,
+          "y": 0.74,
+          "w": 0.353,
+          "h": 0.107,
+          "label": "Asset distribution",
+          "note": "Breakdown by asset class is how concentration shows up: most of the footprint sitting in one model family or one server is a dependency worth naming before an incident names it."
+        },
+        {
+          "x": 0.15,
+          "y": 0.851,
+          "w": 0.842,
+          "h": 0.144,
+          "label": "Quick actions",
+          "note": "An inventory earns its keep only if what it turns up gets acted on; registration, prompt import and evaluation start from this screen rather than from a ticket raised elsewhere."
+        }
+      ]
+    },
+    "media/ai-signals/command-center.png": {
+      "title": "Trust command center",
+      "regions": [
+        {
+          "x": 0.2113,
+          "y": 0.2996,
+          "w": 0.4863,
+          "h": 0.6423,
+          "label": "Trust index wheel",
+          "note": "Security, governance, operations, assets, intelligence and financial ops each carry their own score and their own drill-in, so the headline number stays traceable to the domain that moved it rather than standing alone."
+        },
+        {
+          "x": 0.7006,
+          "y": 0.1273,
+          "w": 0.1413,
+          "h": 0.1723,
+          "label": "Trust trend",
+          "note": "Direction over the selected window, measured against the prior period, so a review can separate an estate that is recovering from one that is decaying at the same standing."
+        },
+        {
+          "x": 0.8494,
+          "y": 0.1273,
+          "w": 0.1444,
+          "h": 0.1723,
+          "label": "Risk and estate counts",
+          "note": "Severity counts sit beside coverage counts — models and agents under watch — so a reader can tell whether a low risk count means a clean estate or a thinly monitored one."
+        },
+        {
+          "x": 0.7,
+          "y": 0.3226,
+          "w": 0.2938,
+          "h": 0.2335,
+          "label": "Attention required",
+          "note": "Live queue of the critical and high-priority findings inside the current scope, with a route into the risk dashboard, so the first look each morning is a worklist rather than a browse."
+        },
+        {
+          "x": 0.7,
+          "y": 0.5731,
+          "w": 0.2938,
+          "h": 0.1263,
+          "label": "Compliance frameworks",
+          "note": "Framework coverage tracked continuously rather than assembled at audit time, with a link into the compliance center so a control question moves from this view to the detail in one step."
+        },
+        {
+          "x": 0.3813,
+          "y": 0.008,
+          "w": 0.35,
+          "h": 0.0441,
+          "label": "Scope and time range",
+          "note": "Everything on the page answers to the project and date range chosen here, which is what makes one team's standing comparable with another's, or this quarter's with last."
+        }
+      ]
+    },
+    "media/ai-signals/finops.png": {
+      "title": "AI FinancialOps overview",
+      "regions": [
+        {
+          "x": 0.155,
+          "y": 0.202,
+          "w": 0.39,
+          "h": 0.046,
+          "label": "Cost view tabs",
+          "note": "Splits the same spend telemetry by cost center, usage, and provider, so allocation questions from finance and optimization work for engineering come off one source rather than separate spreadsheets."
+        },
+        {
+          "x": 0.153,
+          "y": 0.263,
+          "w": 0.836,
+          "h": 0.224,
+          "label": "Spend summary cards",
+          "note": "Pairs actual spend with a forecast and an efficiency score, each carrying its change against the previous range, so an overrun surfaces weeks before the provider invoice confirms it."
+        },
+        {
+          "x": 0.881,
+          "y": 0.128,
+          "w": 0.108,
+          "h": 0.06,
+          "label": "Workspace score",
+          "note": "Condenses the workspace into one graded band rather than a bare figure, letting a budget owner track direction between reviews without reading every panel underneath."
+        },
+        {
+          "x": 0.153,
+          "y": 0.506,
+          "w": 0.479,
+          "h": 0.343,
+          "label": "Spend over time",
+          "note": "Puts spend on the selected date range so a step change can be tied to the week it began. After an unexpected bill the useful question is when it moved, not what the total is."
+        },
+        {
+          "x": 0.641,
+          "y": 0.506,
+          "w": 0.349,
+          "h": 0.343,
+          "label": "Spend by model",
+          "note": "Attributes cost to individual models, which is where a swap decision gets made: once one model is shown carrying the bill, routing it elsewhere or down a tier becomes a concrete change."
+        },
+        {
+          "x": 0.153,
+          "y": 0.857,
+          "w": 0.836,
+          "h": 0.117,
+          "label": "Quick actions",
+          "note": "Jumps from a cost finding into the work it implies — registering a model, running an evaluation, opening an investigation — so the spend view ends in an action rather than a note to follow up."
+        }
+      ]
+    },
+    "media/ai-signals/governance-hub.png": {
+      "title": "AI Governance Hub",
+      "regions": [
+        {
+          "x": 0.151,
+          "y": 0.1965,
+          "w": 0.8395,
+          "h": 0.049,
+          "label": "Governance sections",
+          "note": "Splits AI governance into the artifacts an assessor asks for — a risk register, written policies, enforced guardrails, compliance and stored evidence — so a control claim can be traced back to its record."
+        },
+        {
+          "x": 0.1525,
+          "y": 0.2567,
+          "w": 0.2025,
+          "h": 0.2279,
+          "label": "Governance score",
+          "note": "Compresses current control state into one tracked figure with its trend beside it, so posture can be reported and its direction defended without reassembling the underlying controls each time."
+        },
+        {
+          "x": 0.364,
+          "y": 0.2567,
+          "w": 0.6275,
+          "h": 0.2279,
+          "label": "Risk and control counters",
+          "note": "Three counts that separate exposure from coverage: what risk is open now, where policy is being broken, and how much of the control set actually passes."
+        },
+        {
+          "x": 0.1525,
+          "y": 0.5025,
+          "w": 0.4825,
+          "h": 0.345,
+          "label": "Risk overview",
+          "note": "Tracks risk across the selected window rather than at the instant you looked, which is what distinguishes a backlog being worked down from one that is merely quiet."
+        },
+        {
+          "x": 0.6438,
+          "y": 0.5025,
+          "w": 0.348,
+          "h": 0.345,
+          "label": "Policy coverage",
+          "note": "Where policy applies, broken out by category — and when the selected range returns nothing, the panel says so rather than drawing a flat line a reader would take for a clean estate."
+        },
+        {
+          "x": 0.1525,
+          "y": 0.8537,
+          "w": 0.8395,
+          "h": 0.131,
+          "label": "Quick actions",
+          "note": "Governance findings usually leave the tool as a ticket somewhere else. Registration, evaluation and investigation start here instead, which keeps the action attached to the control record that prompted it."
+        }
+      ]
+    },
+    "media/ai-signals/mcp-security.png": {
+      "title": "MCP security posture",
+      "regions": [
+        {
+          "x": 0.153,
+          "y": 0.13,
+          "w": 0.844,
+          "h": 0.226,
+          "label": "Posture summary strip",
+          "note": "Four counters answer whether MCP servers are inventoried, governed by policy, and seen recently. The gap between servers connected and servers actually covered surfaces here before anyone opens a panel."
+        },
+        {
+          "x": 0.154,
+          "y": 0.373,
+          "w": 0.369,
+          "h": 0.262,
+          "label": "Threat posture score",
+          "note": "The composite is assembled from server health, policy coverage, strict enforcement and recent visibility, each scored separately. A tenant can fail this on visibility alone — servers that are healthy and have a policy attached, but have not checked in recently, still pull the number down."
+        },
+        {
+          "x": 0.161,
+          "y": 0.648,
+          "w": 0.354,
+          "h": 0.07,
+          "label": "Policy mode mix",
+          "note": "Enforcement mode matters more than coverage: a server on monitor is watched, not stopped. Pairing the allow/deny/monitor split with the single largest gap keeps the report and the runtime honest."
+        },
+        {
+          "x": 0.539,
+          "y": 0.432,
+          "w": 0.451,
+          "h": 0.051,
+          "label": "Inventory search and filters",
+          "note": "Filters the inventory by status and by attached policy, so \"which servers have nothing enforcing on them\" is a question answered in place rather than by exporting and cross-referencing."
+        },
+        {
+          "x": 0.539,
+          "y": 0.499,
+          "w": 0.451,
+          "h": 0.142,
+          "label": "Registered server record",
+          "note": "Per-server record: health and risk rating, attached policy count, last contact, endpoint, and the tool names it exposes - the basis for judging what an agent could actually reach through it."
+        },
+        {
+          "x": 0.531,
+          "y": 0.751,
+          "w": 0.466,
+          "h": 0.104,
+          "label": "Policy control plane",
+          "note": "Guard policies are defined here with their scope and mode, so the decision to watch or block, for one project or across all of them, sits beside the inventory it governs."
+        }
+      ]
+    },
+    "media/ai-signals/model-security.png": {
+      "title": "Model security posture",
+      "regions": [
+        {
+          "x": 0.153,
+          "y": 0.15,
+          "w": 0.841,
+          "h": 0.05,
+          "label": "Domain tabs",
+          "note": "Model security is one view among findings, red teaming, prompt security and MCP security, so an assessor moves between AI risk domains without losing the tenant and time window set above."
+        },
+        {
+          "x": 0.153,
+          "y": 0.211,
+          "w": 0.841,
+          "h": 0.173,
+          "label": "Posture headline tiles",
+          "note": "The four figures a program is judged on — weighted posture, models actually monitored, open findings by severity, guardrail coverage — each carrying its direction of travel, not just its level."
+        },
+        {
+          "x": 0.17,
+          "y": 0.463,
+          "w": 0.117,
+          "h": 0.196,
+          "label": "Posture score dial",
+          "note": "One weighted score with a banded verdict attached, so model risk can be reported to a board or an auditor without the audience having to interpret four separate coverage metrics."
+        },
+        {
+          "x": 0.3,
+          "y": 0.488,
+          "w": 0.215,
+          "h": 0.145,
+          "label": "Coverage breakdown",
+          "note": "Splits that score into telemetry, evaluation, guardrail and owner coverage, which turns a mediocre headline into a named gap and, in the owner case, a team to hand it to."
+        },
+        {
+          "x": 0.16,
+          "y": 0.679,
+          "w": 0.352,
+          "h": 0.078,
+          "label": "Scan activity",
+          "note": "Shows whether scanning is running at all and which model currently carries the most risk, separating a weak score caused by real exposure from one caused by nothing having been scanned."
+        },
+        {
+          "x": 0.528,
+          "y": 0.403,
+          "w": 0.466,
+          "h": 0.437,
+          "label": "Model inventory",
+          "note": "Models arrive by registration or by the platform observing model traffic, and are searchable by name, match pattern and posture. Until they appear here, the score above describes an empty estate."
+        },
+        {
+          "x": 0.16,
+          "y": 0.858,
+          "w": 0.834,
+          "h": 0.126,
+          "label": "Quick actions",
+          "note": "Entry points for the work the rest of the page implies — register a model, run an evaluation, import prompts, open an investigation — placed on the screen that reports the gap."
+        }
+      ]
+    },
+    "media/ai-signals/observability-trace.png": {
+      "title": "Trace inspector",
+      "regions": [
+        {
+          "x": 0.145,
+          "y": 0.254,
+          "w": 0.126,
+          "h": 0.68,
+          "label": "Trace filters",
+          "note": "Narrows the recorded runs by environment, release, session, tags, level and latency, so an investigation starts from the runs that match the report instead of the whole stream."
+        },
+        {
+          "x": 0.273,
+          "y": 0.254,
+          "w": 0.127,
+          "h": 0.68,
+          "label": "Trace list",
+          "note": "Every model run the platform captured, newest first and flaggable for follow-up, so a specific conversation can be found again and handed to a colleague weeks later."
+        },
+        {
+          "x": 0.409,
+          "y": 0.096,
+          "w": 0.234,
+          "h": 0.093,
+          "label": "Span tree",
+          "note": "Breaks a run into its component calls with latency, token counts and spend on each, so a slow or expensive request is attributed to the step responsible rather than the whole trace."
+        },
+        {
+          "x": 0.655,
+          "y": 0.096,
+          "w": 0.279,
+          "h": 0.034,
+          "label": "Dataset and review actions",
+          "note": "Sends a real production run into an evaluation dataset, opens it for reviewer annotation, or attaches a comment, so what actually shipped becomes test material and a reviewable record."
+        },
+        {
+          "x": 0.653,
+          "y": 0.278,
+          "w": 0.253,
+          "h": 0.052,
+          "label": "Run tags",
+          "note": "Labels the run with the model, provider and application feature behind it, which is what lets a change in behaviour be tied to a model version rather than argued about."
+        },
+        {
+          "x": 0.653,
+          "y": 0.34,
+          "w": 0.337,
+          "h": 0.07,
+          "label": "Recorded input",
+          "note": "The prompt the model actually received, kept verbatim — the only reliable starting point when a user disputes an answer or a red team finding has to be reproduced."
+        },
+        {
+          "x": 0.653,
+          "y": 0.414,
+          "w": 0.337,
+          "h": 0.53,
+          "label": "Model output",
+          "note": "Complete response as returned, stored against its input so a contested answer can be read in full months afterwards instead of reconstructed from a summary or a screenshot."
+        }
+      ]
+    },
+    "media/ai-signals/red-teaming-scenarios.png": {
+      "title": "Red team campaigns",
+      "regions": [
+        {
+          "x": 0.1556,
+          "y": 0.1035,
+          "w": 0.335,
+          "h": 0.5055,
+          "label": "Attack scenario packs",
+          "note": "Each pack pairs an adversarial technique with the behaviour the target must hold to, so a run returns a pass or fail against a stated condition rather than a reviewer's impression."
+        },
+        {
+          "x": 0.16,
+          "y": 0.6169,
+          "w": 0.3238,
+          "h": 0.0746,
+          "label": "Safe-mode campaign launch",
+          "note": "Queued runs default to safe mode and keep redacted evidence references, so probing a model for data exposure does not itself create a second copy of the sensitive output."
+        },
+        {
+          "x": 0.1538,
+          "y": 0.7264,
+          "w": 0.4944,
+          "h": 0.0488,
+          "label": "Live campaign queue",
+          "note": "Running and pending campaigns appear while they execute, so an engineer can see which targets are under adversarial test right now instead of learning it from a report afterwards."
+        },
+        {
+          "x": 0.1606,
+          "y": 0.7791,
+          "w": 0.4856,
+          "h": 0.0398,
+          "label": "Queue search and filters",
+          "note": "Narrows the queue by run status and approval state — the view a reviewer uses to find campaigns waiting on sign-off rather than reading the whole queue."
+        },
+        {
+          "x": 0.6563,
+          "y": 0.7264,
+          "w": 0.3375,
+          "h": 0.1244,
+          "label": "Scenario coverage",
+          "note": "Shows how much testing each pack has actually received, so an untested technique reads as a gap instead of passing quietly for want of anyone having run it."
+        }
+      ]
+    },
+    "media/ai-signals/red-teaming.png": {
+      "title": "Red team console",
+      "regions": [
+        {
+          "x": 0.16,
+          "y": 0.2272,
+          "w": 0.4763,
+          "h": 0.0476,
+          "label": "AI security sections",
+          "note": "Red teaming shares a console with model, prompt and MCP security, so what an adversarial run turns up lands beside the standing controls instead of in a separate tool someone has to reconcile."
+        },
+        {
+          "x": 0.1531,
+          "y": 0.2857,
+          "w": 0.8388,
+          "h": 0.1746,
+          "label": "Campaign counters",
+          "note": "Counts campaigns in flight, scenarios available, approvals waiting and findings raised, each with its direction of travel — enough to tell whether a red-team programme is running or has quietly stalled."
+        },
+        {
+          "x": 0.1575,
+          "y": 0.5347,
+          "w": 0.33,
+          "h": 0.0824,
+          "label": "Campaign definition",
+          "note": "Naming a campaign and pinning it to a single target keeps adversarial traffic inside a system you own, and gives every finding it produces a specific run to be traced back to."
+        },
+        {
+          "x": 0.3769,
+          "y": 0.628,
+          "w": 0.1088,
+          "h": 0.1002,
+          "label": "Execution guard",
+          "note": "Before an attack campaign runs, safe mode and an approval step gate it, so adversarial prompts reach a live system only under constraints an accountable person has signed off."
+        },
+        {
+          "x": 0.5094,
+          "y": 0.5347,
+          "w": 0.1275,
+          "h": 0.1994,
+          "label": "Readiness score",
+          "note": "One composite figure for whether this workspace is set up to red-team safely — the number you report upward, kept next to the measures behind it rather than standing alone."
+        },
+        {
+          "x": 0.6438,
+          "y": 0.5665,
+          "w": 0.3425,
+          "h": 0.1409,
+          "label": "Coverage breakdown",
+          "note": "Safe mode coverage, scenario coverage, approval readiness and critical risk avoidance are scored on their own. Scenario coverage is the one that moves with use — a workspace can hold the other three at full marks and still be exercising only part of the attack library."
+        },
+        {
+          "x": 0.5038,
+          "y": 0.748,
+          "w": 0.4825,
+          "h": 0.0883,
+          "label": "Runner and queue status",
+          "note": "Confirms an execution runner is live and nothing is stuck awaiting approval, and names the scenario currently at the top — the operational check before treating readiness as a claim about the system."
+        }
+      ]
+    },
+    "media/ai-signals/security-reports.png": {
+      "title": "Evidence reports",
+      "regions": [
+        {
+          "x": 0.159,
+          "y": 0.262,
+          "w": 0.155,
+          "h": 0.368,
+          "label": "Framework picker",
+          "note": "Retargets the same evidence pipeline at whichever regime an assessor cites, from LLM-specific lists to general assurance standards, so one body of testing answers several obligations instead of being rebuilt per audit."
+        },
+        {
+          "x": 0.319,
+          "y": 0.262,
+          "w": 0.152,
+          "h": 0.072,
+          "label": "Evidence scope",
+          "note": "Bounds which security runs the report is compiled from, so evidence can be limited to the system actually under review rather than everything the tenant has ever tested."
+        },
+        {
+          "x": 0.504,
+          "y": 0.261,
+          "w": 0.471,
+          "h": 0.048,
+          "label": "Report library filters",
+          "note": "Search and filters over past reports, so the artefact an auditor asks for months later is retrieved by framework or scope instead of reconstructed from the run that produced it."
+        },
+        {
+          "x": 0.497,
+          "y": 0.331,
+          "w": 0.486,
+          "h": 0.105,
+          "label": "Generated report record",
+          "note": "Each report carries its framework, scope, control and run counts, generation time and status, so a reviewer can judge what the artefact covers before opening it."
+        },
+        {
+          "x": 0.152,
+          "y": 0.636,
+          "w": 0.456,
+          "h": 0.194,
+          "label": "Framework coverage",
+          "note": "Compares how much of each standard the current evidence supports, exposing the gap between the frameworks you claim to meet and the ones you can prove, before an assessor finds it."
+        },
+        {
+          "x": 0.614,
+          "y": 0.636,
+          "w": 0.378,
+          "h": 0.194,
+          "label": "Evidence readiness",
+          "note": "Breaks readiness into the inputs a report depends on: finding coverage, control mapping, scope and history, so a weak score points at the missing input rather than just a failing grade."
+        }
+      ]
+    },
+    "media/ai-signals/tracing.png": {
+      "title": "AI Operations Center",
+      "regions": [
+        {
+          "x": 0.155,
+          "y": 0.207,
+          "w": 0.305,
+          "h": 0.042,
+          "label": "Tracing view tabs",
+          "note": "Overview is the tab open here; Tracing and Sessions sit beside it, for the point where an aggregate that looks wrong has to be settled against a single recorded run."
+        },
+        {
+          "x": 0.84,
+          "y": 0.129,
+          "w": 0.153,
+          "h": 0.063,
+          "label": "Workspace score",
+          "note": "Persistent across the AI Signals views, so the workspace's standing stays in front of an engineer who is deep in traffic detail rather than being something to go back and check."
+        },
+        {
+          "x": 0.154,
+          "y": 0.264,
+          "w": 0.84,
+          "h": 0.226,
+          "label": "Live health counters",
+          "note": "Volume, latency, error rate and token usage sit on one row because AI incidents usually show up as a combination — spend climbing while errors climb — that no single counter would reveal."
+        },
+        {
+          "x": 0.154,
+          "y": 0.509,
+          "w": 0.483,
+          "h": 0.347,
+          "label": "Request volume over time",
+          "note": "Traffic plotted across the selected range turns a spike into something you can date, which is the first question after an abuse report or a runaway agent: when did this start."
+        },
+        {
+          "x": 0.645,
+          "y": 0.509,
+          "w": 0.349,
+          "h": 0.347,
+          "label": "Model usage mix",
+          "note": "Proportion of calls by model, which is the first split to check when latency or error rate moves: a shift in the mix explains as many regressions as a change in any single model's behaviour."
+        },
+        {
+          "x": 0.154,
+          "y": 0.863,
+          "w": 0.84,
+          "h": 0.13,
+          "label": "Quick actions",
+          "note": "Same row of entry points as the other AI Signals views; here the one that matters is Launch Investigation, so a spike the charts cannot explain becomes a case rather than a note in a channel."
+        }
+      ]
+    },
+    "media/cloudsignals/ai-security-brief.png": {
+      "title": "Executive brief",
+      "regions": [
+        {
+          "x": 0.0345,
+          "y": 0.098,
+          "w": 0.279,
+          "h": 0.149,
+          "label": "Risk status and scope",
+          "note": "Every readout is stamped with its snapshot time, the environments and provider scopes it covers, and a confidence rating — so a reader knows how current the position is before acting on it."
+        },
+        {
+          "x": 0.7785,
+          "y": 0.099,
+          "w": 0.189,
+          "h": 0.081,
+          "label": "Brief actions",
+          "note": "Regenerate the same brief against current data, export it as the document a board meeting needs, or put a follow-up question to the assistant instead of rebuilding the analysis by hand."
+        },
+        {
+          "x": 0.0355,
+          "y": 0.265,
+          "w": 0.93,
+          "h": 0.123,
+          "label": "Headline metrics",
+          "note": "Composite posture score, open failure backlog, assets at critical risk and overdue GRC work sit together at the top, so the security and compliance sides of the argument are read from one set of figures."
+        },
+        {
+          "x": 0.0295,
+          "y": 0.441,
+          "w": 0.428,
+          "h": 0.102,
+          "label": "Report navigation",
+          "note": "The brief runs as an argument — insight, drivers, explanation, controls, simulated fixes, decision — and each step is addressable, so a reviewer can jump straight to the claim they doubt."
+        },
+        {
+          "x": 0.5445,
+          "y": 0.443,
+          "w": 0.423,
+          "h": 0.373,
+          "label": "Operational views",
+          "note": "Each card opens the working page behind the summary: risk matrix, framework coverage, remediation queue. A statement in the brief can be checked against the data it came from."
+        },
+        {
+          "x": 0.0265,
+          "y": 0.872,
+          "w": 0.598,
+          "h": 0.107,
+          "label": "AI executive insight",
+          "note": "Names the control areas concentrating unresolved exposure, turning a posture number into a position on where risk actually sits and what leadership should be deciding about."
+        },
+        {
+          "x": 0.6375,
+          "y": 0.872,
+          "w": 0.334,
+          "h": 0.107,
+          "label": "Next-best actions",
+          "note": "Guidance ordered for the fastest safe reduction in risk, with each item opening a filtered findings workbench — the plan hands off as assignable work rather than as advice."
+        }
+      ]
+    },
+    "media/cloudsignals/compliance-dashboard.png": {
+      "title": "Compliance results grid",
+      "regions": [
+        {
+          "x": 0.056,
+          "y": 0.105,
+          "w": 0.264,
+          "h": 0.095,
+          "label": "Compliance results header",
+          "note": "Every card here reports against one selected completed scan, so a framework result is a claim about a known point in time that can be re-run and reproduced, not a drifting average."
+        },
+        {
+          "x": 0.1,
+          "y": 0.371,
+          "w": 0.182,
+          "h": 0.047,
+          "label": "Framework score bar",
+          "note": "Scores are normalized to one percentage per framework, letting a team compare regimes that share underlying controls and spot the benchmark that is slipping without opening its control list."
+        },
+        {
+          "x": 0.33,
+          "y": 0.417,
+          "w": 0.1,
+          "h": 0.032,
+          "label": "Passing requirement count",
+          "note": "The ratio behind the score exposes how many controls it rests on; a framework with few requirements swings hard on a single finding, while a large one barely moves."
+        },
+        {
+          "x": 0.259,
+          "y": 0.739,
+          "w": 0.028,
+          "h": 0.052,
+          "label": "Per-framework export",
+          "note": "Each card carries its own download, keeping evidence scoped to the regime an auditor actually asked about rather than one bundle covering everything."
+        },
+        {
+          "x": 0.297,
+          "y": 0.819,
+          "w": 0.221,
+          "h": 0.152,
+          "label": "AiVRIC ThreatScore card",
+          "note": "AiVRIC's own baseline is scored on the same footing as the public benchmarks, so an internal standard is tracked from the same evidence as the regimes an auditor will name."
+        },
+        {
+          "x": 0.524,
+          "y": 0.819,
+          "w": 0.221,
+          "h": 0.152,
+          "label": "Regional and sector regimes",
+          "note": "Jurisdiction and sector regimes — NIS2, national schemes, industry standards — appear in the grid alongside the global benchmarks. Read it as a scope list: a regime that is absent here is one your team still evidences on its own."
+        }
+      ]
+    },
+    "media/cloudsignals/compliance-posture.png": {
+      "title": "Framework control detail",
+      "regions": [
+        {
+          "x": 0.079,
+          "y": 0.062,
+          "w": 0.896,
+          "h": 0.103,
+          "label": "Control result badges",
+          "note": "Every clause of the standard carries its own verdict, and clauses only a human can attest are marked as such rather than left blank, so audit preparation starts from a known list of gaps."
+        },
+        {
+          "x": 0.083,
+          "y": 0.167,
+          "w": 0.36,
+          "h": 0.1,
+          "label": "Control description",
+          "note": "Requirement text sits beside the technical result, so the engineer fixing a check and the auditor reading the clause work from one definition rather than a mapping spreadsheet kept on the side."
+        },
+        {
+          "x": 0.087,
+          "y": 0.276,
+          "w": 0.883,
+          "h": 0.045,
+          "label": "Checks for this control",
+          "note": "Compliance clauses are prose; this expands them into the discrete checks that decided the verdict, which is what you need when someone disputes the mapping or asks why the control failed."
+        },
+        {
+          "x": 0.088,
+          "y": 0.36,
+          "w": 0.88,
+          "h": 0.056,
+          "label": "Column and export controls",
+          "note": "Choosing which fields to show and exporting the set turns the screen into the evidence file an auditor asked for, without a request to whoever owns the data warehouse."
+        },
+        {
+          "x": 0.093,
+          "y": 0.437,
+          "w": 0.522,
+          "h": 0.548,
+          "label": "Finding rows",
+          "note": "Each row names the configuration that should exist and the resource that was evaluated, so remediation becomes a specific change on a named asset instead of a clause somebody has to interpret."
+        },
+        {
+          "x": 0.616,
+          "y": 0.437,
+          "w": 0.113,
+          "h": 0.548,
+          "label": "Severity and status",
+          "note": "Severity and current state are both sortable, letting remediation start where the exposure is worst rather than at the top of the list, and showing which findings still sit open."
+        },
+        {
+          "x": 0.735,
+          "y": 0.437,
+          "w": 0.12,
+          "h": 0.548,
+          "label": "Last seen and region",
+          "note": "Last seen says whether a failure was still there at the most recent scan or is left over from an older one; region says where the resource actually runs, which is what a data-residency question turns on."
+        }
+      ]
+    },
+    "media/cloudsignals/finding-detail.png": {
+      "title": "Finding detail",
+      "regions": [
+        {
+          "x": 0.47,
+          "y": 0.09,
+          "w": 0.514,
+          "h": 0.27,
+          "label": "Remediation guidance",
+          "note": "The fix procedure travels with the finding, so whoever picks it up can work the change without first hunting through provider documentation for the right console path."
+        },
+        {
+          "x": 0.4695,
+          "y": 0.376,
+          "w": 0.256,
+          "h": 0.06,
+          "label": "CLI command",
+          "note": "A copyable command for the same change, for teams that remediate through scripts and pipelines rather than clicking their way through a provider console."
+        },
+        {
+          "x": 0.7275,
+          "y": 0.376,
+          "w": 0.2565,
+          "h": 0.104,
+          "label": "Reference link",
+          "note": "Carries the knowledge-base URL behind the fix, so a reviewer can trace the change back to a written procedure instead of taking the ticket on trust."
+        },
+        {
+          "x": 0.47,
+          "y": 0.591,
+          "w": 0.514,
+          "h": 0.068,
+          "label": "Resource identifier",
+          "note": "Names the exact object the finding is about, with a copy control, so an engineer pivots straight to it in the provider console or CLI instead of matching it by hand."
+        },
+        {
+          "x": 0.47,
+          "y": 0.663,
+          "w": 0.514,
+          "h": 0.065,
+          "label": "Resource attributes",
+          "note": "Type, service and name say what kind of object failed, not just that something did — usually the difference between a one-line configuration change and a design decision somebody has to own."
+        },
+        {
+          "x": 0.47,
+          "y": 0.826,
+          "w": 0.514,
+          "h": 0.155,
+          "label": "Compliance and references",
+          "note": "Maps the finding to the frameworks and categories it bears on, so a closed fix can be reported as audit evidence rather than reconstructed at assessment time."
+        }
+      ]
+    },
+    "media/cloudsignals/portfolio-analytics.png": {
+      "title": "Portfolio analytics",
+      "regions": [
+        {
+          "x": 0.0655,
+          "y": 0.1779,
+          "w": 0.91,
+          "h": 0.1554,
+          "label": "Portfolio risk headline",
+          "note": "Open risk count, quantified exposure, quantification maturity and treatment coverage on one line, so a board conversation starts from figures the team can defend rather than a slide assembled by hand."
+        },
+        {
+          "x": 0.074,
+          "y": 0.4728,
+          "w": 0.8935,
+          "h": 0.1311,
+          "label": "Exposure by treatment state",
+          "note": "Splits the money at risk into untreated, actively treated and formally accepted, which is the split that says whether risk is being worked or only recorded."
+        },
+        {
+          "x": 0.0725,
+          "y": 0.6414,
+          "w": 0.6025,
+          "h": 0.0983,
+          "label": "Coverage maturity",
+          "note": "Measures how completely each risk is mapped to threats, owners, treatments and quantification, so holes in the governance record surface before an auditor or an incident finds them."
+        },
+        {
+          "x": 0.0745,
+          "y": 0.7659,
+          "w": 0.6875,
+          "h": 0.2032,
+          "label": "Maturity gap bars",
+          "note": "Each dimension shows records covered against records still missing, turning \"improve governance\" into a countable backlog that can be assigned to an owner."
+        },
+        {
+          "x": 0.78,
+          "y": 0.632,
+          "w": 0.1955,
+          "h": 0.1451,
+          "label": "Executive narrative",
+          "note": "The written summary is generated from the records the tiles are drawn from, so the version that goes upward and the version the team works from cannot quietly diverge."
+        },
+        {
+          "x": 0.789,
+          "y": 0.8034,
+          "w": 0.1785,
+          "h": 0.1723,
+          "label": "Narrative callout cards",
+          "note": "Names where exposure currently sits and which part of the business carries the concentration, so the read-out points at a next action instead of ending at a summary."
+        }
+      ]
+    },
+    "media/cloudsignals/project-center.png": {
+      "title": "RiskOps Project Center",
+      "regions": [
+        {
+          "x": 0.076,
+          "y": 0.2356,
+          "w": 0.889,
+          "h": 0.1395,
+          "label": "Portfolio status counters",
+          "note": "How much work is open, how much of it is regulatory, how much has slipped — each count also carried as a share of the portfolio, so a raw number cannot be read as worse or better than it is."
+        },
+        {
+          "x": 0.081,
+          "y": 0.4005,
+          "w": 0.66,
+          "h": 0.195,
+          "label": "Six-stage execution flow",
+          "note": "Every project sits in one named stage between intake and verified, so work that has stopped moving shows up as a stage that never empties rather than as a due date someone missed."
+        },
+        {
+          "x": 0.748,
+          "y": 0.391,
+          "w": 0.218,
+          "h": 0.363,
+          "label": "Insight rail",
+          "note": "Turns the current queue into a stated next move and the metric worth watching, so triage does not depend on which analyst opened the board or how well they know the backlog."
+        },
+        {
+          "x": 0.7915,
+          "y": 0.1489,
+          "w": 0.1675,
+          "h": 0.033,
+          "label": "Project and automation controls",
+          "note": "Where remediation work is opened, recurring handling is set as a rule, and reporting is pulled: intake, automation and reporting in the same console as the queue they describe."
+        },
+        {
+          "x": 0.074,
+          "y": 0.9057,
+          "w": 0.7835,
+          "h": 0.0575,
+          "label": "Queue search and filters",
+          "note": "Narrows the project list by owner, tag, priority or overdue state before anything is acted on, so an engineer works their own slice instead of reading the whole program."
+        },
+        {
+          "x": 0.86,
+          "y": 0.9425,
+          "w": 0.113,
+          "h": 0.0443,
+          "label": "Export and share",
+          "note": "Puts the filtered view in front of people who do not work in this console, such as an auditor or a system owner, without rebuilding the list by hand in a spreadsheet."
+        }
+      ]
+    },
+    "media/cloudsignals/remediation-plan.png": {
+      "title": "ThreatSignals control plane",
+      "regions": [
+        {
+          "x": 0.0725,
+          "y": 0.181,
+          "w": 0.328,
+          "h": 0.051,
+          "label": "Lens filters",
+          "note": "Re-filters the same regional evidence for exposure, identity, threat or compliance work, so those four reviews argue from one dataset instead of four exports that already disagree by the time they meet."
+        },
+        {
+          "x": 0.295,
+          "y": 0.281,
+          "w": 0.46,
+          "h": 0.372,
+          "label": "Regional threat map",
+          "note": "Positions risk on the estate's actual geography and draws the correlated pathways between nodes, so an analyst can tell whether an issue sits in one region or is moving across providers."
+        },
+        {
+          "x": 0.08,
+          "y": 0.518,
+          "w": 0.202,
+          "h": 0.119,
+          "label": "Severity signal legend",
+          "note": "Defines what each colour on the map means and how many correlated pathways the current layer is drawing, so two people reading the same view reach the same severity, not their own impression."
+        },
+        {
+          "x": 0.077,
+          "y": 0.685,
+          "w": 0.368,
+          "h": 0.045,
+          "label": "Top regions",
+          "note": "Names the highest-scoring provider regions and ranks them, turning a dense map into a short worklist when the visual is too crowded to order by eye."
+        },
+        {
+          "x": 0.074,
+          "y": 0.757,
+          "w": 0.684,
+          "h": 0.126,
+          "label": "Replay timeline",
+          "note": "Scrubs risk backwards across a chosen window, which separates a real regression from a scanner change or a one-day spike before anyone is assigned remediation work."
+        },
+        {
+          "x": 0.783,
+          "y": 0.322,
+          "w": 0.192,
+          "h": 0.185,
+          "label": "Selected region risk",
+          "note": "Holds the score for the selected provider region beside its trend and the finding and asset counts behind it, so the number can be defended in a review instead of taken on trust."
+        },
+        {
+          "x": 0.783,
+          "y": 0.7,
+          "w": 0.192,
+          "h": 0.275,
+          "label": "Top contributors",
+          "note": "Breaks a region's score into severity-weighted causes such as storage exposure, encryption and logging gaps, and control failures, so remediation targets what moves the score rather than the longest list."
+        }
+      ]
+    },
+    "media/cloudsignals/risk-governance.png": {
+      "title": "Risk governance console",
+      "regions": [
+        {
+          "x": 0.0655,
+          "y": 0.2066,
+          "w": 0.909,
+          "h": 0.139,
+          "label": "Governance load counters",
+          "note": "Tells you whether governance is keeping pace with intake — how much is waiting on a decision, what is still unmapped or untreated, and how complete coverage is — before you open any single risk."
+        },
+        {
+          "x": 0.4735,
+          "y": 0.3805,
+          "w": 0.308,
+          "h": 0.039,
+          "label": "Fabric lenses",
+          "note": "Priority depends on which criterion you weight — where risk concentrates, what is breaching its clock, what costs most — and the lens makes that choice explicit rather than fixing one ranking into the view."
+        },
+        {
+          "x": 0.0755,
+          "y": 0.4915,
+          "w": 0.7055,
+          "h": 0.394,
+          "label": "Risk fabric map",
+          "note": "Traces findings through risks, scenarios and treatments to outcomes, so the stage where work actually stalls shows up as a shape instead of being inferred from separate counts."
+        },
+        {
+          "x": 0.0755,
+          "y": 0.892,
+          "w": 0.7055,
+          "h": 0.034,
+          "label": "Encoding key",
+          "note": "Defines what edge thickness, pulse and severity colour carry, so an engineer can read the map as data and defend a conclusion drawn from it in review."
+        },
+        {
+          "x": 0.8025,
+          "y": 0.3755,
+          "w": 0.166,
+          "h": 0.421,
+          "label": "Governance intelligence",
+          "note": "Converts the map into a queue: the decision blocking the most items, the stage acting as bottleneck, and the risk under most pressure, each carrying a severity so triage is not left to interpretation."
+        },
+        {
+          "x": 0.8045,
+          "y": 0.8025,
+          "w": 0.162,
+          "h": 0.107,
+          "label": "Recommended next action",
+          "note": "Ends the diagnosis in an assignment — one named move, with a link into the workspace where it is carried out, so the finding does not stop at an observation on a screen."
+        }
+      ]
+    },
+    "media/cloudsignals/risk-landscape.png": {
+      "title": "Risk landscape",
+      "regions": [
+        {
+          "x": 0.74,
+          "y": 0.098,
+          "w": 0.228,
+          "h": 0.036,
+          "label": "Report actions",
+          "note": "Opens the underlying risk report or re-runs it against current scan data, so the version circulated to a board or an auditor is the one the platform holds today."
+        },
+        {
+          "x": 0.032,
+          "y": 0.197,
+          "w": 0.235,
+          "h": 0.034,
+          "label": "Snapshot state and scope",
+          "note": "Every figure on this page is a point-in-time cut, stamped with when it was taken and which data sets fed it, so a disputed number can be traced rather than argued."
+        },
+        {
+          "x": 0.024,
+          "y": 0.284,
+          "w": 0.632,
+          "h": 0.13,
+          "label": "Severity summary tiles",
+          "note": "Splits the failing population by severity and keeps muted findings visible but separate, so suppression stays an accounted-for decision instead of a silent reduction in the headline count."
+        },
+        {
+          "x": 0.024,
+          "y": 0.502,
+          "w": 0.952,
+          "h": 0.066,
+          "label": "Risk band totals",
+          "note": "Rolls the whole matrix into five bands, letting a security lead see whether exposure sits in the tail or the middle before opening a single finding."
+        },
+        {
+          "x": 0.023,
+          "y": 0.586,
+          "w": 0.954,
+          "h": 0.314,
+          "label": "Impact by likelihood grid",
+          "note": "Scores impact against likelihood and shows where findings actually cluster, which is what separates a large severity count from the few scenarios that justify funding and downtime."
+        },
+        {
+          "x": 0.021,
+          "y": 0.915,
+          "w": 0.219,
+          "h": 0.032,
+          "label": "Score band thresholds",
+          "note": "Publishes the numeric range behind each band, so the scoring model can be challenged and tuned up front rather than after a cell's colour lands in a report."
+        }
+      ]
+    },
+    "media/cloudsignals/riskops-insights.png": {
+      "title": "Driver treatment workspace",
+      "regions": [
+        {
+          "x": 0.16,
+          "y": 0.058,
+          "w": 0.594,
+          "h": 0.031,
+          "label": "Driver category tabs",
+          "note": "Risk is broken into control themes rather than a single aggregate score, so a driver can be handed to the team that owns that control and worked on its own."
+        },
+        {
+          "x": 0.064,
+          "y": 0.128,
+          "w": 0.36,
+          "h": 0.175,
+          "label": "Driver context summary",
+          "note": "Explains what the weak control lets an attacker do once access is obtained, and names the policy behind it, so the driver reads to an owner or auditor outside the security team."
+        },
+        {
+          "x": 0.756,
+          "y": 0.132,
+          "w": 0.216,
+          "h": 0.19,
+          "label": "Driver scorecard",
+          "note": "Sizes the driver before anyone opens a finding: severity-weighted score, how many findings feed it, how many assets it touches and which clouds carry it — the scope questions a remediation owner asks first."
+        },
+        {
+          "x": 0.058,
+          "y": 0.414,
+          "w": 0.519,
+          "h": 0.18,
+          "label": "Driver causality analysis",
+          "note": "Answers why the score sits where it does, tracing it to where failed findings concentrate and to the recurring root-cause themes — the difference between a score you can argue with and one you can act on."
+        },
+        {
+          "x": 0.0575,
+          "y": 0.808,
+          "w": 0.432,
+          "h": 0.188,
+          "label": "Treatment strategy",
+          "note": "Ranks treatment paths by the pressure each removes from the driver against the effort it costs, with a start window, so sequencing is a stated trade-off rather than the order the list happened to load."
+        },
+        {
+          "x": 0.504,
+          "y": 0.808,
+          "w": 0.474,
+          "h": 0.188,
+          "label": "Recommended remediation plan",
+          "note": "Turns the chosen treatment into workstreams with an owning domain and concrete steps, so the analysis leaves this screen as assignable work instead of a recommendation someone still has to translate."
+        }
+      ]
+    },
+    "media/cloudsignals/scan-findings.png": {
+      "title": "Cloud finding detail",
+      "regions": [
+        {
+          "x": 0.47,
+          "y": 0.08,
+          "w": 0.362,
+          "h": 0.1,
+          "label": "Severity and control",
+          "note": "Pass-fail state, severity band and CVSS rating sit on the same line as the control being tested, so an engineer can judge urgency without cross-referencing a separate check catalogue."
+        },
+        {
+          "x": 0.868,
+          "y": 0.081,
+          "w": 0.109,
+          "h": 0.092,
+          "label": "Vision AI and fix",
+          "note": "Both next steps open from the record itself: send the finding to Vision AI for guidance written against this organization, or move straight to the fix path without rebuilding the case in another tool."
+        },
+        {
+          "x": 0.47,
+          "y": 0.197,
+          "w": 0.39,
+          "h": 0.075,
+          "label": "Cloud account context",
+          "note": "Which cloud, which service and region, which resource, and when the finding first appeared — the ownership facts that decide who the ticket belongs to and whether the exposure is new or long-standing."
+        },
+        {
+          "x": 0.462,
+          "y": 0.312,
+          "w": 0.527,
+          "h": 0.234,
+          "label": "Finding identifiers",
+          "note": "Stable copyable identifiers for the finding, the check and the resource type let the same issue be quoted in a ticket and matched against earlier or later scans instead of being retyped."
+        },
+        {
+          "x": 0.462,
+          "y": 0.567,
+          "w": 0.527,
+          "h": 0.268,
+          "label": "Risk and description",
+          "note": "Why the control exists, stated before any remediation step, so a team can defend fixing, accepting or deferring the item rather than clearing a queue on trust."
+        },
+        {
+          "x": 0.462,
+          "y": 0.856,
+          "w": 0.527,
+          "h": 0.13,
+          "label": "Remediation guidance",
+          "note": "Ordered console steps, CLI guidance and references travel with the finding, so closing it does not depend on whoever happens to know that particular cloud service well."
+        }
+      ]
+    },
+    "media/cloudsignals/scenario-library.png": {
+      "title": "Risk scenario studio",
+      "regions": [
+        {
+          "x": 0.0665,
+          "y": 0.1758,
+          "w": 0.91,
+          "h": 0.155,
+          "label": "Studio inventory counters",
+          "note": "Shows how much scenario material the tenant already holds — templates, unfinished drafts, published register entries, mapped threats — so authoring effort goes where the register is thin instead of duplicating work."
+        },
+        {
+          "x": 0.0685,
+          "y": 0.3516,
+          "w": 0.2115,
+          "h": 0.0312,
+          "label": "Authoring workflow tabs",
+          "note": "Separates choosing a template, building the scenario, and publishing it, so half-written risks wait in a queue rather than reaching the register before anyone has reviewed them."
+        },
+        {
+          "x": 0.516,
+          "y": 0.427,
+          "w": 0.276,
+          "h": 0.05,
+          "label": "Template search and filter",
+          "note": "Narrows the library by keyword and class when an analyst arrives with a specific exposure in mind, and starts a new template when nothing on the shelf fits."
+        },
+        {
+          "x": 0.075,
+          "y": 0.538,
+          "w": 0.716,
+          "h": 0.449,
+          "label": "Scenario template cards",
+          "note": "Each card states a threat event and when it applies, with class and category tags that carry into the register, so analysts adapt reviewed wording instead of each inventing their own."
+        },
+        {
+          "x": 0.807,
+          "y": 0.3497,
+          "w": 0.1705,
+          "h": 0.191,
+          "label": "Scenario guidance",
+          "note": "Sets the bar for a publishable scenario — named threat event, vulnerable condition, business context, decision-grade impact — so risks written by different teams stay comparable at review."
+        },
+        {
+          "x": 0.807,
+          "y": 0.5633,
+          "w": 0.1705,
+          "h": 0.2448,
+          "label": "Quality score checklist",
+          "note": "Scores the draft against the elements a reviewer will look for, turning \"is this good enough to publish\" into a list of specific gaps the author can close."
+        },
+        {
+          "x": 0.807,
+          "y": 0.8299,
+          "w": 0.1705,
+          "h": 0.159,
+          "label": "Register compatibility",
+          "note": "Checks whether the draft carries what the risk register requires before it is written, naming the selections still missing so incomplete records are caught here rather than downstream."
+        }
+      ]
+    },
+    "media/cloudsignals/sla-governance.png": {
+      "title": "SLA command center",
+      "regions": [
+        {
+          "x": 0.074,
+          "y": 0.225,
+          "w": 0.89,
+          "h": 0.119,
+          "label": "SLA health counters",
+          "note": "Adherence is only readable next to the workload under it: how many policies are live, how much is approaching its clock, how much has already run past. The last two are what changes the day."
+        },
+        {
+          "x": 0.072,
+          "y": 0.512,
+          "w": 0.706,
+          "h": 0.372,
+          "label": "Policy playbook templates",
+          "note": "Templates pair a work type — POA&M, misconfiguration, audit evidence, third-party risk, AI exceptions — with a severity and preset response and resolution clocks, so teams inherit an agreed timeline instead of negotiating one per incident."
+        },
+        {
+          "x": 0.798,
+          "y": 0.518,
+          "w": 0.168,
+          "h": 0.166,
+          "label": "Impact and coverage signals",
+          "note": "Shows how many live signals the current policy path would act on and whether coverage is active, so a policy is judged against real workload before anyone commits to it."
+        },
+        {
+          "x": 0.798,
+          "y": 0.702,
+          "w": 0.168,
+          "h": 0.106,
+          "label": "Compliance framework mapping",
+          "note": "Frameworks the policy path maps to are named here, which turns SLA timing into audit evidence and shows a control owner which regimes a missed clock would touch."
+        },
+        {
+          "x": 0.798,
+          "y": 0.82,
+          "w": 0.168,
+          "h": 0.156,
+          "label": "Recommendation preview",
+          "note": "Guidance derived from the current SLA data path proposes which policy to stand up first and states its reasoning, so an operator can accept it in one step or disagree with it."
+        },
+        {
+          "x": 0.066,
+          "y": 0.902,
+          "w": 0.72,
+          "h": 0.083,
+          "label": "Policy and record workspace",
+          "note": "One surface switches between the policies you define, the live records running against them, and analytics over both, keeping authoring and enforcement out of separate tools."
+        }
+      ]
+    },
+    "media/cloudsignals/third-party-register.png": {
+      "title": "Third-party register",
+      "regions": [
+        {
+          "x": 0.754,
+          "y": 0.105,
+          "w": 0.206,
+          "h": 0.045,
+          "label": "Discovery and intake",
+          "note": "Vendors enter the register two ways: added by hand, or found by a discovery run that surfaces external parties nobody filed. The review queue holds the ones waiting on a decision."
+        },
+        {
+          "x": 0.074,
+          "y": 0.258,
+          "w": 0.892,
+          "h": 0.138,
+          "label": "Register health counters",
+          "note": "Standing counts of scope, elevation, review debt and suppressed signals. Read together they say whether the register is being worked or quietly drifting out of date between assessments."
+        },
+        {
+          "x": 0.074,
+          "y": 0.414,
+          "w": 0.892,
+          "h": 0.056,
+          "label": "Register filters",
+          "note": "Narrows the register to the population a review actually covers — one vendor type, one risk band, one status — which is how an assessment cycle gets scoped to a queue somebody can finish."
+        },
+        {
+          "x": 0.074,
+          "y": 0.489,
+          "w": 0.258,
+          "h": 0.314,
+          "label": "Risk tier distribution",
+          "note": "Splits the register by assigned tier and keeps the unrated share visible; that unknown slice measures how much third-party exposure nobody has judged yet."
+        },
+        {
+          "x": 0.34,
+          "y": 0.489,
+          "w": 0.359,
+          "h": 0.314,
+          "label": "Risk trend",
+          "note": "Tracks tier populations month over month, so a shift reads as a trend rather than a single scan result - the view that answers whether third-party risk is actually moving."
+        },
+        {
+          "x": 0.707,
+          "y": 0.489,
+          "w": 0.259,
+          "h": 0.314,
+          "label": "Audit exposure",
+          "note": "Counts third parties against each framework in scope, so a weakness at a supplier can be traced straight to the audits and attestations it will surface in."
+        },
+        {
+          "x": 0.074,
+          "y": 0.817,
+          "w": 0.892,
+          "h": 0.178,
+          "label": "Third-party table",
+          "note": "Each row carries owner, review dates and the confidence behind its rating, so an overdue assessment or a vendor with nobody assigned is visible without opening the record."
+        }
+      ]
+    },
+    "media/cloudsignals/vision-chat.png": {
+      "title": "Vision Chat console",
+      "regions": [
+        {
+          "x": 0.059,
+          "y": 0.062,
+          "w": 0.127,
+          "h": 0.185,
+          "label": "Conversation stack",
+          "note": "Prior sessions stay addressable, so a line of questioning opened during an incident can be picked up later instead of rebuilt from the first prompt."
+        },
+        {
+          "x": 0.295,
+          "y": 0.286,
+          "w": 0.182,
+          "h": 0.046,
+          "label": "Three ways to ask",
+          "note": "Free-form questions, packaged mission prompts and evidence upload run through the same composer, so an analyst can move from a quick question to a documented review without changing tools."
+        },
+        {
+          "x": 0.295,
+          "y": 0.337,
+          "w": 0.427,
+          "h": 0.093,
+          "label": "Evidence-aware input",
+          "note": "Screenshots and exported images can be pasted straight into the question, and the composer states that metadata is stripped before send — evidence from another console is discussed without hand-transcribing it."
+        },
+        {
+          "x": 0.729,
+          "y": 0.243,
+          "w": 0.16,
+          "h": 0.128,
+          "label": "Session telemetry",
+          "note": "Counters for tokens, signals and images expose what a session consumed and how much evidence it drew on while it is still running, rather than only in hindsight."
+        },
+        {
+          "x": 0.729,
+          "y": 0.389,
+          "w": 0.16,
+          "h": 0.145,
+          "label": "Model selector",
+          "note": "Naming the model, its provider and whether vision is active lets a security team hold advisory output to the same model-governance rules applied to the rest of the stack."
+        },
+        {
+          "x": 0.202,
+          "y": 0.572,
+          "w": 0.598,
+          "h": 0.372,
+          "label": "Mission prompt library",
+          "note": "Starter missions cover what a board or auditor tends to ask — where risk concentrates, what to fix first, what findings mean in business terms — so a session does not begin at a blank prompt."
+        },
+        {
+          "x": 0.809,
+          "y": 0.572,
+          "w": 0.159,
+          "h": 0.38,
+          "label": "Live session rail",
+          "note": "Readiness state and attached evidence sit beside the answer, making it clear what context the advisor is reasoning from before its conclusions are acted on."
+        }
+      ]
+    },
+    "media/cloudsignals/vision-model-insights.png": {
+      "title": "Vision model insights",
+      "regions": [
+        {
+          "x": 0.066,
+          "y": 0.181,
+          "w": 0.352,
+          "h": 0.032,
+          "label": "Scope and retention",
+          "note": "Tells you, before any figure below is read, which tenant boundary the data came from, which privacy mode produced it, and how long these traces are held."
+        },
+        {
+          "x": 0.056,
+          "y": 0.244,
+          "w": 0.469,
+          "h": 0.165,
+          "label": "Quality and latency tiles",
+          "note": "Session volume, closed-loop success rate and response latency sit on one line, so a regression presents as either a quality problem or a speed problem instead of a vague complaint."
+        },
+        {
+          "x": 0.526,
+          "y": 0.244,
+          "w": 0.152,
+          "h": 0.165,
+          "label": "Privacy mode",
+          "note": "Whichever mode is in force decides how much trace context is kept with each recorded session — and so both whether an engineer can reconstruct a bad answer weeks later, and how much request detail sits inside the retention window named above."
+        },
+        {
+          "x": 0.065,
+          "y": 0.56,
+          "w": 0.454,
+          "h": 0.156,
+          "label": "Token footprint",
+          "note": "Splits consumption into prompt versus completion for the current window, which is where oversized context or retry loops become visible before they arrive as a bill."
+        },
+        {
+          "x": 0.525,
+          "y": 0.56,
+          "w": 0.455,
+          "h": 0.156,
+          "label": "Prompt vault coverage",
+          "note": "Ties stored prompts to their recorded runs and pass-or-fail outcomes, so a prompt change can be argued against how it behaved in this tenant rather than on intuition."
+        },
+        {
+          "x": 0.065,
+          "y": 0.731,
+          "w": 0.454,
+          "h": 0.137,
+          "label": "Export boundary",
+          "note": "Names the routing posture in force, whether AI signals stay inside the tenant or use a shared project, and confirms credentials are resolved from a secret reference rather than inline config."
+        },
+        {
+          "x": 0.525,
+          "y": 0.731,
+          "w": 0.455,
+          "h": 0.181,
+          "label": "Quality and cost",
+          "note": "Pairs a composite score built from success, latency and efficiency with estimated spend, so tuning is decided as a trade-off rather than as quality at any price."
         }
       ]
     }

@@ -332,4 +332,28 @@ on the elements they name; no note spills outside the viewer at any width; the o
 image's box exactly (0px drift on all four edges); images now fit inside the stage at every width;
 no console errors; the room walk and the living screens are unaffected.
 
-**Coverage.** One of 37 images is annotated. The mechanism is done; the writing is not.
+**Coverage.** 29 of 37 images are annotated — every screenshot in CloudSignals and AI Signals, the
+two stations a prospect actually opens. The remaining eight are single-image stations where the
+panel copy already carries the weight.
+
+**How the writing was done.** One agent per screenshot, each reading its image, placing regions,
+rendering them through a standalone harness, looking at the result and iterating until every box
+sat on the thing its label named. Two or three rounds was typical. Then two editors over disjoint
+halves — a single pass over 28 screens skims the tail — hunting for notes that describe what is on
+screen instead of what it is for, figures restated as product claims, invented capabilities, and
+marketing adjectives. 19 rewrites were applied.
+
+The merge reads the run's journal rather than anything hand-copied, and refuses to write if a
+coordinate falls outside 0-1, a region runs past the image edge, a banned adjective appears, or a
+note runs long. 185 regions, five to seven per screen, notes a median of 30 words.
+
+**Two rules did the heavy lifting.** No figure from a screenshot may be restated as a product
+claim — those numbers belong to whatever tenant was captured, so a note may name a metric but never
+assert its value. And no capability may be invented: where a control's behaviour could not be read
+off the screen, the agent described the region at the level it could actually support or chose a
+different one.
+
+**Verified in the product, not just in the file.** Every annotated screenshot opened in the running
+viewer at 1440x900: the control appears, the regions render, and no region falls outside its
+image's box. The one apparent failure was the test picking a video whose poster is also an
+annotated image — videos correctly get no annotations.
