@@ -1,5 +1,5 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-07q';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-08a';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');

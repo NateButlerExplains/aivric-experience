@@ -17,8 +17,8 @@
 //   - It holds still while the camera moves. Drift starts only after the room has settled, so the
 //     zoom into a room is never competing with eight elements being written every frame.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-07q';
-import clock from './clock.js?v=2026-09-07q';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-08a';
+import clock from './clock.js?v=2026-09-08a';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -98,7 +98,10 @@ function stillsFor(surface, room, selectedStationId, taken) {
 
   const roomFirst = [];
   for (const st of room.stations || []) roomFirst.push(...(mediaByStation.get(st.id) || []));
-  const pool = [...roomFirst, ...allStills];
+  // Room stills first, then the rest of the building; de-duplicated, since allStills contains
+  // this room's too and a surface must not cross-fade an image to itself.
+  const seen = new Set();
+  const pool = [...roomFirst, ...allStills].filter((m) => !seen.has(m.src) && seen.add(m.src));
   // Prefer stills no other surface in this room has claimed, so two displays are not twins.
   const fresh = pool.filter((m) => !taken.has(m.src));
   const picked = (fresh.length ? fresh : pool).slice(0, 4);
@@ -207,7 +210,7 @@ export function showRoomScreens(room, station) {
 
   const selected = station ? station.id : null;
   const taken = new Set();
-  spec.surfaces.forEach((surface, i) => {
+  spec.surfaces.filter((x) => x.mount !== false).forEach((surface, i) => {
     const list = stillsFor(surface, room, selected, taken);
     if (!DEBUG && !list) return;                        // nothing real to show: leave it dark
     const stationId = list[0].station;
@@ -218,7 +221,8 @@ export function showRoomScreens(room, station) {
       quad: surface.quad,
       content: DEBUG ? debugContent(surface) : buildContent(list),
       id: `ls-${surface.id}`,
-      className: 'screen-live' + (DEBUG ? ' is-debug' : '') + (clickable ? ' is-live-link' : ''),
+      className: 'screen-live' + (DEBUG ? ' is-debug' : '')
+        + (clickable ? ' is-live-link' : '') + (surface.glass ? ' is-glass' : ''),
       interactive: clickable,
     });
     if (!screenId) return;                              // screens.js rejected the quad and said why

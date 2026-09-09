@@ -106,3 +106,32 @@ content, so a quad can be checked against the live site. No `screens.json` is a 
 **Cost.** Nothing per frame while the camera moves: drift is held for 1.7s after entering a room,
 which is the only place in this experience where frame budget is tight. The stills are the same
 files the panel already loads, so they are cache hits.
+
+**Surfaces.** 18 mounted across five rooms, calibrated with `tools/calibrate.html`; every quad's
+edges were fitted numerically from the render's own luminance profile rather than eyeballed.
+
+| Room | Mounted | Notes |
+|---|---|---|
+| AIRE | the wall board as its four columns | The seams were measured (x 523.5, 851.5, 1120.0), so the columns tile with no gap. That is also the geometry the four-stage approver board will need. Three seated heads clip the bottom edge and are traced back in. |
+| Defense | wall display + two desk monitors | The man pointing at the board and the ponytail clipping its right strip are traced back in. |
+| Client Vision | all six holographic panels | These are holograms, not displays, so they mount as projected light (`glass`) rather than opaque plates — which also lets the sphere's limb and light streams pass through the corners they cross without a polygon each. Two glass mullions genuinely stand in front and are masked. |
+| Offense | four desk monitors | No wall display exists in this render. The analyst's back covers half the centre monitor and is traced back in. |
+| Executive Decisions | the table glass | The quad is the walnut bezel inset 5px onto the lit glass. The cup on the table and the gold ceiling ribbon crossing it are punched through. |
+
+Recorded but not mounted, so the measurement is not lost: the whole-board AIRE quad, both AIRE
+console monitors (45-65% hidden behind the operators sitting at them), and the Decisions right
+wall display (cut into strips by two mullions and a head).
+
+**Media, and an ask.** Most stations in the manifest have no media at all — `aire-workflow`, which
+owns the largest display in the building, has none. A surface whose station is empty borrows from
+its own room first and the rest of the building second, and every still carries its own station,
+so clicking a display goes to whatever it is actually showing rather than to the station the
+surface was nominally assigned. That keeps the building lit and keeps the navigation honest, but
+the real fix is screenshots for those stations.
+
+**Verified.** All six rooms at 1440x900, 1280x720 and 390x844: 18 surfaces mount, none survive an
+exit to the building, none leak across repeated room changes, no console errors. Clicking a
+display navigates to the station it is showing. The primary display follows the open station tab
+without re-mounting. Pins stay clickable. The inline viewer still dims the room and covers the
+screens. Reduced motion mounts everything and animates nothing. Frame pacing on the room zoom is
+unchanged within noise: median 16.6 ms to 16.7 ms, p95 25.0 to 25.8, over 140 frames.

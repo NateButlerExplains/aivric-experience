@@ -840,6 +840,15 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 }
 .screen-live.is-live-link:hover .ls-frame { filter: brightness(calc(var(--ls-dim) + 0.12)) saturate(1) contrast(1.04); }
 
+/* The Client Vision panels are translucent holograms floating in a glass chamber, not displays.
+   An opaque screenshot there reads as a sticker stuck to the air. Dropping the whole plate back
+   to projected light keeps the hologram — and it lets the sphere's own limb and light streams,
+   which cross the corners of four of the six panels, come through without a traced polygon each. */
+.screen-live.is-glass { background: none; }
+.screen-live.is-glass .ls-wrap { opacity: 0.62; }
+.screen-live.is-glass::after { opacity: 0.4; }
+.screen-live.is-glass .ls-frame { filter: brightness(1.08) saturate(0.8) contrast(0.95); }
+
 /* ?screens=debug — the calibration grid, so a quad can be checked on the live site. */
 .screen-live.is-debug {
   background:

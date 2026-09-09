@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "PROVISIONAL \u2014 seed quads only. Being replaced by calibrated values.",
+  "note": "Surface geometry for js/livescreens.js. Quads are TL, TR, BR, BL in the render's own image pixels; occluders are traced silhouettes in the same space. Calibrated with tools/calibrate.html. `mount: false` records geometry that is not used yet.",
   "rooms": {
     "defense": {
       "imageWidth": 2048,
@@ -301,6 +301,584 @@
             ]
           ],
           "dim": 0.9
+        }
+      ]
+    },
+    "aire-bridge": {
+      "imageWidth": 2048,
+      "imageHeight": 1152,
+      "surfaces": [
+        {
+          "id": "aire-board",
+          "mount": false,
+          "primary": false,
+          "quad": [
+            [
+              122,
+              71
+            ],
+            [
+              1345,
+              160
+            ],
+            [
+              1345,
+              401
+            ],
+            [
+              122,
+              425
+            ]
+          ]
+        },
+        {
+          "id": "aire-board-col1",
+          "primary": true,
+          "station": "aire-workflow",
+          "quad": [
+            [
+              122,
+              71
+            ],
+            [
+              524,
+              100
+            ],
+            [
+              524,
+              417
+            ],
+            [
+              122,
+              425
+            ]
+          ],
+          "dim": 0.8,
+          "occluders": [
+            [
+              [
+                238,
+                400
+              ],
+              [
+                248,
+                388
+              ],
+              [
+                268,
+                383
+              ],
+              [
+                295,
+                385
+              ],
+              [
+                310,
+                398
+              ],
+              [
+                318,
+                442
+              ],
+              [
+                226,
+                442
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "aire-board-col2",
+          "primary": false,
+          "station": "aire-workflow",
+          "quad": [
+            [
+              524,
+              100
+            ],
+            [
+              852,
+              124
+            ],
+            [
+              852,
+              411
+            ],
+            [
+              524,
+              417
+            ]
+          ],
+          "dim": 0.8,
+          "occluders": [
+            [
+              [
+                684,
+                392
+              ],
+              [
+                698,
+                377
+              ],
+              [
+                724,
+                371
+              ],
+              [
+                762,
+                371
+              ],
+              [
+                790,
+                380
+              ],
+              [
+                802,
+                396
+              ],
+              [
+                812,
+                442
+              ],
+              [
+                676,
+                442
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "aire-board-col3",
+          "primary": false,
+          "station": "aire-workflow",
+          "quad": [
+            [
+              852,
+              124
+            ],
+            [
+              1120,
+              144
+            ],
+            [
+              1120,
+              405
+            ],
+            [
+              852,
+              411
+            ]
+          ],
+          "dim": 0.8,
+          "occluders": [
+            [
+              [
+                1054,
+                398
+              ],
+              [
+                1066,
+                386
+              ],
+              [
+                1084,
+                382
+              ],
+              [
+                1102,
+                385
+              ],
+              [
+                1114,
+                397
+              ],
+              [
+                1120,
+                438
+              ],
+              [
+                1050,
+                438
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "aire-board-col4",
+          "primary": false,
+          "station": "aire-workflow",
+          "quad": [
+            [
+              1120,
+              144
+            ],
+            [
+              1345,
+              160
+            ],
+            [
+              1345,
+              401
+            ],
+            [
+              1120,
+              405
+            ]
+          ],
+          "dim": 0.8
+        },
+        {
+          "id": "aire-monitor-left",
+          "mount": false,
+          "primary": false,
+          "quad": [
+            [
+              200,
+              462
+            ],
+            [
+              445,
+              457
+            ],
+            [
+              455,
+              534
+            ],
+            [
+              211,
+              546
+            ]
+          ]
+        },
+        {
+          "id": "aire-monitor-centre",
+          "mount": false,
+          "primary": false,
+          "quad": [
+            [
+              560,
+              456
+            ],
+            [
+              845,
+              446
+            ],
+            [
+              865,
+              522
+            ],
+            [
+              575,
+              528
+            ]
+          ]
+        }
+      ]
+    },
+    "vision": {
+      "imageWidth": 2048,
+      "imageHeight": 1152,
+      "surfaces": [
+        {
+          "id": "vision-panel-upper-right",
+          "primary": true,
+          "station": "vision-enterprise",
+          "quad": [
+            [
+              1101,
+              158
+            ],
+            [
+              1318,
+              174
+            ],
+            [
+              1318,
+              335
+            ],
+            [
+              1101,
+              318
+            ]
+          ],
+          "glass": true,
+          "dim": 1.0
+        },
+        {
+          "id": "vision-panel-lower-right",
+          "primary": false,
+          "station": "fabric-center",
+          "quad": [
+            [
+              1110,
+              658
+            ],
+            [
+              1322,
+              650
+            ],
+            [
+              1322,
+              795
+            ],
+            [
+              1110,
+              803
+            ]
+          ],
+          "glass": true,
+          "dim": 1.0
+        },
+        {
+          "id": "vision-panel-lower-left",
+          "primary": false,
+          "station": "vision-ai-optics",
+          "quad": [
+            [
+              704,
+              646
+            ],
+            [
+              897,
+              656
+            ],
+            [
+              897,
+              804
+            ],
+            [
+              704,
+              793
+            ]
+          ],
+          "glass": true,
+          "dim": 1.0
+        },
+        {
+          "id": "vision-panel-mid-left",
+          "primary": false,
+          "station": "vision-enterprise",
+          "quad": [
+            [
+              583,
+              369
+            ],
+            [
+              751,
+              361
+            ],
+            [
+              751,
+              495
+            ],
+            [
+              583,
+              497
+            ]
+          ],
+          "glass": true,
+          "dim": 1.0,
+          "occluders": [
+            [
+              [
+                643,
+                358
+              ],
+              [
+                668,
+                358
+              ],
+              [
+                668,
+                500
+              ],
+              [
+                643,
+                500
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "vision-panel-mid-right",
+          "primary": false,
+          "station": "fabric-center",
+          "quad": [
+            [
+              1290,
+              369
+            ],
+            [
+              1465,
+              368
+            ],
+            [
+              1465,
+              497
+            ],
+            [
+              1290,
+              496
+            ]
+          ],
+          "glass": true,
+          "dim": 1.0,
+          "occluders": [
+            [
+              [
+                1356,
+                364
+              ],
+              [
+                1372,
+                364
+              ],
+              [
+                1372,
+                500
+              ],
+              [
+                1356,
+                500
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "vision-panel-upper-left",
+          "primary": false,
+          "quad": [
+            [
+              700,
+              163
+            ],
+            [
+              928,
+              154
+            ],
+            [
+              928,
+              317.5
+            ],
+            [
+              700,
+              322.5
+            ]
+          ],
+          "station": "vision-ai-optics",
+          "glass": true,
+          "dim": 1.0,
+          "occluders": [
+            [
+              [
+                894,
+                264
+              ],
+              [
+                932,
+                264
+              ],
+              [
+                932,
+                326
+              ],
+              [
+                894,
+                326
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    "decisions": {
+      "imageWidth": 2048,
+      "imageHeight": 1152,
+      "surfaces": [
+        {
+          "id": "decisions-table-glass",
+          "primary": true,
+          "station": "snapshot",
+          "quad": [
+            [
+              905,
+              676
+            ],
+            [
+              1086,
+              676
+            ],
+            [
+              1147,
+              942
+            ],
+            [
+              816,
+              942
+            ]
+          ],
+          "dim": 0.88,
+          "occluders": [
+            [
+              [
+                924,
+                670
+              ],
+              [
+                963,
+                670
+              ],
+              [
+                963,
+                697
+              ],
+              [
+                924,
+                697
+              ]
+            ],
+            [
+              [
+                1014,
+                666
+              ],
+              [
+                1036,
+                666
+              ],
+              [
+                1042,
+                950
+              ],
+              [
+                1008,
+                950
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "decisions-wall-right",
+          "mount": false,
+          "primary": false,
+          "quad": [
+            [
+              1900,
+              335
+            ],
+            [
+              2048,
+              332
+            ],
+            [
+              2048,
+              421
+            ],
+            [
+              1900,
+              424
+            ]
+          ]
         }
       ]
     }

@@ -1,5 +1,5 @@
 // Hotspot pins: screen-space buttons anchored to normalized master coordinates.
-import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-07q';
+import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-08a';
 
 const pinsEl = document.getElementById('pins');
 let pins = [];
