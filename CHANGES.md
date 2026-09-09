@@ -129,9 +129,29 @@ so clicking a display goes to whatever it is actually showing rather than to the
 surface was nominally assigned. That keeps the building lit and keeps the navigation honest, but
 the real fix is screenshots for those stations.
 
+**A second pass re-measured every quad independently, and it was worth running.** Five surfaces
+were wrong. All six Vision panels were off by 4-8 px in the same direction: they are curved
+holograms whose edges bow away from a straight chord, and the first pass read each edge's height
+at the arc's extremum instead of intersecting the two straight edge runs at the corner. The
+Decisions quad was pixel-accurate on the wrong edge — it tracked the walnut tabletop cutout, and
+a bronze frame about 32 px wide sits between that and the emissive glass, so content was starting
+on the frame. Defense's right monitor had its bottom edge set at the bottom of the bright map,
+excluding the dark taskbar strip that is still screen; the correction is applied but still
+clipped at x 893, because the panel's real right side is behind the woman and content mounted out
+to its true edge would paint over her. The AIRE board, its four columns, all four Offense
+monitors and the Defense wall passed unchanged.
+
+**The screens stay dark while the camera moves.** Painting eighteen screenshots inside a layer
+that is being transformed costs real frames. Measured over five runs of 128 frames each: p95 went
+from 16.9 ms without screens to 25.1 ms with them, repeatably, with a max of 33.5 ms. Ablation
+ruled out every effect — the blend layer, the filters, the mask, `will-change` — and pinned it on
+rasterising the images themselves: hiding them restored 16.9 ms exactly. So a surface mounts
+`visibility: hidden` and fades up once the room has landed, which brings p95 back to 18.8 ms
+against a 17.7 ms baseline and the max back to 25.0. It is also the better beat: you arrive, and
+then the room wakes up.
+
 **Verified.** All six rooms at 1440x900, 1280x720 and 390x844: 18 surfaces mount, none survive an
 exit to the building, none leak across repeated room changes, no console errors. Clicking a
 display navigates to the station it is showing. The primary display follows the open station tab
 without re-mounting. Pins stay clickable. The inline viewer still dims the room and covers the
-screens. Reduced motion mounts everything and animates nothing. Frame pacing on the room zoom is
-unchanged within noise: median 16.6 ms to 16.7 ms, p95 25.0 to 25.8, over 140 frames.
+screens. Reduced motion mounts everything, reveals everything, and animates nothing.

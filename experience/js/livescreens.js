@@ -14,11 +14,14 @@
 //   - It is additive. No screens.json, or ?screens=0, and the experience behaves exactly as before.
 //   - It owns no layout. screens.js parks each surface inside #room, so the stage's pan, zoom,
 //     crossfade, parallax and resize carry them along with the photograph for free.
-//   - It holds still while the camera moves. Drift starts only after the room has settled, so the
-//     zoom into a room is never competing with eight elements being written every frame.
+//   - It stays dark while the camera moves. Painting eighteen screenshots inside a layer that is
+//     being transformed costs real frames — measured, the zoom's p95 frame time goes from 16.9 ms
+//     to 25.1 ms with them visible and back to 16.9 ms with them hidden. So the displays come up
+//     after the room has landed, which is also the better beat: you arrive, and then the room
+//     wakes up.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-08a';
-import clock from './clock.js?v=2026-09-08a';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-08c';
+import clock from './clock.js?v=2026-09-08c';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -35,6 +38,7 @@ let onStation = () => {};
 let live = [];                    // the surfaces mounted right now
 let unsubscribe = null;
 let mountedAt = 0;
+let arrived = false;
 let currentRoomId = null;
 
 /* ---------------------------------------------------------------- *
@@ -221,7 +225,7 @@ export function showRoomScreens(room, station) {
       quad: surface.quad,
       content: DEBUG ? debugContent(surface) : buildContent(list),
       id: `ls-${surface.id}`,
-      className: 'screen-live' + (DEBUG ? ' is-debug' : '')
+      className: 'screen-live is-arriving' + (DEBUG ? ' is-debug' : '')
         + (clickable ? ' is-live-link' : '') + (surface.glass ? ' is-glass' : ''),
       interactive: clickable,
     });
@@ -253,6 +257,7 @@ export function showRoomScreens(room, station) {
   });
 
   if (!live.length) return;
+  arrived = false;
   mountedAt = clock.now();
   if (!unsubscribe) unsubscribe = clock.subscribe(tick);
   clock.play();
@@ -297,14 +302,18 @@ function advance(s) {
 }
 
 function tick(t) {
+  const since = t - mountedAt;
+  // The displays wake up once the camera has arrived. This is above the reduced-motion return on
+  // purpose: reduced motion still gets lit, clickable screens — it just gets them without a fade.
+  if (!arrived && since >= SETTLE) {
+    arrived = true;
+    for (const s of live) s.el.classList.remove('is-arriving');
+  }
   // Reduced motion gets one still per surface and no drift — the screens are still there, still
   // lit and still clickable, which is the part that carries meaning.
   if (clock.reducedMotion) return;
-  const since = t - mountedAt;
   for (const s of live) {
     if (since >= s.next) { advance(s); s.next += CYCLE; }
-    // Held still until the camera has arrived: the zoom into a room is the one place in this
-    // experience where frame budget is tight, and nothing here is worth spending it on.
     if (since < SETTLE) continue;
     const u = ((since - SETTLE) / DRIFT + s.phase) % 1;
     const k = Math.sin(u * Math.PI * 2);

@@ -802,6 +802,13 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   background: #05080f;      /* a display that has not decoded yet reads as off, not as a hole */
 }
 
+.screen-live { transition: opacity 700ms var(--ease); }
+
+/* Arriving: the display is mounted and mapped, but not painted, while the camera is still moving.
+   visibility rather than opacity alone — an opacity-0 layer is still rasterised, and rasterising
+   the screenshots inside a transforming layer is exactly what costs the frames. */
+.screen-live.is-arriving { visibility: hidden; opacity: 0; }
+
 .screen-live .ls-wrap { position: absolute; inset: 0; }
 
 .screen-live .ls-frame {
@@ -864,6 +871,7 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .screen-live { transition: none !important; }
   .screen-live .ls-frame { transition: none !important; transform: scale(1.06) !important; }
   .screen-live.is-live-link::before { transition: none !important; }
 }
