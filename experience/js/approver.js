@@ -16,11 +16,15 @@
 // for time that can be paused, scrubbed or stepped. Including the `is-arriving` gate, which is
 // what keeps the room-entry frame budget where change 02 left it.
 
-import { mountScreen, getScreenElement, unmountScreen } from './screens.js?v=2026-09-09k';
-import clock from './clock.js?v=2026-09-09k';
+import { mountScreen, getScreenElement, unmountScreen } from './screens.js?v=2026-09-09r';
+import clock from './clock.js?v=2026-09-09r';
 
 const params = new URLSearchParams(location.search);
 const OFF = params.get('screens') === '0';
+
+// What travels the board. Deliberately generic: the manifest carries no finding data, and this
+// station is coming-soon, so inventing an identifier would be inventing a customer.
+const ITEM = 'Finding → playbook';
 
 const SETTLE = 1.7;     // matches livescreens: nothing paints while the camera is still moving
 const PROPOSE = 2.2;    // seconds column one runs before it hands over
@@ -67,6 +71,11 @@ function card(stage, i) {
     `<span class="ap-num">${i + 1}</span>` +
     `<span class="ap-name">${stage.name}</span>` +
     `<span class="ap-desc">${stage.desc}</span>` +
+    // The work item itself. Without something that visibly arrives, fills and hands on, the board
+    // only ever reads as four labels changing colour — which is what it did, and it was not enough
+    // to see that anything was happening.
+    `<span class="ap-item"><i class="ap-dot"></i><em class="ap-what">${ITEM}</em>` +
+      `<span class="ap-bar"><b></b></span></span>` +
     `<span class="ap-state" data-state=""></span>` +
     // On the LAST column, not the first: at most viewports the room fit crops the board's left
     // edge, so a tag on column one is a qualifier nobody sees. Column four is both the one most
@@ -98,7 +107,7 @@ export function showApprover(room, station) {
       quad: surface.quad,
       content: card(stages[i], i),
       id: `ap-${surface.id}`,
-      className: 'screen-live screen-board is-arriving',
+      className: 'screen-live screen-board',
     });
     if (!id) return;
     const el = getScreenElement(id);
@@ -107,7 +116,9 @@ export function showApprover(room, station) {
   });
   if (!live.length) { roomId = null; return; }
 
-  arrived = false;
+  // The board is text, not photographs: there is nothing to decode and nothing to wait for, so it
+  // is on screen the moment you arrive.
+  arrived = true;
   phase = 'idle';
   mountedAt = clock.now();
   phaseAt = mountedAt;
@@ -133,6 +144,8 @@ export function clearApprover() {
 // Which columns are done, which one is working, and whether it is waiting on a person.
 const REACHED = { idle: -1, propose: 0, waiting: 1, act: 2, verify: 3, done: 4 };
 
+const DURATION = { propose: PROPOSE, act: ACT, verify: VERIFY };
+
 function paint() {
   const at = REACHED[phase];
   for (const s of live) {
@@ -140,9 +153,26 @@ function paint() {
       : s.i === at ? (phase === 'waiting' ? 'waiting' : 'active')
       : 'idle';
     s.el.querySelector('.ap-state').dataset.state = state;
+    s.el.dataset.state = state;
     s.el.classList.toggle('is-on', s.i <= at);
     s.el.classList.toggle('is-waiting', state === 'waiting');
+    // The item sits in exactly one column: the one the work is in. A column it has left keeps a
+    // tick, a column it has not reached shows nothing.
+    s.el.classList.toggle('has-item', s.i === at && at >= 0 && at < live.length);
+    if (s.i !== at) s.el.style.setProperty('--ap-progress', s.i < at ? '1' : '0');
   }
+}
+
+// Progress inside the working column, so a stage that takes two seconds looks like two seconds of
+// work rather than a light that changes at some point.
+function progress(t) {
+  const at = REACHED[phase];
+  const col = live.find((x) => x.i === at);
+  if (!col) return;
+  const d = DURATION[phase];
+  if (!d) return;                       // waiting and done are not timed
+  const k = Math.max(0, Math.min(1, (t - phaseAt) / d));
+  col.el.style.setProperty('--ap-progress', k.toFixed(3));
 }
 
 function to(next, t) {
@@ -160,6 +190,9 @@ function announce() {
     waiting: phase === 'waiting',
     done: phase === 'done',
     stage: s ? s.stage : null,
+    step: REACHED[phase] + 1,
+    steps: live.length,
+    item: ITEM,
   });
 }
 
@@ -185,13 +218,6 @@ function tick(t) {
   if (!live.length) return;
   const since = t - mountedAt;
 
-  // Same gate as change 02: mounted and mapped, but not painted, until the camera has arrived.
-  if (!arrived) {
-    if (since < SETTLE) return;
-    arrived = true;
-    for (const s of live) s.el.classList.remove('is-arriving');
-  }
-
   // Reduced motion does not travel: the board goes straight to the decision, because the decision
   // is the content and the travel is only the telling of it.
   if (clock.reducedMotion) {
@@ -199,6 +225,7 @@ function tick(t) {
     return;
   }
 
+  progress(t);
   const held = t - phaseAt;
   if (phase === 'idle' && since >= SETTLE + 0.5) to('propose', t);
   else if (phase === 'propose' && held >= PROPOSE) to('waiting', t);

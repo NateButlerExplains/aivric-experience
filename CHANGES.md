@@ -368,3 +368,51 @@ different one.
 viewer at 1440x900: the control appears, the regions render, and no region falls outside its
 image's box. The one apparent failure was the test picking a video whose poster is also an
 annotated image — videos correctly get no annotations.
+
+---
+
+## Change 06 — Review pass
+
+Six things from a walkthrough of changes 02–05.
+
+**Screens are lit on arrival.** They used to be held hidden for 1.7s to protect the room-entry
+frame budget, so you arrived in a room of dark displays that woke up afterwards. Each screen now
+reveals on its own image's `decode()`, and one still per station is pre-decoded while the floor is
+idle, so in practice the decode has already happened before you enter. The timer survives only as a
+backstop, so a broken image can never leave a display permanently dark.
+
+The cost is real and worth stating: p95 frame time during the ~1s camera move goes from 17.0 ms to
+25.3 ms, about six long frames in 128. Median is unchanged at 16.7. Promoting the layer,
+`contain: paint`, `will-change` and cheaper image rendering were all measured and none of them
+recovered it — the cost is painting large images inside a layer that is being transformed. Lit on
+arrival is worth more than those six frames.
+
+**The boardroom table is the right way up.** Its glass inset is a display lying flat, read by the
+people sitting on the far side of the table, and the content was facing the camera instead — so it
+was upside down to everyone in the room. The quad is rotated by two corners. Occluders are traced
+in image pixels and pass through the same homography, so the cup and the ceiling ribbon still land.
+
+**And it reads as a board, not a fragment.** One screenshot scaled into a tall, narrow inset left
+you looking at about a tenth of a dashboard. `layout: "stack3"` splits a surface into three panels
+down its length, each with a title bar, all turning on the same beat. Any surface can ask for it.
+
+**Occlusion is tighter.** The feather was 1.2% of the surface's short edge, soft enough that bright
+map content leaked out from behind a dark shoulder. It is now 0.5%, and each traced silhouette is
+eroded about 2.5px toward its own centre before it is cut — erring INWARD leaves a thin rim of
+mounted content over the occluder's edge, where erring outward leaks a bright rim of the original
+render around it, which is the artifact that actually catches the eye. The Defense arm contour was
+also re-traced: it sat about 5px high along the whole forearm.
+
+**The approver board shows the work, not just the labels.** Four columns changing colour did not
+read as anything happening. A work item now arrives in the active column, fills a bar over that
+stage's real duration, and hands on; a column the work has passed keeps a "Cleared" tick. The panel
+carries the explainer — what the sequence is, which step you are on, and why it has stopped.
+
+**Files.** `js/livescreens.js` · `js/approver.js` · `js/main.js` · `content/screens.json` ·
+`css/experience.css`.
+
+**Verified.** 1440x900, 1280x720, 390x844: no screen is still hidden 600ms after entry; the table
+renders three panels with content; the board runs the full sequence and hands off visibly; keyboard
+reaches the approve control and Enter works; reduced motion lands on the decision and still
+approves; all 33 annotated screenshots still open with their regions inside the image box; Defense
+is untouched; no console errors anywhere.

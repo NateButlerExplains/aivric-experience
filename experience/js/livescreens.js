@@ -14,14 +14,16 @@
 //   - It is additive. No screens.json, or ?screens=0, and the experience behaves exactly as before.
 //   - It owns no layout. screens.js parks each surface inside #room, so the stage's pan, zoom,
 //     crossfade, parallax and resize carry them along with the photograph for free.
-//   - It stays dark while the camera moves. Painting eighteen screenshots inside a layer that is
-//     being transformed costs real frames — measured, the zoom's p95 frame time goes from 16.9 ms
-//     to 25.1 ms with them visible and back to 16.9 ms with them hidden. So the displays come up
-//     after the room has landed, which is also the better beat: you arrive, and then the room
-//     wakes up.
+//   - A display is lit the moment its picture is ready to paint, not on a timer. An earlier
+//     version held every screen hidden for 1.7s to protect the zoom's frame budget, and the cost
+//     was that you arrived in a room full of dark screens that woke up afterwards. Now each screen
+//     reveals on its own image's decode() — pre-warmed at boot, so in practice that has already
+//     happened before you enter and the room is lit on arrival. The per-frame drift is still held
+//     back until the camera stops, because that is a genuine per-frame cost; painting a decoded
+//     image is not.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09k';
-import clock from './clock.js?v=2026-09-09k';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09r';
+import clock from './clock.js?v=2026-09-09r';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -80,6 +82,24 @@ export async function initLiveScreens(rooms) {
   } catch {
     geometry = null;                                   // malformed or offline: same silence
   }
+  // Decode one still per station while the floor is idle. Entering a room then paints from cache
+  // and the displays are lit on arrival rather than a beat later.
+  if (geometry) {
+    const warm = () => {
+      const seen = new Set();
+      for (const list of mediaByStation.values()) {
+        const m = list[0];
+        if (!m || seen.has(m.src)) continue;
+        seen.add(m.src);
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = m.src;
+        if (img.decode) img.decode().catch(() => {});
+      }
+    };
+    if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 4000 });
+    else setTimeout(warm, 1200);
+  }
   return !!geometry;
 }
 
@@ -117,9 +137,9 @@ function stillsFor(surface, room, selectedStationId, taken) {
   return picked.length ? picked : null;
 }
 
-function buildContent(stills) {
-  // Two stacked images, cross-faded by swapping which one is on top. Cheaper and steadier than
-  // replacing the <img>, which would flash whenever a still had not been decoded yet.
+// One cell: two images cross-faded by swapping which is on top. Cheaper and steadier than
+// replacing the <img>, which would flash whenever a still had not been decoded yet.
+function buildCell(first) {
   const wrap = document.createElement('div');
   wrap.className = 'ls-wrap';
   for (let i = 0; i < 2; i++) {
@@ -127,10 +147,28 @@ function buildContent(stills) {
     img.className = 'ls-frame' + (i === 0 ? ' is-on' : '');
     img.decoding = 'async';
     img.alt = '';
-    if (i === 0) img.src = stills[0].src;
+    if (i === 0 && first) img.src = first.src;
     wrap.appendChild(img);
   }
   return wrap;
+}
+
+// A tall, narrow surface — the boardroom table's glass inset is the one we have — gets a single
+// screenshot scaled until you are looking at a tenth of it. Three shorter panels stacked down the
+// same space read as a dashboard instead, and each one is at a size you can actually take in.
+function buildContent(stills, surface) {
+  const cells = surface && surface.layout === 'stack3' ? 3 : 1;
+  if (cells === 1) return buildCell(stills[0]);
+  const stack = document.createElement('div');
+  stack.className = 'ls-stack';
+  for (let i = 0; i < cells; i++) {
+    const panel = document.createElement('div');
+    panel.className = 'ls-panel';
+    panel.innerHTML = '<span class="ls-chrome"><i></i><i></i><i></i></span>';
+    panel.appendChild(buildCell(stills[i % stills.length]));
+    stack.appendChild(panel);
+  }
+  return stack;
 }
 
 /* ---------------------------------------------------------------- *
@@ -165,9 +203,24 @@ function buildMask(surface, w, h) {
   const map = toLocal(surface.quad, w, h);
   if (!map && polys.length) return null;
 
-  const blur = Math.max(1.5, Math.min(w, h) * 0.012);
+  // Feather, in the screen's own local pixels. 1.2% of the short edge was soft enough that the
+  // original render bled a visible halo around a traced silhouette — bright map content leaking
+  // out from behind a dark shoulder. Tighter, with a floor so a small surface still gets a soft
+  // edge rather than a cut-out.
+  const blur = Math.max(1, Math.min(w, h) * 0.005);
+  // Erode each silhouette a little toward its own centre before drawing it. Erring INWARD leaves a
+  // thin rim of mounted content over the occluder's edge; erring outward leaks a bright rim of the
+  // original render around it, which is the artifact that actually catches the eye.
   const shapes = polys.map((pts) => {
-    const p = pts.map(map).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+    const local = pts.map(map);
+    const cx = local.reduce((a, q) => a + q[0], 0) / local.length;
+    const cy = local.reduce((a, q) => a + q[1], 0) / local.length;
+    const p = local.map(([x, y]) => {
+      const dx = x - cx, dy = y - cy;
+      const d = Math.hypot(dx, dy) || 1;
+      const k = Math.min(2.5, d * 0.5) / d;        // pull in ~2.5 local px, never past the centre
+      return `${(x - dx * k).toFixed(1)},${(y - dy * k).toFixed(1)}`;
+    }).join(' ');
     return `<polygon points="${p}" fill="#000"/>`;
   }).join('');
 
@@ -229,7 +282,7 @@ export function showRoomScreens(room, station) {
     const screenId = mountScreen({
       layer: room.id,
       quad: surface.quad,
-      content: DEBUG ? debugContent(surface) : buildContent(list),
+      content: DEBUG ? debugContent(surface) : buildContent(list, surface),
       id: `ls-${surface.id}`,
       className: 'screen-live is-arriving' + (DEBUG ? ' is-debug' : '')
         + (clickable ? ' is-live-link' : '') + (surface.glass ? ' is-glass' : ''),
@@ -253,8 +306,18 @@ export function showRoomScreens(room, station) {
       el.addEventListener('click', () => onStation(el.dataset.station));
     }
 
+    // Reveal this screen as soon as its own picture can paint. decode() resolves immediately for
+    // an already-warmed image, so the common path is lit-on-arrival with no timer involved.
+    const first = el.querySelector('.ls-frame');
+    const light = () => el.classList.remove('is-arriving');
+    if (DEBUG || !first) light();
+    else if (first.decode) first.decode().then(light, light);
+    else if (first.complete) light();
+    else first.addEventListener('load', light, { once: true });
+
     live.push({
       screenId, el, stationId, stills: list || [], primary: !!surface.primary,
+      cells: surface.layout === 'stack3' ? 3 : 1,
       frame: 0,
       // Offset each surface around the cycle so the room does not blink all at once.
       next: CYCLE + (i * CYCLE) / Math.max(1, spec.surfaces.length),
@@ -295,22 +358,31 @@ export function clearScreens() {
  * ---------------------------------------------------------------- */
 
 function advance(s) {
-  if (!s.stills.length || (s.stills.length < 2 && s.frame >= 0)) return;
-  s.frame = (s.frame + 1) % s.stills.length;
-  const [a, b] = s.el.querySelectorAll('.ls-frame');
-  const incoming = a.classList.contains('is-on') ? b : a;
-  const outgoing = incoming === a ? b : a;
-  const next = s.stills[s.frame];
-  incoming.src = next.src;
-  incoming.classList.add('is-on');
-  outgoing.classList.remove('is-on');
-  if (next.station) { s.stationId = next.station; s.el.dataset.station = next.station; }
+  const n = s.stills.length;
+  if (!n || (n < 2 && s.frame >= 0)) return;
+  s.frame = (s.frame + 1) % n;
+  // A stacked surface turns all of its panels on the same beat, so the whole board changes at once
+  // rather than flickering panel by panel.
+  const wraps = [...s.el.querySelectorAll('.ls-wrap')];
+  let lead = null;
+  wraps.forEach((wrap, cell) => {
+    const next = s.stills[(s.frame * wraps.length + cell) % n];
+    if (!next) return;
+    if (cell === 0) lead = next;
+    const [a, b] = wrap.querySelectorAll('.ls-frame');
+    const incoming = a.classList.contains('is-on') ? b : a;
+    const outgoing = incoming === a ? b : a;
+    incoming.src = next.src;
+    incoming.classList.add('is-on');
+    outgoing.classList.remove('is-on');
+  });
+  if (lead && lead.station) { s.stationId = lead.station; s.el.dataset.station = lead.station; }
 }
 
 function tick(t) {
   const since = t - mountedAt;
-  // The displays wake up once the camera has arrived. This is above the reduced-motion return on
-  // purpose: reduced motion still gets lit, clickable screens — it just gets them without a fade.
+  // A screen that somehow never decoded still gets lit, so a broken image can never leave a
+  // display permanently dark.
   if (!arrived && since >= SETTLE) {
     arrived = true;
     for (const s of live) s.el.classList.remove('is-arriving');

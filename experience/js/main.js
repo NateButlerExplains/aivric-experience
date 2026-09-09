@@ -1,15 +1,15 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-09k';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-09k';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-09k';
-import { onRoute, go, parse } from './router.js?v=2026-09-09k';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-09k';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-09k';
-import { runIntro } from './ui/intro.js?v=2026-09-09k';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-09k';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-09k';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-09k';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-09k';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-09r';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-09r';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-09r';
+import { onRoute, go, parse } from './router.js?v=2026-09-09r';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-09r';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-09r';
+import { runIntro } from './ui/intro.js?v=2026-09-09r';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-09r';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-09r';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-09r';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-09r';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -91,15 +91,19 @@ async function main() {
     onState: (st) => {
       const host = extra();
       if (!host || !host.dataset.approver) return;
+      // The board shows state; this says what the state MEANS and what happens next, because four
+      // columns changing colour does not explain itself.
+      const step = st.step > 0 && st.step <= st.steps ? `Step ${st.step} of ${st.steps} · ` : '';
       host.innerHTML =
+        `<p class="ap-intro">Watch one piece of work cross the wall. It stops at Approval, because that gate is a person — you.</p>` +
         `<p class="ap-line">${st.done
-            ? 'Verified. Evidence bundle signed.'
+            ? 'Done. The change was executed inside policy, re-scanned, and filed as signed evidence.'
             : st.waiting
-              ? 'A change is waiting on a reviewer.'
-              : st.stage ? `${st.stage.name}: ${st.stage.desc}` : 'Ready.'}</p>` +
+              ? `${step}Agents have prepared the change and dry-run it. Nothing executes until it is authorised.`
+              : st.stage ? `${step}${st.stage.desc.charAt(0).toUpperCase()}${st.stage.desc.slice(1)}.` : 'Ready when you are.'}</p>` +
         `<button class="btn ${st.waiting ? 'primary' : 'outline'}" type="button" id="ap-go"${st.waiting || st.done ? '' : ' disabled'}>` +
-        `${st.done ? 'Run it again' : 'Approve this change'}</button>` +
-        `<p class="ap-note">Illustrative. AIRE Agentic Mesh is coming soon.</p>`;
+        `${st.done ? 'Run it again' : st.waiting ? 'Approve this change' : 'Waiting…'}</button>` +
+        `<p class="ap-note">Illustrative sequence. AIRE Agentic Mesh is coming soon.</p>`;
       const btn = host.querySelector('#ap-go');
       if (btn) btn.addEventListener('click', () => { if (!approve()) replay(); });
     },
