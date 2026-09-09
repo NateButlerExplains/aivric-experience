@@ -719,6 +719,10 @@ body.floor-portrait #overlays {
   position: fixed; z-index: 32;
   top: var(--hud-h); left: 0; bottom: 0; right: var(--panel-w);
   display: grid; grid-template-rows: 1fr auto;
+  /* Without an explicit column the implicit one is auto — that is max-content, and a 2000px
+     screenshot sizes it to 1041px inside an 893px viewer, pushing the image out under the station
+     panel. Every child then inherits that width however it constrains itself. */
+  grid-template-columns: minmax(0, 1fr);
   padding: 20px 20px 0;
   animation: viewer-in 260ms var(--ease);
 }
@@ -727,7 +731,14 @@ body.floor-portrait #overlays {
 /* The room's prev/next arrows live at the bottom of the same space the viewer bar needs, and
    they navigate to a different room — the wrong offer while you are looking at a screenshot. */
 body.viewing #room-nav { opacity: 0; pointer-events: none; }
-#viewer-media { display: grid; place-items: center; min-height: 0; min-width: 0; }
+/* minmax(0, 1fr) on both axes, not just min-width on the container: the implicit grid column
+   is auto-sized, which means max-content, which means a 2000px screenshot makes a 2000px
+   column and the image runs out under the station panel however it is constrained itself. */
+#viewer-media {
+  display: grid; place-items: center;
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  min-height: 0; min-width: 0;
+}
 #viewer-media img, #viewer-media video {
   max-width: 100%; max-height: 100%; width: auto; height: auto;
   border-radius: 8px; border: 1px solid var(--line);
@@ -1033,4 +1044,86 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .screen-board .ap, .screen-board .ap-state { transition: none !important; }
   .screen-board .ap-state[data-state="waiting"] { animation: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Explain This Screen — named regions over a product screenshot in the viewer
+   (js/ui/viewer.js, content/annotations.json).
+
+   Off by default and it never covers the product: the regions are outlines with
+   a numbered pip, and the note itself only appears on the one you open.
+   --------------------------------------------------------------------------- */
+
+/* The wrapper does NOT shrink-wrap the image. An inline-block sized by a 2000px screenshot with
+   max-width:100% on both wrapper and image is circular — the browser keeps the intrinsic width,
+   and the shot ran 120px under the station panel. So the wrapper fills the cell, the image keeps
+   the constraint it always had, and the overlay is positioned from the image's measured box. */
+#viewer-media .shot {
+  position: relative;
+  display: grid; place-items: center;
+  width: 100%; height: 100%;
+  min-width: 0; min-height: 0;
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  line-height: 0;
+}
+#viewer-media .shot img { display: block; }
+
+/* left/top/width/height are written by viewer.js from the image's own offset box. */
+.shot .notes { position: absolute; pointer-events: none; }
+.shot.explaining .notes { pointer-events: auto; }
+
+.shot .note {
+  position: absolute; margin: 0; padding: 0;
+  border: 1px solid transparent; border-radius: 5px;
+  background: none; cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity 220ms var(--ease), border-color 220ms var(--ease), background 220ms var(--ease);
+}
+.shot.explaining .note { opacity: 1; pointer-events: auto; border-color: rgba(90,165,255,0.55); }
+.shot.explaining .note:hover,
+.shot.explaining .note:focus-visible { border-color: var(--blue); background: rgba(90,165,255,0.10); }
+.shot.explaining .note.is-open { border-color: var(--blue); background: rgba(90,165,255,0.14); }
+
+/* The pip sits on the region's top-left corner, half outside it, the way a callout marker does. */
+.shot .note .pip {
+  position: absolute; left: -11px; top: -11px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  font: 600 12px/1 var(--font-body); font-style: normal;
+  color: #04121f; background: var(--blue);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.shot .note .tip {
+  position: absolute; left: 0; top: calc(100% + 9px);
+  width: max-content; max-width: min(340px, 46vw);
+  display: none;
+  padding: 10px 12px; border-radius: 8px;
+  background: rgba(8,15,28,0.96); border: 1px solid var(--line);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  font: 400 12.5px/1.45 var(--font-body); color: var(--text-muted);
+  text-align: left; white-space: normal;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+  z-index: 2;
+}
+.shot .note.is-open .tip { display: block; }
+.shot .note .tip b {
+  display: block; margin-bottom: 4px;
+  font-family: var(--font-head); font-weight: 500; font-size: 13.5px; color: var(--text);
+}
+/* Flip classes are set in JS from the tip's measured rect, not guessed from the region's
+   coordinates: a note near the bottom or the right of the frame would otherwise open off-screen,
+   and which regions those are depends on the viewport, not on the authored numbers. */
+.shot .note.tip-up .tip { top: auto; bottom: calc(100% + 9px); }
+.shot .note.tip-left .tip { left: auto; right: 0; }
+
+#viewer-explain[hidden] { display: none; }
+#viewer-explain[aria-pressed="true"] { border-color: var(--blue); color: var(--text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .shot .note { transition: none !important; }
+}
+@media (max-width: 767px) {
+  .shot .note .pip { width: 18px; height: 18px; left: -9px; top: -9px; font-size: 10.5px; }
+  .shot .note .tip { max-width: 70vw; font-size: 12px; }
 }

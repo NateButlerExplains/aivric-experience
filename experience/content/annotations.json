@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "note": "Explain This Screen. Keyed by the media src in experience.json. Regions are normalized 0-1 against the image's own pixels: x/y is the top-left corner, w/h the size. `label` names the region in two or three words; `note` says what a reader should take from it. Nothing here restates a number that is already legible in the screenshot as if it were a claim — the numbers belong to whatever tenant was captured.",
+  "media": {
+    "media/cloudsignals/posture-command.png": {
+      "title": "Posture Command",
+      "regions": [
+        {
+          "x": 0.0725, "y": 0.099, "w": 0.145, "h": 0.19,
+          "label": "ThreatScore",
+          "note": "One posture number for the whole estate, so a leader has something to track between reviews rather than a list that only an engineer can read."
+        },
+        {
+          "x": 0.225, "y": 0.099, "w": 0.748, "h": 0.163,
+          "label": "The command strip",
+          "note": "Findings, failed checks, assets monitored, open POA&Ms and scan freshness on one line. Scan freshness is the one that matters most: it tells you whether everything else on this screen is current."
+        },
+        {
+          "x": 0.069, "y": 0.415, "w": 0.325, "h": 0.055,
+          "label": "Four lenses on one graph",
+          "note": "Exposure, identity, threats and compliance are views of the same underlying data, not four separate products. Switching lens re-weights what the map emphasises."
+        },
+        {
+          "x": 0.075, "y": 0.5, "w": 0.685, "h": 0.38,
+          "label": "Threat map",
+          "note": "Regions sized by severity-weighted risk rather than by finding count, so one critical exposure outweighs a hundred low ones. The arcs are correlated pathways between regions."
+        },
+        {
+          "x": 0.78, "y": 0.407, "w": 0.2, "h": 0.29,
+          "label": "Regional intelligence",
+          "note": "Drilling into one provider and region: its own risk score, seven-day trend, and the assets behind it. This is the bridge from a picture to something you can assign."
+        },
+        {
+          "x": 0.783, "y": 0.775, "w": 0.192, "h": 0.115,
+          "label": "Finding severity mix",
+          "note": "The shape of the risk, not just its size. A region scoring 85 on seven medium findings is a different conversation from one scoring 85 on a single critical."
+        },
+        {
+          "x": 0.075, "y": 0.905, "w": 0.37, "h": 0.045,
+          "label": "Top regions",
+          "note": "Ranked by contribution to the score, so remediation starts where it moves the number."
+        }
+      ]
+    }
+  }
+}

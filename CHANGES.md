@@ -290,3 +290,46 @@ approve and replay work; Defense is untouched (3 `ls-` screens, 0 `ap-`, empty s
 reaches the control by Tab and Enter approves. Reduced motion skips the travel, lands on the
 decision, and still approves. Frame pacing on room entry is unchanged: p95 16.8 ms with the board
 and 16.8 ms without, against change 02's 20 ms line — the `is-arriving` gate is what holds it.
+
+---
+
+## Change 05 — Explain this screen
+
+**Problem.** The experience has 37 product screenshots, and after change 01 grouped them and change
+02 put them on the walls, a prospect still cannot read one. A CSPM dashboard captured at 2000px and
+shown at 850 on a laptop is a picture of a dashboard, not a dashboard — evidence that a screen
+exists rather than an explanation of what it does.
+
+**Change.** A screenshot in the viewer can carry named regions. "Explain this screen" outlines
+them, numbers them, and opens a note on the one you click: what the region is, and what a reader
+should take from it. Off by default, because it is an aid rather than a layer to be dismissed, and
+the control only appears on media that actually has annotations.
+
+**Coordinates are normalized against the image's own pixels**, so one set of numbers is right at
+every viewport. The overlay is positioned from the image's measured box through a `ResizeObserver`
+rather than from CSS alone — a cached image reports `complete === true` before it has been laid
+out, so measuring on `load` gives a zero box and stacks every marker in one corner.
+
+**Note placement is measured, not derived.** Whether a region has room for its note below or to the
+right depends on the viewport, not on the authored coordinates — the same region flips one way on
+a laptop and the other on a wide screen. An earlier version guessed from the region's `top` value
+with a CSS attribute-substring selector, which is exactly the kind of rule that works until it
+does not.
+
+**A pre-existing bug fell out of this.** `#viewer` is a grid with `grid-template-rows` but no
+declared columns, so its implicit column was `auto` — max-content — and a 2000px screenshot sized
+it to 1041px inside an 893px viewer. Every screenshot has been running out under the station panel
+since the viewer shipped, with the overflow hidden behind the panel's own background. Declaring
+`grid-template-columns: minmax(0, 1fr)` fixes it; images now sit fully inside the stage at every
+width.
+
+**Files.** `content/annotations.json` (new — keyed by media src) · `js/ui/viewer.js` · `index.html`
+(one control in the viewer bar) · `css/experience.css`.
+
+**Verified.** 1440x900, 1280x720, 390x844: the control appears only on annotated images and never
+on video or on an unannotated screenshot; all seven regions on the first annotated screenshot land
+on the elements they name; no note spills outside the viewer at any width; the overlay tracks the
+image's box exactly (0px drift on all four edges); images now fit inside the stage at every width;
+no console errors; the room walk and the living screens are unaffected.
+
+**Coverage.** One of 37 images is annotated. The mechanism is done; the writing is not.
