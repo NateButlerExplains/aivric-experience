@@ -1,14 +1,14 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-08c';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-08c';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-08c';
-import { onRoute, go, parse } from './router.js?v=2026-09-08c';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-08c';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-08c';
-import { runIntro } from './ui/intro.js?v=2026-09-08c';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-08c';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-08c';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens } from './livescreens.js?v=2026-09-08c';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-08d';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-08d';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-08d';
+import { onRoute, go, parse } from './router.js?v=2026-09-08d';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-08d';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-08d';
+import { runIntro } from './ui/intro.js?v=2026-09-08d';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-08d';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-08d';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens } from './livescreens.js?v=2026-09-08d';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');

@@ -43,7 +43,7 @@ export function revealStreams() {
       p.style.opacity = '';
       p.style.strokeDashoffset = '0';
       setTimeout(() => { // hand back to the flowing dash animation
-        p.style.transition = 'none';
+        p.style.transition = '';
         p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; p.style.animation = '';
       }, 1500);
     }, 200 + i * 180);

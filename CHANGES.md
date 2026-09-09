@@ -155,3 +155,86 @@ exit to the building, none leak across repeated room changes, no console errors.
 display navigates to the station it is showing. The primary display follows the open station tab
 without re-mounting. Pins stay clickable. The inline viewer still dims the room and covers the
 screens. Reduced motion mounts everything, reveals everything, and animates nothing.
+
+---
+
+## Change 03 — The door plate
+
+**Problem.** Change 02 lit eighteen displays inside the rooms, which made the building view the
+deadest part of the experience. A pin gave a room name and, on hover, a tagline. It could not
+answer the only question a visitor actually has at that moment: *if I go in there, what do I get?*
+Defense has three stations and thirty-two screenshots; AIRE has one station and none. That
+asymmetry is real, and it was completely invisible.
+
+**What was rejected, and why it matters.** The plan going in said to preview the room's own render
+behind a soft mask. That is wrong, and looking at the building is what shows it: **the master is a
+cutaway.** You can already see into Defense, the sphere chamber, Offense, the boardroom and the
+AIRE bridge. Pasting a photograph of a room over the photograph of that room is either invisible or
+reads as a rendering bug. A four-way design panel with three independent judges also killed a
+lighting approach — dropping the house lights everywhere except the hovered room — on the evidence
+of its own prototype renders: the gold sphere is emissive and survives any matte, so the lit region
+read as a lens vignette rather than as a room.
+
+**Change.** The chip grows downward on hover and keyboard focus into a door plate: one line per
+station, in the chip's own material. No new surface, no second border, no blur of its own, no
+animation of its own. The product name on one side, and on the other a status word — but only where
+the answer is something you can have today. While a plate is open the other five pins step back to
+0.4, matching what `streams.js` already does to the paths on the same event.
+
+**The status policy is one object.** `js/roomfacts.js` exports `BUILDING_STATUS`, which maps
+roadmap and coming-soon to `''`. The panel states every status in colour, next to the copy that
+explains it; the building says nothing rather than stacking "Coming soon" three deep across the
+room on the gold sphere. A bare product name claims nothing. Flipping a `''` to the label changes
+the plates and the spoken labels together and touches nothing else.
+
+**Nothing looks abandoned, and that is not luck.** The rooms with the fewest stations have the
+longest station names, so at a fixed 248px measure the rendered line counts come out 3, 3, 3, 2, 2,
+2 — AIRE's single station wraps to two lines and carries comparable plate mass to Defense's three.
+No copy was invented to pad anything.
+
+**Two bugs found by building it.**
+
+Offense is the only left-placed pin, so its button is anchored by its *right* edge — the transform
+subtracts the button's own width. A chip that grows wider therefore grows leftward, dragging the
+room name 200px out from under the pointer that opened it, which drops the hover and starts a
+flicker loop. Fixed by mirroring that side: the plate right-aligns against the pinned edge, status
+word on the outside. It reads as a sign hanging off the hinge, which is what a sign on the other
+side of a door does.
+
+`transition-duration` on `.pin` never reached `.pin .sub`, so a reduced-motion visitor has been
+getting the animated tagline reveal this whole time. Fixed in the same rule that covers the plate.
+
+**Also.** Keyboard focus now dispatches `room:hover`, so the streams respond to the keyboard — they
+never did before. The six pulse rings get a negative per-pin animation delay; in lockstep they read
+as a bank of identical UI markers rather than as lights in a building. `streams.js` hands its paths
+back to the stylesheet instead of pinning `transition: none` for the life of the page, so sweeping
+the pointer across the floor blends instead of strobing.
+
+**Files.** `js/roomfacts.js` (new — one vocabulary imported by both the pins and the panel, so the
+two can never drift), `js/hotspots.js`, `js/ui/panel.js`, `js/ui/hud.js`, `js/streams.js`,
+`css/experience.css`. No new DOM in `index.html`, no new fetch, no new asset, no new network
+request, and `content/experience.json` is not touched.
+
+**Degradation.** Touch and coarse pointers get no plate at all — the hover rule sits behind
+`(hover: hover) and (pointer: fine)` and `:focus-visible` does not match a tap, so one tap enters
+the room exactly as before, with no flash. Under 768px the plate is `display: none`. On a portrait
+phone the chips are already dropped, so nothing changes visually; the contents reach a portrait
+visitor through the room-list label instead. Without `:has()` the other pins simply do not recede.
+A room with no stations renders no plate, so no orphan hairline can paint.
+
+**Verified.** Resting building unchanged to the pixel — all six chip rects identical to shipped.
+The room name does not move on open, in either axis, at 1440x900 and 740x360 (measured as a glyph
+box relative to the pin's own dot, so the pointer parallax cancels). No plate leaves the viewport
+at 1440x900 or 1280x720. Keyboard focus opens the plate and drives the streams. A tap navigates on
+the first touch with the plate never displayed. Reduced motion has the plate at full height inside
+120ms with every row present and the ring not pulsing. Portrait is unchanged with no horizontal
+overflow, and its room-list label reads "Defense. Visibility, protection, and oversight. 3
+stations: CloudSignals+RiskOps™, Live; AI Signals™, Beta; AIRE Agentic Mesh™." Change 02's
+eighteen surfaces still mount across all five rooms, no console errors anywhere.
+
+**Cost: none, measured as a same-session A/B.** Pointer sweep across the floor with a plate held
+open versus closed: median 8.3 ms and p95 9.4 ms, identical. Room entry with screens off versus on:
+p95 25.0 versus 25.1. Pins are `visibility: hidden` from the first instant of a route change, so
+nothing here paints during the camera move at all. Note for anyone comparing against change 02's
+numbers: absolute frame times move with machine load between sessions, so only same-session
+comparisons carry information.

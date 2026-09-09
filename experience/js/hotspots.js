@@ -1,5 +1,11 @@
 // Hotspot pins: screen-space buttons anchored to normalized master coordinates.
-import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-08c';
+//
+// A pin's chip carries the room name at rest and, on hover or keyboard focus, grows downward into
+// a door plate: one line per station, in the chip's own material. The building can already be
+// SEEN into — the master render is a cutaway — so what a pin was failing to answer was never
+// "what does this room look like", it was "if I go in there, what do I get". That is the plate.
+import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-08d';
+import { roomFacts, factsLabel, esc } from './roomfacts.js?v=2026-09-08d';
 
 const pinsEl = document.getElementById('pins');
 let pins = [];
@@ -13,15 +19,36 @@ export function buildPins(rooms, onSelect) {
     b.dataset.room = room.id;
     b.dataset.place = room.hotspot.side || 'right';
     b.style.pointerEvents = 'auto';
-    b.setAttribute('aria-label', `${room.name}: ${room.tagline || ''}`);
+    // The button's own label carries what the plate prints, so a screen reader gets the contents
+    // on every viewport — including the portrait phone, where the chips do not exist at all.
+    b.setAttribute('aria-label', factsLabel(room));
+    // Six rings on one keyframe with no delay blink in lockstep and read as a bank of identical
+    // UI markers rather than as lights in a building. Six pins x 0.4s is exactly one cycle.
+    b.style.setProperty('--i', i);
+    const rows = roomFacts(room).map((f) =>
+      `<span class="st"><span class="nm">${esc(f.name)}</span>` +
+      `<span class="meta${f.now ? ' now' : ''}">` +
+      `${f.video ? '<i class="play" aria-hidden="true"></i>' : ''}${esc(f.label)}</span></span>`).join('');
     // The numeral is what the label becomes on a portrait phone, where the chips are dropped and
     // the names are carried by the numbered room list under the building (ui/hud.js). Same index
     // in both places, so a dot on the render and a row in the list name the same room.
+    //
+    // The room name moves into its own span because the chip is white-space: nowrap and the plate
+    // rows have to wrap. Spans rather than a list: a <ul> inside a <span> is invalid nesting, and
+    // the plate is aria-hidden anyway — the button's label already carries it.
     b.innerHTML = `<span class="dot" aria-hidden="true"><i>${i + 1}</i></span>` +
-      `<span class="chip">${room.name}<span class="sub">${room.tagline || ''}</span></span>`;
+      `<span class="chip"><span class="name">${esc(room.name)}</span>` +
+      `<span class="sub">${esc(room.tagline || '')}</span>` +
+      (rows ? `<span class="plate" aria-hidden="true"><span class="plate-in">${rows}</span></span>` : '') +
+      `</span>`;
     b.addEventListener('click', () => onSelect(room));
     b.addEventListener('pointerenter', () => document.dispatchEvent(new CustomEvent('room:hover', { detail: room.id })));
     b.addEventListener('pointerleave', () => document.dispatchEvent(new CustomEvent('room:hover', { detail: null })));
+    // Focus does what hover does. Until now the keyboard got the chip expansion and no stream
+    // response at all; focus/blur rather than focusin/focusout because the pin has no focusable
+    // descendants.
+    b.addEventListener('focus', () => document.dispatchEvent(new CustomEvent('room:hover', { detail: room.id })));
+    b.addEventListener('blur', () => document.dispatchEvent(new CustomEvent('room:hover', { detail: null })));
     pinsEl.appendChild(b);
     return { room, el: b, side: room.hotspot.side || 'right' };
   });

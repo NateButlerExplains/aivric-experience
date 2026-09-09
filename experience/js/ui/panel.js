@@ -1,9 +1,12 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-08c';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-08d';
+// Shared with the pins, so the panel's badge and the building's plate can never say different
+// words about the same station.
+import { STATUS_LABEL, esc } from '../roomfacts.js?v=2026-09-08d';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');
-const STATUS_LABEL = { live: 'Live', beta: 'Beta', alpha: 'Alpha', roadmap: 'Roadmap', 'coming-soon': 'Coming soon', service: '3HUE Advisory', platform: 'Platform' };
+
 // Maintainer affordance. The dashed "add media" card is an instruction to whoever fills the
 // manifest, not something a prospect should ever read, so it only appears on ?edit URLs.
 const EDIT = new URLSearchParams(location.search).has('edit');
@@ -13,7 +16,7 @@ const MAX_TILES = 4;
 let onSelectStation = () => {};
 // The station's media in the order the panel displays it; what the viewer steps through.
 let viewOrder = [];
-const esc = (s = '') => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
 
 export function initPanel(handlers) {
   onSelectStation = handlers.onSelectStation || onSelectStation;

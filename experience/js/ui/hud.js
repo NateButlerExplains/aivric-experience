@@ -1,4 +1,5 @@
 // HUD: room buttons, breadcrumb, exit controls.
+import { factsLabel } from '../roomfacts.js?v=2026-09-08d';
 const navEl = document.getElementById('nav');
 const crumbsEl = document.getElementById('crumbs');
 const roomsEl = document.getElementById('mobile-rooms');
@@ -46,6 +47,9 @@ function buildRoomList() {
     b.innerHTML = `<i class="idx" aria-hidden="true">${i + 1}</i>` +
       `<span class="rname">${r.name}</span>` +
       `<span class="rtag">${r.tagline || ''}</span>` + CHEVRON;
+    // The row shows a name and a tagline; the label carries the room's contents. On a portrait
+    // phone, where the chips and their plates do not exist, this is the only channel that has them.
+    b.setAttribute('aria-label', factsLabel(r));
     b.addEventListener('click', () => handlers.onRoom(r));
     roomsEl.appendChild(b);
   });

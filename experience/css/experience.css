@@ -68,6 +68,7 @@ a { color: inherit; }
   fill: none;
   stroke-width: 3.2;
   stroke-linecap: round;
+  transition: opacity 200ms var(--ease), stroke-width 200ms var(--ease);
   stroke-dasharray: 16 24;
   opacity: 0.8;
   filter: drop-shadow(0 0 4px currentColor);
@@ -90,9 +91,22 @@ a { color: inherit; }
    phone, where every pin becomes a numbered dot and the room names move to the list below. */
 .pin {
   --dot-size: 30px;
+  --pin-pad: 0px;      /* vertical padding this pin carries at <=767px; the anchor has to know */
+  --chip-h: 35px;      /* the resting chip's height, used only to keep it optically centred */
+  --plate-w: 248px;    /* the plate's fixed measure — the reason AIRE and Fabric wrap to two lines */
   position: absolute;
-  transform: translate(calc(var(--dot-size) / -2), -50%);
-  display: flex; align-items: center; gap: 10px;
+  /* max-content: #pins is fixed inset:0, so an absolutely positioned pin's available width is
+     viewport-minus-left. Without this the Offense pin, at left 1280, clamps its open chip to
+     ~120px and wraps into a column while the others get their full width.
+     flex-start + the padding-aware translate: with align-items:center the button stays centred on
+     the coordinate, so a taller chip pushes the room name upward — 16px on Fabric, 56px on
+     Offense. Anchoring the top holds the name still. --pin-pad keeps the dot on its coordinate
+     where the 767px block adds padding.
+     calc needs whitespace around + and -; without it the whole transform silently drops. */
+  width: max-content;
+  transform: translate(calc(var(--dot-size) / -2),
+                       calc(-1 * (var(--pin-pad) + var(--dot-size) / 2)));
+  display: flex; align-items: flex-start; gap: 10px;
   padding: 0; margin: 0;
   color: var(--text);
   opacity: 0;
@@ -119,6 +133,9 @@ a { color: inherit; }
   content: ""; position: absolute; inset: -6px; border-radius: 50%;
   border: 1.5px solid rgba(255,255,255,0.5);
   animation: pulse 2.4s ease-out infinite;
+  /* Negative delay, so every ring is already mid-cycle at reveal instead of waiting its turn.
+     Six pins x 0.4s is exactly one cycle; in lockstep they read as UI markers, not as a building. */
+  animation-delay: calc(var(--i, 0) * -0.4s);
 }
 @keyframes pulse { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
 .pin .chip {
@@ -129,6 +146,10 @@ a { color: inherit; }
   border: 1px solid var(--line);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   white-space: nowrap;
+  display: block; text-align: left;
+  /* The chip is ~35px against a 30px dot, so anchoring the top alone would drop the label 2.5px.
+     This restores the shipped optical centring without moving the dot. */
+  margin-top: calc((var(--dot-size) - var(--chip-h)) / 2);
 }
 .pin .sub {
   display: block; font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--text-muted);
@@ -136,10 +157,72 @@ a { color: inherit; }
   transition: max-height 220ms var(--ease), max-width 220ms var(--ease), margin 220ms var(--ease);
 }
 .pin:hover .sub, .pin:focus-visible .sub { max-height: 40px; max-width: 320px; margin-top: 2px; }
+
+/* ---- The door plate ----
+   The chip grows downward into a directory of the room's stations. No new surface, no second
+   border, no blur of its own: it is the chip, taller. Colour stays reserved for the streams and
+   the panel — the only bright word here is "Live".
+   A grid drawer (0fr -> 1fr) rather than max-height, because a height cap on a wrapping list is a
+   guess and overflow:hidden turns a wrong guess into content that silently vanishes. max-width:0
+   at rest is what keeps the RESTING chip narrow — max-width caps an element's intrinsic
+   contribution, so a collapsed plate adds nothing to the chip's width. */
+.pin .name { display: block; }
+.pin .plate {
+  display: grid; grid-template-rows: 0fr; max-width: 0;
+  transition: grid-template-rows 240ms var(--ease), max-width 240ms var(--ease);
+}
+.pin .plate-in { min-height: 0; overflow: hidden; }
+@media (hover: hover) and (pointer: fine) {
+  .pin:hover .plate { grid-template-rows: 1fr; max-width: calc(var(--plate-w) + 2px); }
+}
+/* Outside the hover query on purpose: the keyboard gets the plate on every device. */
+.pin:focus-visible .plate { grid-template-rows: 1fr; max-width: calc(var(--plate-w) + 2px); }
+.pin .st {
+  width: var(--plate-w);       /* fixed measure: wrapping is deterministic and costs no reflow */
+  display: flex; align-items: baseline; gap: 12px;
+  font-family: var(--font-head); font-weight: 400; font-size: 12px; line-height: 1.35;
+  color: var(--text-muted); white-space: normal; padding: 2px 0;
+}
+/* An incised line rather than a drawn rule: dark groove, light catch below it, like a score in
+   the material. It lives inside the clip so nothing paints before the drawer opens. */
+.pin .st:first-child {
+  margin-top: 7px; padding-top: 7px;
+  border-top: 1px solid rgba(2,8,16,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.pin .st .nm { flex: 1 1 auto; min-width: 0; }   /* wraps; never ellipsised */
+.pin .st .meta {
+  flex: none; font-family: var(--font-body); font-size: 10.5px; letter-spacing: 0.02em;
+  color: var(--text-dim); white-space: nowrap;
+}
+.pin .st .meta:empty { display: none; }
+.pin .st .meta.now { color: var(--text); }
+.pin .st .play {
+  display: inline-block; width: 0; height: 0; margin-right: 6px;
+  border-left: 6px solid var(--text-dim);
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+}
+/* One plate at a time: while a room is open the rest of the floor's labels step back. A
+   subtraction, matching what streams.js already does to the paths on the same event. */
+#pins .pin .chip, #pins .pin .dot { transition: opacity 240ms var(--ease); }
+#pins:has(.pin:hover, .pin:focus-visible) .pin:not(:hover):not(:focus-visible) .chip { opacity: 0.4; }
+#pins:has(.pin:hover, .pin:focus-visible) .pin:not(:hover):not(:focus-visible) .dot { opacity: 0.6; }
 .pin:hover .dot, .pin:focus-visible .dot { border-color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
 .pin:focus-visible { outline: 2px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
 /* Label on the left: the dot is the last box, so anchor the button's right edge instead. */
-.pin[data-place="left"] { flex-direction: row-reverse; transform: translate(calc(var(--dot-size) / 2 - 100%), -50%); }
+.pin[data-place="left"] {
+  flex-direction: row-reverse;
+  transform: translate(calc(var(--dot-size) / 2 - 100%),
+                       calc(-1 * (var(--pin-pad) + var(--dot-size) / 2)));
+}
+/* A left-placed pin is anchored by its RIGHT edge — the translate subtracts the button's own
+   width — so a chip that grows wider grows LEFTWARD, and a left-aligned room name would slide out
+   from under the pointer that opened it (measured: 200px, enough to drop the hover and start a
+   flicker loop). Mirroring the plate against the pinned edge holds the name still. It is also
+   what a sign on the other side of a door looks like: the text hangs off the hinge. */
+.pin[data-place="left"] .chip { text-align: right; }
+.pin[data-place="left"] .st { flex-direction: row-reverse; }
+.pin[data-place="left"] .st .play { margin-right: 0; margin-left: 6px; }
 
 /* ---------- HUD ---------- */
 #hud {
@@ -446,7 +529,8 @@ body.in-room #panel { transform: translateX(0); }
 @media (prefers-reduced-motion: reduce) {
   #streams path, .pin .dot::before { animation: none; }
   :root { --dur: 1ms; }
-  #panel, #intro, .pin, #stage .layer, #floor-head, #floor-foot { transition-duration: 1ms !important; }
+  #panel, #intro, .pin, .pin .chip, .pin .sub, .pin .plate,
+  #stage .layer, #floor-head, #floor-foot { transition-duration: 1ms !important; }
 }
 @media (max-width: 767px) {
   :root { --panel-w: 100vw; --hud-h: 52px; }
@@ -464,10 +548,11 @@ body.in-room #panel { transform: translateX(0); }
   /* Smaller than on the desktop: a phone gives the whole building a 375-390 px band to stand in,
      and six full-size chips would cover the thing they are pointing at. (In portrait they are
      dropped altogether — see the composed view at the end of this file.) */
-  .pin .sub { display: none; }
-  /* Thumb-sized targets. Only the side placements need padding: the flex centring keeps the dot
-     on its coordinate as the button grows, while a stacked pin is already tall enough. */
+  .pin .sub, .pin .plate { display: none; }
+  /* Thumb-sized targets. Only the side placements need padding, and --pin-pad is what tells the
+     transform above about it — without it every dot here drops by exactly that padding. */
   .pin[data-place="right"], .pin[data-place="left"] { padding: 11px 0; }
+  .pin { --pin-pad: 11px; }
 }
 
 /* Shrinking the pins is a PORTRAIT concession: there the building is fitted to a band a third of
