@@ -332,9 +332,20 @@ on the elements they name; no note spills outside the viewer at any width; the o
 image's box exactly (0px drift on all four edges); images now fit inside the stage at every width;
 no console errors; the room walk and the living screens are unaffected.
 
-**Coverage.** 29 of 37 images are annotated — every screenshot in CloudSignals and AI Signals, the
-two stations a prospect actually opens. The remaining eight are single-image stations where the
-panel copy already carries the weight.
+**Coverage.** 33 of 37 images are annotated — 208 regions. The four that are not each have a
+reason rather than being a gap:
+
+- `assets/images/brand/Threat-Signals-1.png` is decorative concept art, not a product screen. It
+  has no readable interface, so every note would have to be invented — which is the one rule the
+  whole set rests on. Its own caption already says "concept render".
+- The other three are duplicate references: the same file appears under more than one station, and
+  an annotation is keyed by file, so it is written once and shows everywhere it is used.
+
+`academy/screenshots/provider-branding-config.png` IS annotated, carefully. It is the redacted
+copy, so its support email, both logo URLs, the favicon URL and the header search render as empty
+boxes. The agent was told exactly which fields are blank, to place no region on them and not to
+mention them; the tab strip, Branding Studio, both palettes, the dual-mode preview and the
+published-state card carry the screen on their own.
 
 **How the writing was done.** One agent per screenshot, each reading its image, placing regions,
 rendering them through a standalone harness, looking at the result and iterating until every box

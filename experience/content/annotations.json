@@ -1626,6 +1626,210 @@
           "note": "Pairs a composite score built from success, latency and efficiency with estimated spend, so tuning is decided as a trade-off rather than as quality at any price."
         }
       ]
+    },
+    "../academy/screenshots/integration-hub.png": {
+      "title": "Integration Hub",
+      "regions": [
+        {
+          "x": 0.214,
+          "y": 0.079,
+          "w": 0.746,
+          "h": 0.166,
+          "label": "Hub purpose",
+          "note": "Findings are not meant to stay here. The hub is the exit path: detections are pushed into the security hubs, ticket queues, chat channels and archives a team already runs, which is what decides whether they get acted on at all."
+        },
+        {
+          "x": 0.215,
+          "y": 0.27,
+          "w": 0.745,
+          "h": 0.118,
+          "label": "Coverage counters",
+          "note": "Counts connectors by destination type — catalog, security pipelines, ticketing, notifications, storage — so an evaluator can size how much of an existing stack the Fabric reaches before committing to it."
+        },
+        {
+          "x": 0.216,
+          "y": 0.414,
+          "w": 0.742,
+          "h": 0.079,
+          "label": "SIEM pipeline section",
+          "note": "Groups the destinations that receive findings for centralized monitoring, so detection work stays in the SIEM analysts already watch instead of adding another console to triage."
+        },
+        {
+          "x": 0.225,
+          "y": 0.514,
+          "w": 0.651,
+          "h": 0.43,
+          "label": "Connector entries",
+          "note": "Entries are specific about the far end — the workspace findings land in, the format they arrive as, the transport they travel over — so an engineer knows up front whether a destination takes findings in a shape their platform already parses."
+        },
+        {
+          "x": 0.876,
+          "y": 0.528,
+          "w": 0.07,
+          "h": 0.375,
+          "label": "Per-connector manage",
+          "note": "Each destination is configured from its own control, so credentials and routing for one pipeline can be changed or removed without disturbing the others."
+        }
+      ]
+    },
+    "../academy/screenshots/provider-branding-config.png": {
+      "title": "Provider branding studio",
+      "regions": [
+        {
+          "x": 0.201,
+          "y": 0.193,
+          "w": 0.774,
+          "h": 0.052,
+          "label": "Console section tabs",
+          "note": "Pricing, invoicing, support, staff and tenant branding are all the same operator's job, which is why identity work sits in this row at all — what a client sees gets administered like billing or support, not treated as a separate design exercise."
+        },
+        {
+          "x": 0.203,
+          "y": 0.274,
+          "w": 0.421,
+          "h": 0.092,
+          "label": "Branding Studio",
+          "note": "Where a provider sets the identity its tenants see. Edits are saved as a draft and published as a separate step, so branding changes get reviewed before any customer loads them."
+        },
+        {
+          "x": 0.212,
+          "y": 0.738,
+          "w": 0.196,
+          "h": 0.252,
+          "label": "Light palette",
+          "note": "Assigns the colour roles — primary, secondary, accent, background, surface, text — used when the console renders light, so the product carries the provider's identity instead of the vendor's."
+        },
+        {
+          "x": 0.419,
+          "y": 0.738,
+          "w": 0.196,
+          "h": 0.252,
+          "label": "Dark palette",
+          "note": "The same roles kept as a separate set for dark mode, so contrast and legibility can be tuned per mode rather than inverting one palette and hoping it still reads."
+        },
+        {
+          "x": 0.65,
+          "y": 0.272,
+          "w": 0.316,
+          "h": 0.476,
+          "label": "Brand Preview",
+          "note": "Renders the draft in both display modes before it goes live, so a logo or contrast problem is caught here rather than by the provider's own customers."
+        },
+        {
+          "x": 0.65,
+          "y": 0.764,
+          "w": 0.316,
+          "h": 0.094,
+          "label": "Published state",
+          "note": "Records which tenant identity is currently live and when it was last published — the reference point for whether a draft has actually shipped or is still pending."
+        }
+      ]
+    },
+    "../academy/screenshots/provider-clients-list.png": {
+      "title": "Provider client roster",
+      "regions": [
+        {
+          "x": 0.201,
+          "y": 0.193,
+          "w": 0.778,
+          "h": 0.052,
+          "label": "Console sections",
+          "note": "Price book, invoices, support, branding and staff sit beside the client roster, so a provider runs the commercial and operational side of its tenants without leaving the security product."
+        },
+        {
+          "x": 0.203,
+          "y": 0.382,
+          "w": 0.18,
+          "h": 0.098,
+          "label": "Client and package",
+          "note": "Ties each downstream tenant to the entitlement package it was sold on, so a provider can confirm what a customer is contracted for before scope or renewal is argued."
+        },
+        {
+          "x": 0.383,
+          "y": 0.382,
+          "w": 0.172,
+          "h": 0.098,
+          "label": "Lifecycle and health",
+          "note": "Separates how far a client has got through onboarding from whether their environment currently needs attention, so stalled deployments and degraded tenants stay distinguishable across a book of clients."
+        },
+        {
+          "x": 0.559,
+          "y": 0.382,
+          "w": 0.148,
+          "h": 0.098,
+          "label": "Environments and cases",
+          "note": "Whether a client is actually running, in two numbers: environments connected says whether anything was ever deployed against the package they were sold, open cases say what serving them costs. Opening the row is where environments, entitlements and billing state get assigned."
+        },
+        {
+          "x": 0.733,
+          "y": 0.278,
+          "w": 0.24,
+          "h": 0.093,
+          "label": "New client setup",
+          "note": "A tenant exists as a record before it exists as a deployment: created here, wired up afterwards. That ordering is what lets a provider open an account without waiting on the vendor."
+        },
+        {
+          "x": 0.738,
+          "y": 0.716,
+          "w": 0.234,
+          "h": 0.245,
+          "label": "Package and support tier",
+          "note": "Fixes what a new client is entitled to and what support they are owed at creation, so billing and service commitments live with the tenant record rather than in a side spreadsheet."
+        }
+      ]
+    },
+    "../academy/screenshots/vision-config-page.png": {
+      "title": "Vision provider config",
+      "regions": [
+        {
+          "x": 0.234,
+          "y": 0.2356,
+          "w": 0.2333,
+          "h": 0.1478,
+          "label": "Active runtime",
+          "note": "Shows which provider and model are actually serving Vision requests right now, so an engineer chasing an odd answer can confirm what produced it before digging into logs."
+        },
+        {
+          "x": 0.7125,
+          "y": 0.2356,
+          "w": 0.2326,
+          "h": 0.1478,
+          "label": "Credential scope",
+          "note": "Model keys are held per tenant and stay write-only once saved, so an operator can rotate a key here without the secret ever being readable back out of the console."
+        },
+        {
+          "x": 0.234,
+          "y": 0.3978,
+          "w": 0.2535,
+          "h": 0.2444,
+          "label": "Provider profiles",
+          "note": "Holds separate credential profiles and marks which one is live, so production and test providers stay apart and it is unambiguous where prompts are being sent."
+        },
+        {
+          "x": 0.5014,
+          "y": 0.3978,
+          "w": 0.4431,
+          "h": 0.1267,
+          "label": "Runtime defaults",
+          "note": "Defaults for Vision Chat and prompt vault runs are set once for the tenant here, so model behaviour is governed centrally instead of chosen ad hoc per user."
+        },
+        {
+          "x": 0.5132,
+          "y": 0.65,
+          "w": 0.416,
+          "h": 0.1722,
+          "label": "Provider and endpoint",
+          "note": "Records the vendor and the API base URL the platform calls, making the egress path for prompt data a reviewable setting rather than a hard-coded default."
+        },
+        {
+          "x": 0.5132,
+          "y": 0.8756,
+          "w": 0.416,
+          "h": 0.06,
+          "label": "Model selection",
+          "note": "The model version is pinned to the configuration, so it does not move when a vendor ships a new default. A change in how Vision answers traces back to a decision, not a silent upgrade."
+        }
+      ]
     }
   }
 }

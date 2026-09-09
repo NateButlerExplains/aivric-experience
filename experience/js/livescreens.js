@@ -20,8 +20,8 @@
 //     after the room has landed, which is also the better beat: you arrive, and then the room
 //     wakes up.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09j';
-import clock from './clock.js?v=2026-09-09j';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09k';
+import clock from './clock.js?v=2026-09-09k';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
