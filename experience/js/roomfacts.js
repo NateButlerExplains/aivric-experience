@@ -44,3 +44,24 @@ export function factsLabel(room) {
   return `${room.name}. ${room.tagline || ''}. ${f.length} station${f.length === 1 ? '' : 's'}: `
     + f.map((x) => (x.label ? `${say(x.name)}, ${x.label}` : say(x.name))).join('; ') + '.';
 }
+
+/* ---------------------------------------------------------------- *
+ * Links
+ * ---------------------------------------------------------------- */
+
+// The manifest writes a product page as `../cspm-cloudsignals.html` — correct when the experience
+// is served from inside aivric.com, and a 404 everywhere else, including the preview the owner
+// actually looks at. All of those pages exist upstream, so resolve them there when we are not in
+// production rather than editing the owner's file.
+//
+// Only bare parent-relative .html pages are rewritten. `../academy/...` is left alone because
+// those files really are siblings here, and absolute URLs are never touched.
+const SITE = 'https://aivric.com/';
+const PRODUCTION = /(^|\.)aivric\.com$/i;
+
+export function resolveHref(href) {
+  const h = String(href || '');
+  if (PRODUCTION.test(location.hostname)) return h;
+  const m = /^\.\.\/([^/]+\.html(?:[?#].*)?)$/.exec(h);
+  return m ? SITE + m[1] : h;
+}

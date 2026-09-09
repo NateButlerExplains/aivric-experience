@@ -1,8 +1,8 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-09r';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-09u';
 // Shared with the pins, so the panel's badge and the building's plate can never say different
 // words about the same station.
-import { STATUS_LABEL, esc } from '../roomfacts.js?v=2026-09-09r';
+import { STATUS_LABEL, esc, resolveHref } from '../roomfacts.js?v=2026-09-09u';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');
@@ -201,7 +201,7 @@ function renderStation(room, s) {
   const media = s.media || [];
   const links = s.links || [];
   const ctas = links.map((l) =>
-    `<a class="btn ${l.primary ? 'primary' : 'outline'}" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)}
+    `<a class="btn ${l.primary ? 'primary' : 'outline'}" href="${esc(resolveHref(l.href))}" target="_blank" rel="noopener">${esc(l.label)}
       ${l.primary ? '' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>'}
     </a>`).join('');
 

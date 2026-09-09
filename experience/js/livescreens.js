@@ -22,8 +22,8 @@
 //     back until the camera stops, because that is a genuine per-frame cost; painting a decoded
 //     image is not.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09r';
-import clock from './clock.js?v=2026-09-09r';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09u';
+import clock from './clock.js?v=2026-09-09u';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -174,11 +174,20 @@ function buildContent(stills, surface) {
 /* ---------------------------------------------------------------- *
  * Occlusion
  *
- * The render is a photograph, so it has no depth: a screen paints over the man standing at the
- * Defense wall and over the heads along the AIRE board. A luma key cannot separate them — these
- * displays show dark maps, so the people are no darker than the content they stand in front of.
- * So the silhouettes are traced by hand into screens.json, in the render's own image pixels, and
- * punched back out here.
+ * The render is a photograph, so it has no depth: a screen paints over whatever stands in front of
+ * it. Three ways to deal with that, in order of preference, and only the last one is code:
+ *
+ *   1. CROP. Shrink the quad to the clear rectangle. A straight edge along the display's own
+ *      plane reads as a panel boundary. This is what the Defense wall does.
+ *   2. FADE. Where an occluder only clips an edge — heads along the AIRE board's bottom, the
+ *      ceiling ribbon over the boardroom glass — a directional gradient has no edge to get wrong.
+ *   3. SKIP. If the clear area is under the size floor, do not mount it. Offense's centre monitor.
+ *
+ * Tracing a silhouette is the LAST resort and is now used for exactly one thing: the two glass
+ * mullions in the Client Vision chamber, which are hard-edged architectural objects, so a
+ * hard-edged mask matches them. Tracing a person never worked: a hand-drawn polygon against a soft,
+ * slightly out-of-focus photographic edge reads as a bad cut-out no matter how it is feathered,
+ * and tightening the feather made it worse rather than better.
  *
  * The mask is one SVG data-URI: a white plate, minus each occluder polygon, blurred at the edge,
  * optionally with a fade band folded into the same image. One mask layer, so no mask-composite —
@@ -208,19 +217,8 @@ function buildMask(surface, w, h) {
   // out from behind a dark shoulder. Tighter, with a floor so a small surface still gets a soft
   // edge rather than a cut-out.
   const blur = Math.max(1, Math.min(w, h) * 0.005);
-  // Erode each silhouette a little toward its own centre before drawing it. Erring INWARD leaves a
-  // thin rim of mounted content over the occluder's edge; erring outward leaks a bright rim of the
-  // original render around it, which is the artifact that actually catches the eye.
   const shapes = polys.map((pts) => {
-    const local = pts.map(map);
-    const cx = local.reduce((a, q) => a + q[0], 0) / local.length;
-    const cy = local.reduce((a, q) => a + q[1], 0) / local.length;
-    const p = local.map(([x, y]) => {
-      const dx = x - cx, dy = y - cy;
-      const d = Math.hypot(dx, dy) || 1;
-      const k = Math.min(2.5, d * 0.5) / d;        // pull in ~2.5 local px, never past the centre
-      return `${(x - dx * k).toFixed(1)},${(y - dy * k).toFixed(1)}`;
-    }).join(' ');
+    const p = pts.map(map).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
     return `<polygon points="${p}" fill="#000"/>`;
   }).join('');
 

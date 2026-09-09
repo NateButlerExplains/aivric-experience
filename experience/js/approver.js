@@ -16,8 +16,9 @@
 // for time that can be paused, scrubbed or stepped. Including the `is-arriving` gate, which is
 // what keeps the room-entry frame budget where change 02 left it.
 
-import { mountScreen, getScreenElement, unmountScreen } from './screens.js?v=2026-09-09r';
-import clock from './clock.js?v=2026-09-09r';
+import { mountScreen, getScreenElement, unmountScreen } from './screens.js?v=2026-09-09u';
+import { panRoom } from './stage.js?v=2026-09-09u';
+import clock from './clock.js?v=2026-09-09u';
 
 const params = new URLSearchParams(location.search);
 const OFF = params.get('screens') === '0';
@@ -112,7 +113,7 @@ export function showApprover(room, station) {
     if (!id) return;
     const el = getScreenElement(id);
     if (surface.dim != null) el.style.setProperty('--ls-dim', String(surface.dim));
-    live.push({ id, el, stage: stages[i], i });
+    live.push({ id, el, stage: stages[i], i, focus: surface.focus || null });
   });
   if (!live.length) { roomId = null; return; }
 
@@ -179,7 +180,22 @@ function to(next, t) {
   phase = next;
   phaseAt = t;
   paint();
+  look();
   announce();
+}
+
+// The camera travels the wall as the work does, so the stage being described is the one you are
+// looking at. Without this the board is 1223 image px wide against an ~890 px stage and column
+// one — where the sequence starts — is 13% visible at 1440x900.
+//
+// Held still under reduced motion, and on a portrait phone, where the stage is short enough that a
+// pan is more disorienting than useful and the panel carries the sequence anyway.
+function look() {
+  if (clock.reducedMotion) return;
+  if (matchMedia('(max-width: 767px) and (orientation: portrait)').matches) return;
+  const col = live.find((x) => x.i === REACHED[phase]);
+  const target = col ? col.focus : (live[live.length - 1] || {}).focus;
+  if (target) panRoom(target, phase === 'done' ? 1500 : 1100);
 }
 
 function announce() {

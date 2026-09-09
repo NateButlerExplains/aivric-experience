@@ -416,3 +416,63 @@ renders three panels with content; the board runs the full sequence and hands of
 reaches the approve control and Enter works; reduced motion lands on the decision and still
 approves; all 33 annotated screenshots still open with their regions inside the image box; Defense
 is untouched; no console errors anywhere.
+
+---
+
+## Change 07 — Links, honest occlusion, and a camera that follows the work
+
+**Links resolved 404 outside production.** Thirteen station links are written `../page.html` in the
+manifest, which is correct when the experience is embedded in aivric.com and wrong everywhere else
+— including the preview. All thirteen exist upstream. `js/roomfacts.js` gains `resolveHref`, which
+rewrites a bare parent-relative `.html` to `https://aivric.com/...` when the page is not served
+from the production host. `academy/` links stay relative because those files really are siblings
+here, and absolute URLs are untouched. The owner's manifest is not edited: this is a display-time
+rewrite, so his file keeps working unchanged when the experience is embedded. All 16 distinct links
+in the panel now return 200.
+
+**Stopped cutting people out.** Tracing a silhouette never worked, and tightening the feather in
+change 06 made it worse, which was the useful signal: a hand-drawn polygon against a soft,
+slightly out-of-focus photographic edge reads as a bad cut-out however it is blurred. The AIRE
+board's heads looked fine all along — and that is the tell, because there the occluder sits below
+the board's own edge rather than being cut around.
+
+Three rules replace it, in order of preference. Only the last is code.
+
+1. **Crop.** Shrink the quad to the clear rectangle. A straight edge along the display's own plane
+   reads as a panel boundary. The Defense wall is now cropped to clear the man on the left and the
+   ponytail on the right — the wall shows the render's own map where he is pointing and the product
+   beside it, which is what a large operations video wall actually looks like.
+2. **Fade.** Where an occluder only clips an edge, a directional gradient has no edge to get wrong.
+   The AIRE heads and the boardroom's ceiling ribbon are fades now.
+3. **Skip.** Offense's centre monitor was 50-65% behind an analyst, with a hard polygon edge
+   through his shoulder — the worst-looking thing in the building. It is unmounted; cropping to
+   the clear third falls under the size floor. Three Offense monitors instead of four, and the
+   render's own artwork keeps that screen.
+
+Traced polygons now survive for exactly one thing: the two glass mullions in the Client Vision
+chamber, which are hard-edged architectural objects, so a hard-edged mask matches them. The
+erosion pass added in change 06 is gone with the approach it was compensating for.
+
+**The camera follows the work.** The approver board did not land, and the reason was measurable:
+column one — where the sequence starts — was **13% visible at 1440x900, 24% at 1280x720, 37% at
+1920x1080**. The board is 1223 image px against an ~890px stage, so it cannot fit at the room's
+zoom, and four small labels changing colour in the visible right-hand two-thirds was all there ever
+was on screen.
+
+The camera now travels the wall as the work does: column one holds the frame while the finding is
+prepared, the camera moves right to Approval and stops — waiting on the visitor — then carries on
+to Action and settles on Verification. `js/stage.js` gains one export, `panRoom(focus, ms)`, which
+re-runs the same `fitRoom` placement used on arrival, so a pan and an entry cannot disagree about
+where a point on the render is. Mounted screens are children of `#room`, so they travel with it for
+nothing. Camera targets live in `content/screens.json` next to the geometry they belong to.
+
+**Files.** `js/roomfacts.js` · `js/ui/panel.js` · `js/stage.js` · `js/approver.js` ·
+`js/livescreens.js` · `content/screens.json`.
+
+**Verified.** The active column is **100% visible at every stage at 1920x1080, 1440x900 and
+1280x720** — the number this existed to fix. Panning costs nothing measurable: p95 16.8ms against
+change 02's 20ms line, because it is a composited transform. Leaving mid-sequence resets the camera
+and the next room gets its own framing; returning re-mounts and starts fresh. Reduced motion does
+not travel and still approves; portrait holds still and the panel carries the sequence; keyboard
+approval works. All 33 annotated screenshots still open with their regions inside the image box, no
+console errors at any width.

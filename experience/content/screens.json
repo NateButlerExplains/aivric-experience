@@ -12,109 +12,24 @@
           "station": "cloudsignals",
           "quad": [
             [
-              98,
-              142
+              440,
+              170.6
             ],
             [
-              934,
-              212
+              894,
+              208.7
             ],
             [
-              933,
-              487
+              894,
+              487.8
             ],
             [
-              97,
-              504
+              440,
+              497.0
             ]
           ],
           "dim": 0.9,
-          "occluders": [
-            [
-              [
-                318,
-                286
-              ],
-              [
-                392,
-                290
-              ],
-              [
-                398,
-                332
-              ],
-              [
-                408,
-                372
-              ],
-              [
-                452,
-                357
-              ],
-              [
-                500,
-                341
-              ],
-              [
-                517,
-                336
-              ],
-              [
-                522,
-                346
-              ],
-              [
-                508,
-                353
-              ],
-              [
-                472,
-                375
-              ],
-              [
-                432,
-                400
-              ],
-              [
-                416,
-                600
-              ],
-              [
-                230,
-                600
-              ],
-              [
-                246,
-                392
-              ],
-              [
-                300,
-                336
-              ],
-              [
-                310,
-                296
-              ]
-            ],
-            [
-              [
-                898,
-                322
-              ],
-              [
-                938,
-                318
-              ],
-              [
-                938,
-                494
-              ],
-              [
-                896,
-                494
-              ]
-            ]
-          ]
+          "why": "Cropped rather than traced: the left edge clears the man at the wall, the right edge clears the ponytail. Straight cuts along the display plane read as a panel boundary; a traced silhouette did not."
         },
         {
           "id": "defense-monitor-left",
@@ -217,50 +132,8 @@
             ]
           ],
           "dim": 0.92,
-          "occluders": [
-            [
-              [
-                1037,
-                441
-              ],
-              [
-                1089,
-                441
-              ],
-              [
-                1106,
-                465
-              ],
-              [
-                1125,
-                490
-              ],
-              [
-                1134,
-                515
-              ],
-              [
-                1140,
-                532
-              ],
-              [
-                1004,
-                532
-              ],
-              [
-                1006,
-                515
-              ],
-              [
-                1016,
-                490
-              ],
-              [
-                1029,
-                465
-              ]
-            ]
-          ]
+          "mount": false,
+          "why": "The analyst covers 50-65% of it. Cropping to the clear left third falls under the size floor, and tracing him produced a visible hard edge through a soft shoulder."
         },
         {
           "id": "offense-monitor-left",
@@ -362,39 +235,12 @@
             ]
           ],
           "dim": 0.8,
-          "occluders": [
-            [
-              [
-                238,
-                400
-              ],
-              [
-                248,
-                388
-              ],
-              [
-                268,
-                383
-              ],
-              [
-                295,
-                385
-              ],
-              [
-                310,
-                398
-              ],
-              [
-                318,
-                442
-              ],
-              [
-                226,
-                442
-              ]
-            ]
-          ],
-          "driver": "approver"
+          "driver": "approver",
+          "fade": 0.16,
+          "focus": {
+            "x": 0.158,
+            "y": 0.24
+          }
         },
         {
           "id": "aire-board-col2",
@@ -419,43 +265,12 @@
             ]
           ],
           "dim": 0.8,
-          "occluders": [
-            [
-              [
-                684,
-                392
-              ],
-              [
-                698,
-                377
-              ],
-              [
-                724,
-                371
-              ],
-              [
-                762,
-                371
-              ],
-              [
-                790,
-                380
-              ],
-              [
-                802,
-                396
-              ],
-              [
-                812,
-                442
-              ],
-              [
-                676,
-                442
-              ]
-            ]
-          ],
-          "driver": "approver"
+          "driver": "approver",
+          "fade": 0.16,
+          "focus": {
+            "x": 0.336,
+            "y": 0.24
+          }
         },
         {
           "id": "aire-board-col3",
@@ -480,39 +295,12 @@
             ]
           ],
           "dim": 0.8,
-          "occluders": [
-            [
-              [
-                1054,
-                398
-              ],
-              [
-                1066,
-                386
-              ],
-              [
-                1084,
-                382
-              ],
-              [
-                1102,
-                385
-              ],
-              [
-                1114,
-                397
-              ],
-              [
-                1120,
-                438
-              ],
-              [
-                1050,
-                438
-              ]
-            ]
-          ],
-          "driver": "approver"
+          "driver": "approver",
+          "fade": 0.16,
+          "focus": {
+            "x": 0.481,
+            "y": 0.24
+          }
         },
         {
           "id": "aire-board-col4",
@@ -537,7 +325,11 @@
             ]
           ],
           "dim": 0.8,
-          "driver": "approver"
+          "driver": "approver",
+          "focus": {
+            "x": 0.602,
+            "y": 0.24
+          }
         },
         {
           "id": "aire-monitor-left",
@@ -780,26 +572,7 @@
           "station": "vision-ai-optics",
           "glass": true,
           "dim": 1.0,
-          "occluders": [
-            [
-              [
-                894,
-                264
-              ],
-              [
-                932,
-                264
-              ],
-              [
-                932,
-                326
-              ],
-              [
-                894,
-                326
-              ]
-            ]
-          ]
+          "why": "The sphere's limb crossing this panel is glowing light, not a hard object; the panel's own glass opacity already lets it through. Only the two glass mullions stay traced, because a mullion really does have a hard edge."
         }
       ]
     },
@@ -830,45 +603,8 @@
             ]
           ],
           "dim": 0.95,
-          "occluders": [
-            [
-              [
-                924,
-                670
-              ],
-              [
-                963,
-                670
-              ],
-              [
-                963,
-                697
-              ],
-              [
-                924,
-                697
-              ]
-            ],
-            [
-              [
-                1014,
-                666
-              ],
-              [
-                1036,
-                666
-              ],
-              [
-                1042,
-                950
-              ],
-              [
-                1008,
-                950
-              ]
-            ]
-          ],
-          "layout": "stack3"
+          "layout": "stack3",
+          "fade": 0.12
         },
         {
           "id": "decisions-wall-right",

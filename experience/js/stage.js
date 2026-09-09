@@ -400,4 +400,22 @@ if (window.ResizeObserver && bandEl) {
     if (!state.inRoom) { applyMaster(state.s0, state.ox0, state.oy0, false); emit(); }
   }).observe(bandEl);
 }
+// Move the camera inside the room the visitor is already standing in. Same placement maths as
+// arrival — fitRoom by a normalized focus point — so a pan and an entry cannot disagree about
+// where a point on the render belongs. Everything mounted on the render is a child of #room, so
+// mounted screens travel with it and nothing needs to be repositioned.
+//
+// fitRoom clamps the render to keep it covering the stage, so a focus near an edge is honoured as
+// far as the edge and no further. That is the correct behaviour: the camera stops at the wall.
+export function panRoom(focus, ms = 1200) {
+  if (!state.inRoom) return false;
+  const Wr = roomImg.naturalWidth, Hr = roomImg.naturalHeight;
+  if (!Wr || !Hr) return false;
+  const fit = fitRoom(Wr, Hr, roomCoverRect(), visibleRect(), focus);
+  roomEl.style.transition = state.reduced ? 'none'
+    : `transform ${ms}ms var(--ease), opacity var(--dur) var(--ease)`;
+  roomEl.style.transform = `translate3d(${fit.ox}px, ${fit.oy}px, 0) scale(${fit.s})`;
+  return true;
+}
+
 export function setCurrentRoom(room) { state.currentRoom = room; }
