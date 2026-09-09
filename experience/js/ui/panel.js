@@ -1,8 +1,8 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-08d';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-09c';
 // Shared with the pins, so the panel's badge and the building's plate can never say different
 // words about the same station.
-import { STATUS_LABEL, esc } from '../roomfacts.js?v=2026-09-08d';
+import { STATUS_LABEL, esc } from '../roomfacts.js?v=2026-09-09c';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');
@@ -214,6 +214,7 @@ function renderStation(room, s) {
     <h2>${esc(s.headline)}</h2>
     <p class="summary">${esc(s.summary)}</p>
     ${links.length ? `<div class="ctas">${ctas}</div>` : ''}
+    <div id="station-extra"></div>
     ${galleryHtml(s, media)}
     ${s.capabilities?.length ? `<h3>Capabilities</h3><ul class="caps">${s.capabilities.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}`;
 

@@ -19,7 +19,7 @@
 //
 // Nothing happens on import. A screen exists only when a caller asks for one.
 //
-//   import { mountScreen } from './screens.js?v=2026-09-08d';
+//   import { mountScreen } from './screens.js?v=2026-09-09c';
 //   const id = mountScreen({
 //     layer: 'defense',                                 // 'master' | a room id | an element
 //     quad: [[112,36],[1107,137],[1100,500],[112,514]], // TL, TR, BR, BL in image pixels —

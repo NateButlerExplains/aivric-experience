@@ -238,3 +238,55 @@ p95 25.0 versus 25.1. Pins are `visibility: hidden` from the first instant of a 
 nothing here paints during the camera move at all. Note for anyone comparing against change 02's
 numbers: absolute frame times move with machine load between sessions, so only same-session
 comparisons carry information.
+
+---
+
+## Change 04 — The approver board
+
+**Problem.** The AIRE bridge was the last inert room. Change 02 lit its wall board with borrowed
+product screenshots, because `aire-workflow` has no media of its own — honest, but it made the
+building's best surface a placeholder. And nothing anywhere in the experience asks the visitor to
+*do* anything; you look at six rooms and leave.
+
+**Change.** The bridge's four-column board becomes the workflow it is painted as. The columns run
+proposed work → approval → action → verification, and the board **stops at column two** until the
+visitor approves, in the panel. Then it executes, verifies, and settles. It does not loop on its
+own — an animation running unattended behind a panel is motion nobody asked for.
+
+**No invented data.** Every word comes from the manifest. The four stage names and their
+descriptions are `aire-workflow`'s own capability lines, split on the colon they already contain;
+the fallback for a reworded manifest takes stage names from the station's own arrow-separated
+title. `aire-workflow` is `coming-soon`, so the board and the panel both say the sequence is
+illustrative. The demo tenant is still not needed — this was Tier 2's highest-scored idea and it
+turned out not to be blocked at all.
+
+**A surface can now be claimed.** `content/screens.json` gains `"driver": "approver"` on the four
+AIRE columns; `livescreens.js` skips any surface that declares a driver. Data, not a code branch —
+the next feature that wants a display asks for it the same way. Both features read the same
+geometry through `getScreenGeometry()`, so there is one file describing where the screens are.
+
+**Where the parts sit.** The board carries state; the panel carries the control and the words. The
+columns are ~250 CSS px, which is texture, not a readable control, and change 01 established that
+the readable thing belongs in the panel while the thing you watch stays on the left. The panel
+renders an empty `#station-extra` slot and knows nothing about the approver; the feature fills it.
+
+**Colour.** Gold is the AIRE stream's colour and is already spent on this room, so the board is
+monochrome and stage state is carried by brightness. The waiting column is the brightest thing on
+the wall.
+
+**Files.** `js/approver.js` (new) · `js/livescreens.js` (skip claimed surfaces, export the
+geometry) · `js/main.js` (init, wire the control, clear on exit) · `js/ui/panel.js` (the slot) ·
+`content/screens.json` (four `driver` keys) · `css/experience.css`.
+
+**One bug worth recording.** `replay()` set `arrived = true` to avoid re-running the arrival gate —
+but that gate is also what REMOVES `is-arriving`. Setting the flag without revealing left the whole
+board at `visibility: hidden` for the life of the room. Every state transition fired correctly and
+the sequence ran perfectly, invisibly, and the state assertions all passed. Only a screenshot
+caught it.
+
+**Verified.** 1440x900, 1280x720, 390x844: four columns mount, driven by the approver and not also
+by livescreens (4 screens in the room, all `ap-`, no duplicate ids); the full sequence runs;
+approve and replay work; Defense is untouched (3 `ls-` screens, 0 `ap-`, empty slot). Keyboard
+reaches the control by Tab and Enter approves. Reduced motion skips the travel, lands on the
+decision, and still approves. Frame pacing on room entry is unchanged: p95 16.8 ms with the board
+and 16.8 ms without, against change 02's 20 ms line — the `is-arriving` gate is what holds it.

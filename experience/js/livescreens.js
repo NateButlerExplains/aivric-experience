@@ -20,8 +20,8 @@
 //     after the room has landed, which is also the better beat: you arrive, and then the room
 //     wakes up.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-08d';
-import clock from './clock.js?v=2026-09-08d';
+import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09c';
+import clock from './clock.js?v=2026-09-09c';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -84,6 +84,10 @@ export async function initLiveScreens(rooms) {
 }
 
 export function initLiveScreenNav(handler) { onStation = handler || onStation; }
+
+// The surface geometry, shared with any other feature that drives a display in these renders.
+// One fetch, one file, one source of truth for where the screens are.
+export function getScreenGeometry() { return geometry; }
 
 /* ---------------------------------------------------------------- *
  * Mounting
@@ -214,7 +218,9 @@ export function showRoomScreens(room, station) {
 
   const selected = station ? station.id : null;
   const taken = new Set();
-  spec.surfaces.filter((x) => x.mount !== false).forEach((surface, i) => {
+  // A surface with a `driver` belongs to another feature — the AIRE columns are the approver
+  // board's. Without this both features mount on the same four quads and fight over them.
+  spec.surfaces.filter((x) => x.mount !== false && !x.driver).forEach((surface, i) => {
     const list = stillsFor(surface, room, selected, taken);
     if (!DEBUG && !list) return;                        // nothing real to show: leave it dark
     const stationId = list[0].station;

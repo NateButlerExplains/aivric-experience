@@ -960,3 +960,77 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   .screen-live .ls-frame { transition: none !important; transform: scale(1.06) !important; }
   .screen-live.is-live-link::before { transition: none !important; }
 }
+
+/* ---------------------------------------------------------------------------
+   The approver board — the AIRE bridge's four columns as the four stages
+   (js/approver.js). The board carries state; the panel carries the control and
+   the words. Gold is already spent on this room by its stream, so the board is
+   monochrome and stage state is brightness, not hue.
+   --------------------------------------------------------------------------- */
+
+.screen-board {
+  --ls-dim: 0.8;
+  background: #060b14;
+  display: block;
+}
+.screen-board .ap {
+  position: absolute; inset: 0;
+  padding: 7% 8%;
+  display: flex; flex-direction: column; gap: 0.35em;
+  font-family: var(--font-head);
+  color: var(--text-muted);
+  /* Authored against the column's own pixel box, so the type scales with the render rather than
+     with the viewport — the columns are ~330 image px wide and the board must read at any zoom. */
+  font-size: 15px; line-height: 1.3;
+  opacity: 0.42;
+  transition: opacity 420ms var(--ease);
+}
+.screen-board.is-on .ap { opacity: 1; }
+.screen-board .ap-num {
+  font-family: var(--font-body); font-size: 11px; letter-spacing: 0.18em;
+  color: var(--text-dim);
+}
+.screen-board .ap-name { font-size: 19px; font-weight: 500; color: var(--text); }
+.screen-board .ap-desc { font-family: var(--font-body); font-size: 12.5px; color: var(--text-muted); }
+.screen-board .ap-illus {
+  margin-top: auto; align-self: flex-start;
+  font-family: var(--font-body); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim); border: 1px solid var(--line); border-radius: 3px; padding: 2px 6px;
+}
+
+/* The state lamp. A dot, because the columns are small and a word would not survive the scale. */
+.screen-board .ap-state {
+  position: absolute; right: 8%; top: 7%;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid var(--text-dim); background: transparent;
+  transition: background 300ms var(--ease), border-color 300ms var(--ease);
+}
+.screen-board .ap-state[data-state="active"] { background: var(--text-muted); border-color: var(--text-muted); }
+.screen-board .ap-state[data-state="done"] { background: var(--text); border-color: var(--text); }
+.screen-board .ap-state[data-state="waiting"] {
+  background: #fff; border-color: #fff;
+  animation: ap-wait 1.9s var(--ease) infinite;
+}
+@keyframes ap-wait {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+  55% { box-shadow: 0 0 0 7px rgba(255,255,255,0); }
+}
+/* The column being asked about is the brightest thing on the wall. */
+.screen-board.is-waiting .ap-name { color: #fff; }
+
+/* The control, in the panel. */
+#station-extra:empty { display: none; }
+#station-extra { margin: 18px 0 4px; }
+#station-extra .ap-line { margin: 0 0 10px; color: var(--text-muted); font-size: 14px; }
+#station-extra .ap-note {
+  margin: 10px 0 0; font-size: 12px; color: var(--text-dim);
+}
+/* The slot sits directly above Capabilities when a station has no media, so it needs to close
+   itself off rather than run into the next heading. */
+#station-extra:not(:empty) { padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+#station-extra .btn[disabled] { opacity: 0.45; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-board .ap, .screen-board .ap-state { transition: none !important; }
+  .screen-board .ap-state[data-state="waiting"] { animation: none !important; }
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Surface geometry for js/livescreens.js. Quads are TL, TR, BR, BL in the render's own image pixels; occluders are traced silhouettes in the same space. Calibrated with tools/calibrate.html. `mount: false` records geometry that is not used yet.",
+  "note": "Surface geometry for js/livescreens.js. Quads are TL, TR, BR, BL in the render's own image pixels; occluders are traced silhouettes in the same space. Calibrated with tools/calibrate.html. `mount: false` records geometry that is not used yet. A surface with a `driver` is claimed by that feature; livescreens leaves it alone.",
   "rooms": {
     "defense": {
       "imageWidth": 2048,
@@ -385,7 +385,8 @@
                 442
               ]
             ]
-          ]
+          ],
+          "driver": "approver"
         },
         {
           "id": "aire-board-col2",
@@ -445,7 +446,8 @@
                 442
               ]
             ]
-          ]
+          ],
+          "driver": "approver"
         },
         {
           "id": "aire-board-col3",
@@ -501,7 +503,8 @@
                 438
               ]
             ]
-          ]
+          ],
+          "driver": "approver"
         },
         {
           "id": "aire-board-col4",
@@ -525,7 +528,8 @@
               405
             ]
           ],
-          "dim": 0.8
+          "dim": 0.8,
+          "driver": "approver"
         },
         {
           "id": "aire-monitor-left",

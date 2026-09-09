@@ -1,14 +1,15 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-08d';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-08d';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-08d';
-import { onRoute, go, parse } from './router.js?v=2026-09-08d';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-08d';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-08d';
-import { runIntro } from './ui/intro.js?v=2026-09-08d';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-08d';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-08d';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens } from './livescreens.js?v=2026-09-08d';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-09c';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-09c';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-09c';
+import { onRoute, go, parse } from './router.js?v=2026-09-09c';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-09c';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-09c';
+import { runIntro } from './ui/intro.js?v=2026-09-09c';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-09c';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-09c';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-09c';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-09c';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -82,6 +83,28 @@ async function main() {
   initLiveScreenNav((id) => go({ view: 'station', id }));
   await initLiveScreens(rooms);
 
+  // The AIRE bridge's four columns are the approver board's, not the living screens'. The panel
+  // carries the control and the words; the board carries the state. Same split as change 01 —
+  // the readable thing is in the panel, the thing you watch is on the left.
+  const extra = () => document.getElementById('station-extra');
+  initApprover(getScreenGeometry(), {
+    onState: (st) => {
+      const host = extra();
+      if (!host || !host.dataset.approver) return;
+      host.innerHTML =
+        `<p class="ap-line">${st.done
+            ? 'Verified. Evidence bundle signed.'
+            : st.waiting
+              ? 'A change is waiting on a reviewer.'
+              : st.stage ? `${st.stage.name}: ${st.stage.desc}` : 'Ready.'}</p>` +
+        `<button class="btn ${st.waiting ? 'primary' : 'outline'}" type="button" id="ap-go"${st.waiting || st.done ? '' : ' disabled'}>` +
+        `${st.done ? 'Run it again' : 'Approve this change'}</button>` +
+        `<p class="ap-note">Illustrative. AIRE Agentic Mesh is coming soon.</p>`;
+      const btn = host.querySelector('#ap-go');
+      if (btn) btn.addEventListener('click', () => { if (!approve()) replay(); });
+    },
+  });
+
   // Every room render is 500-800 KB, so the first entry into a cold room stalls on the network.
   // Fetch and decode them one at a time once the floor is on screen: sequential so the six
   // requests never contend with each other or with anything the first paint still needs.
@@ -139,6 +162,7 @@ async function main() {
       const leavingRoom = getState().inRoom;
       current = null; setCurrentRoom(null);
       clearScreens();
+      clearApprover();
       goBuilding(true);
       updateHud({ view: 'building' });
       if (!revealed) {
@@ -175,6 +199,11 @@ async function main() {
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest('#tabs');
     const station = showRoom(room, stationId);
     showRoomScreens(room, station);
+    // The slot is re-created by every panel render, so mark it and let the board refill it.
+    const slot = document.getElementById('station-extra');
+    const boardRoom = !!(station && (station.capabilities || []).length >= 4 && room.id === 'aire-bridge');
+    if (slot && boardRoom) slot.dataset.approver = '1';
+    showApprover(boardRoom ? room : null, station);
     if (keepFocus) { const tab = document.querySelector('#tabs .tab.active'); if (tab) tab.focus(); }
     updateHud({ view: route.view, room, station });
   });
