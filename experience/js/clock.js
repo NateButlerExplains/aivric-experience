@@ -5,7 +5,7 @@
 // slowed, run backwards, or stepped one frame at a time by a story engine, an
 // attract loop, or a deterministic visual test.
 //
-//   import clock, { createClock } from './clock.js?v=2026-09-10d';
+//   import clock, { createClock } from './clock.js?v=2026-09-10g';
 //   const off = clock.subscribe((t, dt) => { dot.style.setProperty('--t', t); });
 //
 // API — createClock(options) returns a clock; `clock` is the shared instance.

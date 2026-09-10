@@ -589,3 +589,32 @@ are now `softRects` in the surface's OWN local box, which is the coordinate spac
 got backwards.
 
 **Files.** `tools/build-mattes.py` · `content/screens.json` · `css/experience.css`.
+
+
+---
+
+## Change 10 — The boardroom ribbon, third time
+
+Two real bugs, found by measuring rather than looking.
+
+**The feather washed out its own cut.** `softRects` blurred each rectangle by a sigma proportional
+to its smaller dimension. For the ribbon's tall, narrow band that meant a 22px blur across a 63px
+band, so the centre never reached full transparency: the beam it was meant to clear still dimmed by
+13% instead of not at all. The rectangle is now grown by a fixed 7px feather first and blurred by
+that same amount, so the blur eats only the added margin and the core stays at zero.
+
+**The band ran out from under a slanting beam.** Sized to where the ribbon crosses the panel's top
+edge, it no longer covered it lower down, where the beam has drifted left.
+
+**And a measurement trap worth recording.** Widening the band to chase the residual dip took the
+cut to 52% of the panel's width — most of the dashboard gone — for no gain, because the rows that
+were still dipping were not the beam at all. A naive "brightest pixel in a wide window" search was
+latching onto the glass panel's own bright bezel edges. Tracking the beam through a narrow window
+that follows its known slant shows the true figure: **peak-luminance ratio 1.000 mean, 0.996 min
+below the panel's edge** — the beam is not dimmed where it crosses — at a band of 0.10-0.50 rather
+than 0.06-0.58, which leaves the panels readable.
+
+The cup already passed on the previous attempt: pixel-identical to the untouched render over its
+whole body, with the content's top edge stepping down to clear it.
+
+**Files.** `tools/build-mattes.py` · `content/screens.json`.

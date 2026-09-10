@@ -144,9 +144,17 @@ def main(only=None):
             for r in s.get('softRects', []):
                 x0, x1 = round(r[0] * w), round(r[1] * w)
                 y0, y1 = round(r[2] * h), round(r[3] * h)
+                # The rect is pasted, then feathered by a MODEST fixed sigma. An earlier version
+                # scaled the blur to the rect's smaller dimension, which on a tall narrow band gave
+                # a 22px blur across a 63px band — the centre never reached full transparency, so
+                # the ribbon it was meant to clear still dimmed by 13% instead of not at all. The
+                # rect is also grown by the feather first, so the blur eats only the added margin
+                # and the core stays at zero.
+                feather = 7
                 cut = Image.new('L', (w, h), 255)
-                cut.paste(0, (x0, y0, x1, y1))
-                cut = cut.filter(ImageFilter.GaussianBlur(max(3, min(x1 - x0, y1 - y0) * 0.35)))
+                cut.paste(0, (max(0, x0 - feather), max(0, y0 - feather),
+                              min(w, x1 + feather), min(h, y1 + feather)))
+                cut = cut.filter(ImageFilter.GaussianBlur(feather))
                 alpha = Image.frombytes('L', (w, h), bytes(
                     min(a, c) for a, c in zip(alpha.tobytes(), cut.tobytes())))
             plate = Image.new('RGBA', (w, h), (255, 255, 255, 255))
