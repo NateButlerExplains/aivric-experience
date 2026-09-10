@@ -1322,3 +1322,71 @@ body.directing #room-nav, body.directing #hint { opacity: 0; pointer-events: non
   #walk-ctl .btn { font-size: 12.5px; padding: 7px 10px; }
 }
 @media (prefers-reduced-motion: reduce) { #walk { animation: none !important; } }
+
+/* ---------------------------------------------------------------------------
+   Six panels, one truth — the Client Vision arrival sequence (js/panels.js).
+   Transient: everything here is gone from the DOM once the room has settled,
+   so the steady state is livescreens' own, untouched.
+   --------------------------------------------------------------------------- */
+
+/* A display held dark until its turn in the sequence. Same mechanism as is-arriving. */
+.screen-live.is-held { visibility: hidden; opacity: 0; }
+/* Just lit: the hologram runs a little brighter than it will rest, then eases back. The transition
+   lives only on the two transient classes panels.js owns — is-waking, then is-settling for the
+   900 ms ease back — so no glass screen anywhere else carries a latent ease on its wrap; and on
+   the direct wrap only, so a stacked surface (wraps inside .ls-stack) is excluded by construction. */
+.screen-live.is-glass.is-waking > .ls-wrap,
+.screen-live.is-glass.is-settling > .ls-wrap { transition: opacity 900ms var(--ease); will-change: opacity; }
+.screen-live.is-glass.is-waking > .ls-wrap { opacity: 0.86; }
+
+/* The light. Plain compositing — a blend mode on a per-frame canvas costs real frames on entry.
+   The canvas is promoted to its own layer: it is redrawn while the threads travel, and as its own
+   layer only its pixels are re-uploaded, not the mapped box it sits in. */
+.screen-light { pointer-events: none; }
+.screen-light.is-arriving { visibility: hidden; }
+.screen-light .pl-light { position: absolute; inset: 0; width: 100%; height: 100%; display: block; will-change: transform; }
+
+/* The plate: the pillar's name, set inside the panel in the panel's own light — a hologram emits,
+   it does not cast a shadow, so there is no dark halo and the still shows through the glyphs —
+   in image pixels so it scales with the render. --pl is written by the clock, 0..1, only while
+   it changes. The type is kept as soft as the still it sits on: a 62%-opacity still is not crisp,
+   and crisp type over it read as a caption pasted on the hologram — so a 1 px spread on the
+   glyphs, no hard rule, and a faint elliptical scrim so the words hold contrast whatever the panel
+   shows beneath them. The spread is a text-shadow, not a filter: a blur filter on six masked,
+   projected plates was measured at a full frame on the room-entry p95. */
+.screen-plate { --pl: 0; --pl-c: 120, 190, 255; --pl-t: 205, 228, 255; pointer-events: none; }
+.screen-plate.is-warm { --pl-c: 255, 200, 120; --pl-t: 255, 236, 205; }
+/* Not yet lit: a faint cool veil over the hologram, inside the surface mask, so a panel visibly
+   comes ON at its turn rather than merely gaining a label. Lifts over the still's own 700 ms. */
+.screen-plate::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(6, 12, 24, 0.26);
+  transition: opacity 700ms var(--ease);
+}
+.screen-plate.is-lit::before { opacity: 0; }
+/* Full-size wrapper: carries the occluder mask (a mullion in front of the panel), so the type is
+   cut by the frame member exactly as the still behind it is. */
+.screen-plate .pl-clip { position: absolute; inset: 0; }
+.screen-plate .pl {
+  position: absolute; left: 5%; bottom: 6%; max-width: 92%;
+  padding: 10px 26px 10px 10px;
+  opacity: calc(var(--pl) * 0.6);
+  transform: translate3d(0, calc((1 - var(--pl)) * 8px), 0);
+  font-family: var(--font-head); font-weight: 400;
+  color: rgba(var(--pl-t), 0.92);
+  text-shadow: 0 0 1px rgba(var(--pl-t), 0.75), 0 0 2px rgba(var(--pl-t), 0.35), 0 0 6px rgba(var(--pl-c), 0.55);
+  background: radial-gradient(ellipse 70% 80% at 35% 55%, rgba(5, 12, 24, 0.5), rgba(5, 12, 24, 0) 100%);
+}
+/* The index sits in the same light as the name, quieter: a second colour and wide tracking read as
+   an editorial caption device, which a hologram would not emit. */
+.screen-plate .pl-n {
+  display: block; font-size: 9px; line-height: 1; letter-spacing: 0.08em;
+  color: rgba(var(--pl-t), 0.6);
+}
+.screen-plate .pl-t {
+  display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.2; letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+/* Set in a clear band beside a mullion (panels.js clearBand): tighter, and the name may wrap. */
+.screen-plate .pl.is-narrow { padding: 8px; }
+.screen-plate .pl.is-narrow .pl-t { white-space: normal; }

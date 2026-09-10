@@ -890,3 +890,59 @@ sit at four room-entry boundaries, at most 0.7 s each, where the room render's d
 the wall clock. Every frame at one-second intervals was inspected on a contact sheet.
 
 Regenerate with `node tools/build-film.js --verify` from `experience/` with the local server up.
+
+---
+
+## Change 17 — Six panels, one truth
+
+The Client Vision chamber's argument, shown rather than asserted. The render has a gold sphere with
+six holographic panels around it, and in the steady state the panels show product stills. Now, on
+arrival, the six panels wake one at a time — one per Fabric pillar, each with a small plate carrying
+the pillar's name in the manifest's own words: GenAI Chat, Shared Data Layer, Agentic Design,
+Efficient Compute, Data Localization, AI Model Inspection — and as each wakes, a thread of light
+leaves it and converges on the sphere, cool blue from the left-hand panels and warm gold from the
+right, so the threads read as more of the streams the photograph already has. Each arrival
+brightens the sphere a touch. When all six are in, the sphere takes the light, the plates fade, and
+by 4.5 s the room is exactly the steady state change 02 left — nothing of this module remains in
+the DOM.
+
+It runs once per arrival and never loops; a station change inside the room is not an arrival.
+Reduced motion, `?screens=0` and `?panels=0` land straight on the steady state. Everything is data:
+`content/screens.json` carries the sphere's position and the pillar station, and an `order` on each
+Vision surface; no quad, matte or manifest value changed. Timing is the shared clock's, so the
+director's Vision beat and the film export carry the sequence too.
+
+**How it was built, because the last two "wow" features did not land visually.** Three builders
+worked the same brief from different angles in isolated worktrees — threads of light, instruments
+powering up, content converging into the sphere — each capturing its own frames with one shared
+harness. Three judges ranked the captures blind, on photographic integration, on whether a
+first-time viewer sees the argument, and on engineering and regression; threads of light won on
+every lens (8 / 6 / 3). Then a guardian panel with the same three lenses tried to fail the applied
+build and did, twice: five blockers over two rounds — hard-ended thread heads that read as brush
+strokes, evenly combed fibres, plates that read as UI stickers with a dark text-shadow, a pinwheel
+of six identical arcs, a blue strand riding the gold beam — each fixed and recaptured. Round three
+passed on all three lenses with no blockers. Three of the remaining minors were fixed after.
+
+**The light is not a vector line.** Each thread is a bundle of a few dozen faint, unequal fibres —
+different widths, brightness, spacing and length, a few outliers outside the band — stroked on two
+canvases, half-resolution for the cores and quarter-resolution for the glow, whose bilinear upscale
+gives a soft halo for free. No fibre is bright enough to be counted at 1x; the stream is their sum.
+Nothing has a hard end: every fibre fades in out of its panel and fades out again inside the sphere
+at its own depth. Each thread is clipped to its panel plus the space beyond the edge that faces the
+sphere, so light can only ever be seen leaving a panel, never sprouting beside one. The canvas
+covers only the region the threads touch and is redrawn on alternate frames on a fast display.
+
+**Files.** `js/panels.js` (new) · `js/main.js` · `css/experience.css` · `content/screens.json`
+(additive: `sequence`, `order`).
+
+**Verified.** Final captures at 1440x900 and 390x844 with zero console or page errors. Room-entry
+frame pacing, median of five p95s: 25.0 ms with the sequence, 25.1 ms with `?panels=0`. In the DOM
+1.5 s after entering Vision: six plates, one light canvas, four displays still held; at 5 s none of
+them, six living screens — livescreens' own steady state. Defense, Offense, AIRE, Executive
+Decisions and Fabric mount nothing of this module. A station change inside Vision mounts nothing;
+leaving clears everything; re-entering replays once; the narrated walk steps through Vision as
+before. Reduced motion lands directly on the steady state. On a portrait phone the plates stay off
+by design — legible type is impossible at 300 px — and the light reads as a brief blue and gold
+shimmer around the sphere; the layout is intact and it settles cleanly.
+
+Built by a three-angle judged workflow with a three-lens guardian (18 agents); recorded above.

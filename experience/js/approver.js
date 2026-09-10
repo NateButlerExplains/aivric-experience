@@ -16,9 +16,9 @@
 // for time that can be paused, scrubbed or stepped. Including the `is-arriving` gate, which is
 // what keeps the room-entry frame budget where change 02 left it.
 
-import { mountScreen, getScreenElement, unmountScreen, applySurfaceMask } from './screens.js?v=2026-09-10t';
-import { panRoom } from './stage.js?v=2026-09-10t';
-import clock from './clock.js?v=2026-09-10t';
+import { mountScreen, getScreenElement, unmountScreen, applySurfaceMask } from './screens.js?v=2026-09-10u';
+import { panRoom } from './stage.js?v=2026-09-10u';
+import clock from './clock.js?v=2026-09-10u';
 
 const params = new URLSearchParams(location.search);
 const OFF = params.get('screens') === '0';

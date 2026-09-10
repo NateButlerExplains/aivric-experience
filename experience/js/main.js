@@ -1,17 +1,18 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10t';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10t';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10t';
-import { onRoute, go, parse } from './router.js?v=2026-09-10t';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10t';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10t';
-import { runIntro } from './ui/intro.js?v=2026-09-10t';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10t';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10t';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10t';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10t';
-import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10t';
-import { initDirector } from './director.js?v=2026-09-10t';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10u';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10u';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-10u';
+import { onRoute, go, parse } from './router.js?v=2026-09-10u';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-10u';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10u';
+import { runIntro } from './ui/intro.js?v=2026-09-10u';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10u';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10u';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10u';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10u';
+import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10u';
+import { initDirector } from './director.js?v=2026-09-10u';
+import { initPanels, showPanels, clearPanels } from './panels.js?v=2026-09-10u';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -86,6 +87,8 @@ async function main() {
   // click on one goes there — the same navigation the pins and the tabs already use.
   initLiveScreenNav((id) => go({ view: 'station', id }));
   await initLiveScreens(rooms);
+  // The Client Vision arrival sequence reads its pillar names from the manifest's own stations.
+  initPanels(rooms);
 
   // The AIRE bridge's four columns are the approver board's, not the living screens'. The panel
   // carries the control and the words; the board carries the state. Same split as change 01 —
@@ -180,6 +183,7 @@ async function main() {
       const leavingRoom = getState().inRoom;
       current = null; setCurrentRoom(null);
       clearScreens();
+      clearPanels();
       clearApprover();
       goBuilding(true);
       updateHud({ view: 'building' });
@@ -217,6 +221,9 @@ async function main() {
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest('#tabs');
     const station = showRoom(room, stationId);
     showRoomScreens(room, station);
+    // After the screens are mounted, because the sequence holds them dark until their turn. Once per
+    // arrival: a station change inside the room is a no-op here, as it is one line up.
+    showPanels(room);
     // The slot is re-created by every panel render, so mark it and let the board refill it.
     const slot = document.getElementById('station-extra');
     const boardRoom = !!(station && (station.capabilities || []).length >= 4 && room.id === 'aire-bridge');

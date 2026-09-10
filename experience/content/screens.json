@@ -399,6 +399,14 @@
     "vision": {
       "imageWidth": 2048,
       "imageHeight": 1152,
+      "sequence": {
+        "pillars": "fabric-pillars",
+        "sphere": {
+          "x": 1020,
+          "y": 500,
+          "r": 230
+        }
+      },
       "surfaces": [
         {
           "id": "vision-panel-upper-right",
@@ -424,7 +432,8 @@
           ],
           "glass": true,
           "dim": 1.0,
-          "matte": "media/scene/mattes/vision-panel-upper-right.png"
+          "matte": "media/scene/mattes/vision-panel-upper-right.png",
+          "order": 2
         },
         {
           "id": "vision-panel-lower-right",
@@ -450,7 +459,8 @@
           ],
           "glass": true,
           "dim": 1.0,
-          "matte": "media/scene/mattes/vision-panel-lower-right.png"
+          "matte": "media/scene/mattes/vision-panel-lower-right.png",
+          "order": 6
         },
         {
           "id": "vision-panel-lower-left",
@@ -476,7 +486,8 @@
           ],
           "glass": true,
           "dim": 1.0,
-          "matte": "media/scene/mattes/vision-panel-lower-left.png"
+          "matte": "media/scene/mattes/vision-panel-lower-left.png",
+          "order": 5
         },
         {
           "id": "vision-panel-mid-left",
@@ -522,7 +533,8 @@
               ]
             ]
           ],
-          "matte": "media/scene/mattes/vision-panel-mid-left.png"
+          "matte": "media/scene/mattes/vision-panel-mid-left.png",
+          "order": 3
         },
         {
           "id": "vision-panel-mid-right",
@@ -568,7 +580,8 @@
               ]
             ]
           ],
-          "matte": "media/scene/mattes/vision-panel-mid-right.png"
+          "matte": "media/scene/mattes/vision-panel-mid-right.png",
+          "order": 4
         },
         {
           "id": "vision-panel-upper-left",
@@ -595,7 +608,8 @@
           "glass": true,
           "dim": 1.0,
           "why": "The sphere's limb crossing this panel is glowing light, not a hard object; the panel's own glass opacity already lets it through. Only the two glass mullions stay traced, because a mullion really does have a hard edge.",
-          "matte": "media/scene/mattes/vision-panel-upper-left.png"
+          "matte": "media/scene/mattes/vision-panel-upper-left.png",
+          "order": 1
         }
       ]
     },
