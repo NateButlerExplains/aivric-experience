@@ -741,3 +741,39 @@ generated) · `index.html` (the building's own tags) · `js/ui/panel.js` · `css
 the served bytes, which is what a crawler sees rather than the post-redirect DOM; the cards serve;
 the Share control copies the stub URL and confirms; the room walk is unaffected and there are no
 console errors.
+
+---
+
+## Change 13 — Room sound, synthesised
+
+Every wing has its own atmosphere and the site ships no audio files. A noise bed and two detuned
+oscillators through a lowpass filter, differing between rooms by PARAMETER rather than by asset:
+Defense low and wide, Offense tighter and brighter, Client Vision an airy high pad, the AIRE bridge
+a soft machine hum, the boardroom warm and quiet. No bytes on the wire, no licence, no loop point to
+click, and a seventh room would be six numbers rather than a recording session.
+
+Two details that matter more than the synthesis. The noise is **brown-ish rather than white** —
+integrated rather than raw, which tilts it low the way a room actually sounds; white noise reads as
+a broken speaker. And the two oscillators sit a few cents apart, because the beating between them is
+what stops a synth drone sounding like a test tone.
+
+Moving between rooms **glides** over 1.2s rather than cutting. A hard cut between two tones is a
+jump scare.
+
+**Muted by default, and provably so.** No `AudioContext` is constructed until the visitor presses
+the control — verified by counting constructions through a proxy: zero before the gesture, one
+after. A visitor who never presses it pays nothing and hears nothing.
+
+**The preference is armed, not replayed.** No browser will start audio without a gesture, so a
+stored "on" cannot simply be restored on load. Instead the next interaction of any kind brings the
+room back — verified: zero contexts after a reload, one after the first click. Muting fades out and
+then suspends the context, so a silent page costs nothing.
+
+The control sits beside the film's own Mute/Unmute in the HUD, borrowing its wording and its
+`aria-pressed` pattern, so the two read as one idea rather than two.
+
+**Files.** `js/sound.js` (new) · `js/ui/hud.js` · `js/main.js` · `css/experience.css`.
+
+**Verified.** Nothing audible or constructed before a gesture; toggling on and off persists across a
+reload; the preference arms and wakes on first interaction; a hidden tab suspends; no console errors
+at 1440x900 or 390x844, and the room walk is unaffected.

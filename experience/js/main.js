@@ -1,15 +1,16 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10m';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10m';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10m';
-import { onRoute, go, parse } from './router.js?v=2026-09-10m';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10m';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10m';
-import { runIntro } from './ui/intro.js?v=2026-09-10m';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10m';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10m';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10m';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10m';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10p';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10p';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-10p';
+import { onRoute, go, parse } from './router.js?v=2026-09-10p';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-10p';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10p';
+import { runIntro } from './ui/intro.js?v=2026-09-10p';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10p';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10p';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10p';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10p';
+import { initSound, setRoom as setSoundRoom, toggleSound, soundWanted } from './sound.js?v=2026-09-10p';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -78,6 +79,8 @@ async function main() {
     onFilm: async () => { await runIntro(); },
   });
   initPanel({ onSelectStation: (s) => go({ view: 'station', id: s.id }) });
+  // The button exists from the first paint; the AudioContext does not exist until it is pressed.
+  initSound(document.getElementById('btn-sound'));
   // The painted displays inside each room render show that station's own screenshots, and a
   // click on one goes there — the same navigation the pins and the tabs already use.
   initLiveScreenNav((id) => go({ view: 'station', id }));
@@ -167,6 +170,7 @@ async function main() {
       current = null; setCurrentRoom(null);
       clearScreens();
       clearApprover();
+      setSoundRoom('building');
       goBuilding(true);
       updateHud({ view: 'building' });
       if (!revealed) {
@@ -201,6 +205,7 @@ async function main() {
       prevBtn.textContent = '← ' + neighbor(-1).name; nextBtn.textContent = neighbor(1).name + ' →';
     }
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest('#tabs');
+    setSoundRoom(room.id);
     const station = showRoom(room, stationId);
     showRoomScreens(room, station);
     // The slot is re-created by every panel render, so mark it and let the board refill it.

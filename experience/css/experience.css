@@ -1288,3 +1288,14 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   background: rgba(8,15,28,0.96); border: 1px solid var(--line);
   font: 400 12px/1 var(--font-body); color: var(--text);
 }
+
+/* ---- Room sound ----
+   Off is the resting state and it looks like it: the two waves are hidden until sound is on, so
+   the icon reads as "speaker, silent" rather than as a speaker that might be playing. */
+#btn-sound .wave1, #btn-sound .wave2 { opacity: 0; transition: opacity 260ms var(--ease); }
+#btn-sound.is-on .wave1 { opacity: 0.9; }
+#btn-sound.is-on .wave2 { opacity: 0.55; }
+#btn-sound.is-on { color: var(--text); border-color: var(--line); }
+@media (prefers-reduced-motion: reduce) {
+  #btn-sound .wave1, #btn-sound .wave2 { transition: none !important; }
+}
