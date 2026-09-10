@@ -22,8 +22,8 @@
 //     back until the camera stops, because that is a genuine per-frame cost; painting a decoded
 //     image is not.
 
-import { mountScreen, getScreenElement, unmountScreen, quadSize, applySurfaceMask } from './screens.js?v=2026-09-10b';
-import clock from './clock.js?v=2026-09-10b';
+import { mountScreen, getScreenElement, unmountScreen, quadSize, applySurfaceMask } from './screens.js?v=2026-09-10d';
+import clock from './clock.js?v=2026-09-10d';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal

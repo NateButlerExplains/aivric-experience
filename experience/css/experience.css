@@ -949,6 +949,10 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
    which cross the corners of four of the six panels, come through without a traced polygon each. */
 .screen-live.is-glass { background: none; }
 .screen-live.is-glass .ls-wrap { opacity: 0.62; }
+/* The boardroom table reads brighter than a floating hologram, so it carries more of its own
+   content while still letting the cup and the ceiling ribbon through. */
+.screen-live.is-glass .ls-stack { opacity: 0.78; }
+.screen-live.is-glass .ls-stack .ls-wrap { opacity: 1; }
 .screen-live.is-glass::after { opacity: 0.4; }
 .screen-live.is-glass .ls-frame { filter: brightness(1.08) saturate(0.8) contrast(0.95); }
 

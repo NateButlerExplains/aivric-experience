@@ -54,6 +54,33 @@ def quad_size(quad):
     return max(1, round((d(0, 1) + d(3, 2)) / 2)), max(1, round((d(0, 3) + d(1, 2)) / 2))
 
 
+def segment(im, session, tiles=(3, 2), overlap=0.18):
+    """Person matte for a whole render, refined by segmenting overlapping tiles.
+
+    u2net resizes its input to 320x320 internally, so on a 2048px render anything only a few pixels
+    wide is below the model's resolution before it even starts. That is why a pointing hand came
+    back as a blunt blob with no fingers, and why the arm ended in a stump once the matte was cut.
+    Segmenting overlapping tiles gives the model a far larger effective scale on the same pixels,
+    and taking the per-pixel MAXIMUM against the full-frame pass keeps whatever either one finds:
+    the global pass gets bodies right, the tiles recover fingers, hair and other thin features.
+    """
+    W, H = im.size
+    best = remove(im, session=session, only_mask=True)
+    cols, rows = tiles
+    tw, th = W // cols, H // rows
+    ox, oy = int(tw * overlap), int(th * overlap)
+    for r in range(rows):
+        for c in range(cols):
+            box = (max(0, c * tw - ox), max(0, r * th - oy),
+                   min(W, (c + 1) * tw + ox), min(H, (r + 1) * th + oy))
+            part = remove(im.crop(box), session=session, only_mask=True)
+            patch = best.crop(box)
+            merged = Image.frombytes('L', patch.size, bytes(
+                max(a, b) for a, b in zip(patch.tobytes(), part.tobytes())))
+            best.paste(merged, box)
+    return best
+
+
 def main(only=None):
     geo = json.loads(GEOMETRY.read_text())
     OUT.mkdir(parents=True, exist_ok=True)
@@ -72,7 +99,7 @@ def main(only=None):
             continue
 
         print(f'{room_id}: segmenting {render.name}')
-        people = remove(Image.open(render).convert('RGB'), session=session, only_mask=True)
+        people = segment(Image.open(render).convert('RGB'), session)
 
         for s in wants:
             w, h = quad_size(s['quad'])
@@ -87,15 +114,14 @@ def main(only=None):
             # the interior to fully opaque and keep only a short transition.
             warped = warped.point(lambda v: 0 if v < 60 else (255 if v > 120 else (v - 60) * 255 // 60))
 
-            # ERODE, then feather INWARD. This is the counter-intuitive part and it is the whole
-            # fix. An outward feather keeps a rim of the ORIGINAL render around the silhouette; here
-            # the render's wall is bright blue and the mounted dashboard is near-black, so that rim
-            # reads as a glowing outline traced around a person's head. Shrinking the cut-out first
-            # means the soft edge falls INSIDE the silhouette instead: the mounted content laps a
-            # pixel or two over the person's own edge, which is invisible, rather than the render
-            # leaking out around them, which is not.
-            warped = warped.filter(ImageFilter.MinFilter(3))
-            warped = warped.filter(ImageFilter.GaussianBlur(0.8))
+            # NO EROSION, and a tight feather. An earlier version eroded the whole silhouette by a
+            # pixel to keep the render from leaking a bright rim around people — which worked, but
+            # a uniform erode also eats anything only a few pixels wide. It removed the pointing
+            # man's fingertips and left his arm ending in a stump at the knuckles: exactly the
+            # "what happened to that person" failure this is all trying to avoid. Losing a hand is
+            # far worse than a faint rim, so the silhouette is kept whole and the feather is kept
+            # tight enough that there is very little rim to leak.
+            warped = warped.filter(ImageFilter.GaussianBlur(0.6))
             alpha = warped.point(lambda v: 255 - v)          # person -> transparent
 
             # Feather the matte's own border. Without this the mounted content ends in a hard line
@@ -111,13 +137,16 @@ def main(only=None):
             alpha = Image.frombytes('L', (w, h), bytes(
                 min(a, b) for a, b in zip(alpha.tobytes(), border.tobytes())))
 
-            # A light beam or other soft foreground the segmenter cannot see: a vertical band,
-            # heavily feathered, given in fractions of the surface's own width.
-            for band in s.get('softBands', []):
-                x0, x1 = round(band[0] * w), round(band[1] * w)
+            # Foreground the segmenter cannot see — a light beam, a cup — as heavily feathered
+            # rectangles in fractions of the surface's OWN box: [x0, x1, y0, y1]. Local, not image,
+            # coordinates: the first attempt at this put a band at the wrong place entirely because
+            # the quad is rotated 180 degrees, so image-space intuition was backwards.
+            for r in s.get('softRects', []):
+                x0, x1 = round(r[0] * w), round(r[1] * w)
+                y0, y1 = round(r[2] * h), round(r[3] * h)
                 cut = Image.new('L', (w, h), 255)
-                cut.paste(0, (x0, 0, x1, h))
-                cut = cut.filter(ImageFilter.GaussianBlur(max(3, (x1 - x0) * 0.55)))
+                cut.paste(0, (x0, y0, x1, y1))
+                cut = cut.filter(ImageFilter.GaussianBlur(max(3, min(x1 - x0, y1 - y0) * 0.35)))
                 alpha = Image.frombytes('L', (w, h), bytes(
                     min(a, c) for a, c in zip(alpha.tobytes(), cut.tobytes())))
             plate = Image.new('RGBA', (w, h), (255, 255, 255, 255))

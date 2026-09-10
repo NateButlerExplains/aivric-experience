@@ -540,6 +540,8 @@ over a statically-positioned band however opaque it was.)
 room, all 33 annotated screenshots still opening with their regions inside the image box, and all
 16 panel links returning 200.
 
+(Superseded by Change 09 — the guardian did eventually run and failed two of these rooms.)
+
 The caveat: the FINAL guardian pass did not run. All five agents stalled and returned nothing, so
 the two-pass automated review did not sign this off. The three ship-blockers it had previously
 identified were instead verified by direct inspection at 3x — the pointing man's arm and hand solid
@@ -547,3 +549,43 @@ with no halo, the AIRE operator's head intact with individual hair strands again
 the woman's hands and tablet whole on the desk monitor. That is weaker evidence than two
 independent passes and should be treated as such. The capture is likely too large for the fleet to
 chew on; shrink it before the next run.
+
+
+---
+
+## Change 09 — What the guardian caught after I said it was fine
+
+The guardian's earlier passes kept stalling, so change 08 shipped on my own inspection instead.
+Shrinking the captures from 2x to 1x — 22MB down to 7.5MB across ten files — and budgeting each
+reviewer to five targeted crops made it complete in 14 minutes on 424k tokens, against 1.9M spent
+stalling. Then it failed two of the five rooms I had already called clean.
+
+**It was right about the hand, and I was wrong.** I inspected the pointing man's arm at 3x, said it
+was solid, and shipped it. A ~20x15px blob of his fingers was painted over with dashboard, and his
+arm ended in a stump at the knuckles with a yellow map marker sitting where the fingertip belonged.
+The guardian measured it in RGB — bright skin in the render, near-black content in the ship, a
+luminance drop of 150+.
+
+The cause was not the matte pipeline but the model: **u2net resizes its input to 320x320
+internally**, so on a 2048px render a hand is below the model's resolution before it starts, and
+comes back as a blunt blob. The uniform 1px erosion then ate what survived. Segmentation now runs
+over **overlapping tiles as well as the whole frame**, taking the per-pixel maximum — the global
+pass gets bodies right, the tiles recover fingers and hair — and the erosion is gone, because
+losing a hand is far worse than a faint rim. Re-judged: pass, with the fingertip blunted by about
+2px, which is a nitpick rather than a stump.
+
+**The boardroom took two attempts and the first was in the wrong place.** The gold ceiling ribbon
+was severed at a straight line and the cup on the table was see-through. Making the content
+translucent — the Client Vision treatment — fixed the cup but only softened the ribbon's cut from
+100% to about 65%, and the guardian rejected that correctly: a light beam physically in front of a
+display must not dim at all where it crosses.
+
+The real error was that my feathered band was simply in the wrong place. Measuring against the quad
+rather than guessing: the ribbon slants across local x 0.17-0.42, and the cup sits at local x
+0.56-0.97 in the last twelve percent of the panel's length. My band had been at 0.53-0.74 —
+straddling the cup and missing the ribbon entirely. That quad is rotated 180 degrees, so
+image-space intuition about which end is which was backwards. Occluders the segmenter cannot see
+are now `softRects` in the surface's OWN local box, which is the coordinate space that cannot be
+got backwards.
+
+**Files.** `tools/build-mattes.py` · `content/screens.json` · `css/experience.css`.

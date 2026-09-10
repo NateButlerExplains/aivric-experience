@@ -620,10 +620,19 @@
           "dim": 0.95,
           "layout": "stack3",
           "matte": "media/scene/mattes/decisions-table-glass.png",
-          "softBands": [
+          "glass": true,
+          "softRects": [
             [
-              0.53,
-              0.74
+              0.14,
+              0.45,
+              0.0,
+              1.0
+            ],
+            [
+              0.54,
+              1.0,
+              0.86,
+              1.0
             ]
           ]
         },

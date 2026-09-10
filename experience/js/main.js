@@ -1,15 +1,15 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10b';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10b';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10b';
-import { onRoute, go, parse } from './router.js?v=2026-09-10b';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10b';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10b';
-import { runIntro } from './ui/intro.js?v=2026-09-10b';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10b';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10b';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10b';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10b';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10d';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10d';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-10d';
+import { onRoute, go, parse } from './router.js?v=2026-09-10d';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-10d';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10d';
+import { runIntro } from './ui/intro.js?v=2026-09-10d';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10d';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10d';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10d';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10d';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
