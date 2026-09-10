@@ -1,16 +1,17 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10s';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10s';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10s';
-import { onRoute, go, parse } from './router.js?v=2026-09-10s';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10s';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10s';
-import { runIntro } from './ui/intro.js?v=2026-09-10s';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10s';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10s';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10s';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10s';
-import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10s';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10t';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10t';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-10t';
+import { onRoute, go, parse } from './router.js?v=2026-09-10t';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-10t';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10t';
+import { runIntro } from './ui/intro.js?v=2026-09-10t';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10t';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10t';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10t';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10t';
+import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10t';
+import { initDirector } from './director.js?v=2026-09-10t';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -121,6 +122,14 @@ async function main() {
     warming = true;
     for (const r of rooms) { if (r.render) await warmRoom(r.render); }
   }
+
+  // The attract loop. Idle on the building view, with nothing else open, is the only way in; the
+  // director checks the route itself, this says whether anything is sitting on top of it.
+  const introEl = document.getElementById('intro');
+  initDirector({
+    free: () => introEl.hidden && !isViewerOpen() && !isLightboxOpen() && !isWalking(),
+    prepare: warmRooms,
+  });
 
   // Prev / next room controls
   const prevBtn = document.getElementById('room-prev'), nextBtn = document.getElementById('room-next');

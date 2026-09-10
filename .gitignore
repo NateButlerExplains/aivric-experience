@@ -1,1 +1,4 @@
 .DS_Store
+# Build artifacts of tools/build-film.js; regenerate rather than commit. (aivric-fabric.mp4 alongside is the intro film and is tracked.)
+experience/media/film/inside-aivric.mp4
+experience/media/film/inside-aivric.frames.json

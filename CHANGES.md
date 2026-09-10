@@ -830,3 +830,63 @@ right arrow walks all nineteen steps to the end, every step announces exactly on
 consecutive duplicates, the panel's active tab is the station being described on all thirteen
 station steps, and Escape hides the bar, drops the walking state and returns to `#/`. No console
 errors.
+
+---
+
+## Change 16 — The director: the floor plays itself, and the film is a build artifact
+
+Two things from one timeline.
+
+**The attract loop.** Left alone on the building view for forty seconds, the floor starts to play:
+a keyframed camera timeline through all six rooms — building, Defense, Client Vision, Offense,
+Fabric, AIRE, Executive Decisions, and back — using the same router and the same `panRoom` every
+visitor uses, so nothing it shows is a different rendering from what a visitor would see by hand.
+Inside each room the camera drifts slowly to a focus point rather than holding a still; on the AIRE
+bridge it is left to the approver board's own sequence, which travels the wall by itself and parks
+on Approval. A real input of any kind — pointer move, key, wheel, touch — cancels it within a frame
+and returns to the building, which is where the visitor was when it started.
+
+It never starts while anything else owns the screen: not in a room, not with a screenshot open, not
+mid-walk, not during the intro, and time spent doing any of those does not count as idle. It does
+not start under `prefers-reduced-motion`, and it does not start on a touch-only device — a phone is
+read, not watched, and a camera that moves under a resting thumb is a nuisance rather than a show.
+While it runs the room arrows and the hint are hidden; the first real input brings them back.
+
+Chrome re-dispatches a synthetic mousemove whenever layout changes under a stationary cursor —
+during a camera move that is every frame — so a pointer move only counts if the pointer actually
+moved. Without that check the loop cancelled itself the instant it started.
+
+**The film.** `?film=1` freezes the shared clock to wall time and exposes a stepping hook, and
+`tools/build-film.js` drives the same timeline one frame at a time in a headless browser at
+1920x1080, piping frames through ffmpeg to `media/film/inside-aivric.mp4`. The film is the site:
+change a render, a screen, a matte, or the timeline and the film changes with it, and nothing can
+drift between what the film promises and what the floor shows.
+
+Making that deterministic took three clocks, not one. The shared clock is stepped exactly 1/30 s a
+frame, which carries the director, the living screens and the approver board. Every CSS transition
+and animation — the camera moves are CSS transitions — is paused through the Web Animations API the
+moment it appears and seeked to film time before each capture. And `setTimeout` is shimmed to film
+time so the pin reveal and the settle fallbacks fire where they would at real 30 fps rather than
+early because capture is slower than playback. Two things were tried first and are recorded so they
+are not tried again: Chromium's virtual time advances `performance.now()` but never reaches the
+compositor, so transitions did not move under it; and `HeadlessExperimental.beginFrame` hangs on the
+bundled headless shell.
+
+What is *not* on film time is `<video>`: the board clips on the AIRE bridge play at wall rate, so
+frames inside that beat differ run to run by exactly those pixels. `--verify` runs the timeline
+twice and reports it rather than claiming otherwise.
+
+**Files.** `js/director.js` (new) · `tools/build-film.js` (new) · `js/main.js` · `css/experience.css` ·
+`.gitignore` (the export is regenerated, not committed; the intro film alongside it stays tracked).
+
+**Verified.** In a real headless browser at 1440x900 with `?idle=4`: the loop starts 4.00 s after
+the floor is ready and not before; a real pointer move cancels it in 7 ms and lands on `#/`; six
+seconds idle inside a room, six seconds idle with the walk open, and six and a half seconds under
+`prefers-reduced-motion` all leave it unstarted; on an emulated iPhone it never starts; after the
+walk is closed it starts again and a key cancels it. No console errors. The film export: 1501
+frames, 50.0 s, 1920x1080 at 30 fps, 19.1 MB. Run twice, 1188 of 1501 frames were bit-identical; the
+AIRE beat (video clips, 30.6–39.5 s) accounts for 268 of the 313 that differed, and the remaining 45
+sit at four room-entry boundaries, at most 0.7 s each, where the room render's decode resolves on
+the wall clock. Every frame at one-second intervals was inspected on a contact sheet.
+
+Regenerate with `node tools/build-film.js --verify` from `experience/` with the local server up.

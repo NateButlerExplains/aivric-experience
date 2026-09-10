@@ -9,8 +9,8 @@
 // and a person reading a caption bar has to finish reading. Space, Enter or the right arrow moves
 // on; the left arrow goes back; Escape leaves the walk wherever it is.
 
-import { go } from './router.js?v=2026-09-10s';
-import { factsLabel } from './roomfacts.js?v=2026-09-10s';
+import { go } from './router.js?v=2026-09-10t';
+import { factsLabel } from './roomfacts.js?v=2026-09-10t';
 
 const bar = document.getElementById('walk');
 const liveEl = document.getElementById('walk-live');
