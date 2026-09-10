@@ -683,3 +683,27 @@ The cost is a soft bloom of the render's own cloud map around the fingertip, whe
 necessarily a little larger than the finger. It reads as the display glowing at the point he is
 touching. Recorded here rather than argued: it is the one place in the building where a hole shows
 something other than the person it was cut for.
+
+**Final verdict: all five rooms pass.** The Defense wall cleared once the finger was hand-cut.
+
+The review corrected the measurement, again. My own skin test reported 55% of the finger surviving
+and then 100%; both figures were built on a warm-tone filter, and the finger is BACKLIT by the
+screen — pale grey and lavender, not warm skin — so the filter under-reported it throughout.
+Measured properly against matte alpha, the finger sits at 0.90-1.00 across its whole length and
+every pixel of the fist and hand box is bit-identical to the render.
+
+The bloom resolved in the build's favour, and the reasoning is worth keeping. Rather than judging
+it by eye, the reviewer reconstructed the matte's alpha field from the composite and found a smooth
+radial falloff centred on the fingertip — alpha 1.0 in a 35x28 core, ramping to zero over 15-25px
+on every side, with **no straight edge and no corner anywhere in the field**. What it reveals is
+amorphous cloud texture: no coastline, no graticule, no UI element, nothing legible as a second
+image. So it reads as light spilling from the point he is touching, not as a rectangular patch of
+the wrong picture.
+
+**The recurring lesson, recorded once.** Four times on this work a hand-rolled metric of mine gave
+a confident wrong answer: a brightest-pixel search that locked onto the glass bezel, an adaptive
+tracker that locked onto the render's own painted particle glow, a cliff detector that could not
+tell a dashboard's card border from a composite seam, and a warm-skin filter applied to a backlit
+hand. Each one looked reasonable and each one was measuring the wrong thing. The reviews were right
+every time. When the question is "does this look wrong to a person", a metric is a hypothesis to be
+checked, not an answer.
