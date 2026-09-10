@@ -1274,3 +1274,17 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 .screen-board .ap-illus {
   position: absolute; right: 6%; top: 5%; margin: 0;
 }
+
+/* ---- Share ----
+   Copies the station's stub URL rather than the hash it is currently showing, because a hash never
+   reaches a crawler and a pasted link would preview as the building whatever room it points at. */
+#panel .btn.ghost { border-color: transparent; background: none; color: var(--text-muted); }
+#panel .btn.ghost:hover { border-color: var(--line); color: var(--text); }
+#panel .btn.share { position: relative; }
+#panel .btn.share[data-said]::after {
+  content: attr(data-said);
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%);
+  padding: 5px 9px; border-radius: 5px; white-space: nowrap;
+  background: rgba(8,15,28,0.96); border: 1px solid var(--line);
+  font: 400 12px/1 var(--font-body); color: var(--text);
+}

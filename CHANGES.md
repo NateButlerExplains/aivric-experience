@@ -707,3 +707,37 @@ tell a dashboard's card border from a composite seam, and a warm-skin filter app
 hand. Each one looked reasonable and each one was measuring the wrong thing. The reviews were right
 every time. When the question is "does this look wrong to a person", a metric is a hypothesis to be
 checked, not an answer.
+
+---
+
+## Change 12 — Send this room
+
+Per-station links that preview properly when pasted into Slack, LinkedIn or an email.
+
+**The problem is structural, not cosmetic.** The experience is hash-routed on static hosting, so
+`#/station/x` never reaches a server and no crawler executes the JS that reads it. Per-station Open
+Graph tags are therefore impossible from `index.html` alone. And the page carried **no OG or
+Twitter tags at all**, so every share of every room previewed as nothing.
+
+**One small real file per station.** `tools/build-shares.js` reads the manifest and writes a stub at
+`s/<stationId>.html` carrying that station's own title, description and card, which then bounces the
+visitor into the hash route — scripted and as a meta refresh, so it works with JS disabled. Static
+files; no server; works on Pages and works embedded on aivric.com.
+
+**The card is the product, not a logo.** Each one is a screenshot of the experience itself at that
+station — the room with its panel, the approver board mid-sequence on AIRE — captured at 2x for
+crisp type, then downscaled to the card's real 1200x630 and encoded as JPEG. The raw 2x PNGs came to
+26MB across fourteen cards, which is absurd for something whose whole job is to load instantly in a
+chat client; they are 1.6MB in total now, about 107KB each.
+
+A "Share" control sits beside the CTAs and copies the **stub** URL rather than the hash currently in
+the address bar — copying the hash is exactly the mistake that would make every shared room preview
+as the building.
+
+**Files.** `tools/build-shares.js` (new) · `s/` (13 stubs, generated) · `media/share/` (14 cards,
+generated) · `index.html` (the building's own tags) · `js/ui/panel.js` · `css/experience.css`.
+
+**Verified.** All 13 stubs return 200 and land on their own station; the OG tags read correctly from
+the served bytes, which is what a crawler sees rather than the post-redirect DOM; the cards serve;
+the Share control copies the stub URL and confirms; the room walk is unaffected and there are no
+console errors.

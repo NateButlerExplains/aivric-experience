@@ -1,8 +1,8 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-10k';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-10m';
 // Shared with the pins, so the panel's badge and the building's plate can never say different
 // words about the same station.
-import { STATUS_LABEL, esc, resolveHref } from '../roomfacts.js?v=2026-09-10k';
+import { STATUS_LABEL, esc, resolveHref } from '../roomfacts.js?v=2026-09-10m';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');
@@ -213,7 +213,8 @@ function renderStation(room, s) {
     <div class="meta"><span class="badge ${esc(s.status)}">${esc(STATUS_LABEL[s.status] || s.status)}</span><span>${esc(s.suite || '')}</span></div>
     <h2>${esc(s.headline)}</h2>
     <p class="summary">${esc(s.summary)}</p>
-    ${links.length ? `<div class="ctas">${ctas}</div>` : ''}
+    ${links.length ? `<div class="ctas">${ctas}<button class="btn ghost share" type="button" data-share="${esc(s.id)}">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>Share</button></div>` : ''}
     <div id="station-extra"></div>
     ${galleryHtml(s, media)}
     ${s.capabilities?.length ? `<h3>Capabilities</h3><ul class="caps">${s.capabilities.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}`;
@@ -225,6 +226,16 @@ function renderStation(room, s) {
   if (peek) peek.addEventListener('click', () => expandAreas(true));
   const foldedInner = bodyEl.querySelector('#more-areas .more-inner');
   if (foldedInner) foldedInner.inert = true;
+
+  // Share copies the station's STUB url, not the hash — a hash never reaches a crawler, so a
+  // pasted link would otherwise preview as the building whatever room it points at.
+  const share = bodyEl.querySelector('.share');
+  if (share) share.addEventListener('click', async () => {
+    const url = new URL(`s/${share.dataset.share}.html`, location.href.replace(/[^/]*$/, '')).href;
+    const done = (msg) => { share.dataset.said = msg; setTimeout(() => { delete share.dataset.said; }, 2200); };
+    try { await navigator.clipboard.writeText(url); done('Link copied'); }
+    catch { window.prompt('Copy this link', url); }
+  });
 
   bodyEl.querySelectorAll('.thumb').forEach((b) => b.addEventListener('click', () => {
     const i = Number(b.dataset.i);

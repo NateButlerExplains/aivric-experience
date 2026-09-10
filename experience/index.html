@@ -6,12 +6,23 @@
 <title>Inside AiVRIC — explore the operations floor</title>
 <meta name="description" content="Step inside the AiVRIC operations floor. Explore the Defense and Offense wings, the Client Vision chamber, and the executive table where 3HUE advisors turn findings into decisions.">
 <meta name="theme-color" content="#080f1c">
+<!-- The building's own card. A station shared from the panel links to its stub in s/, which carries
+     its own card instead — a hash never reaches a crawler, so per-station previews cannot come from
+     this file. See tools/build-shares.js. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AiVRIC">
+<meta property="og:title" content="Inside AiVRIC — explore the operations floor">
+<meta property="og:description" content="Step inside the AiVRIC operations floor. Enter a wing, pick a product, and see it running on the displays in the room.">
+<meta property="og:image" content="https://aivric.com/experience/media/share/building.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../assets/images/Aivric-favicon-logo.ico" type="image/x-icon">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Bump ?v= on every deploy: without it a CSS or JS fix sits behind the CDN cache for hours. -->
-<link rel="stylesheet" href="css/experience.css?v=2026-09-10k">
+<link rel="stylesheet" href="css/experience.css?v=2026-09-10m">
 </head>
 <body>
 
@@ -127,6 +138,6 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js?v=2026-09-10k"></script>
+<script type="module" src="js/main.js?v=2026-09-10m"></script>
 </body>
 </html>
