@@ -1,5 +1,5 @@
 // HUD: room buttons, breadcrumb, exit controls.
-import { factsLabel } from '../roomfacts.js?v=2026-09-10p';
+import { factsLabel } from '../roomfacts.js?v=2026-09-10q';
 const navEl = document.getElementById('nav');
 const crumbsEl = document.getElementById('crumbs');
 const roomsEl = document.getElementById('mobile-rooms');
@@ -23,17 +23,6 @@ export function initHud(roomList, h) {
   exit.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Exit room';
   exit.addEventListener('click', () => handlers.onExit());
   navEl.appendChild(exit);
-
-  // Room sound sits next to the film control, because they are the same kind of thing: an offer of
-  // audio the visitor has to accept. Same shape, same place, so it reads as one idea.
-  const sound = document.createElement('button');
-  sound.className = 'btn icon'; sound.id = 'btn-sound'; sound.type = 'button';
-  sound.setAttribute('aria-pressed', 'false');
-  sound.innerHTML =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
-    '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave1" d="M16.5 8.5a5 5 0 0 1 0 7"/>' +
-    '<path class="wave2" d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
-  navEl.appendChild(sound);
 
   const film = document.createElement('button');
   film.className = 'btn icon'; film.id = 'btn-film'; film.type = 'button'; film.title = 'Replay the film'; film.setAttribute('aria-label', 'Replay the film');

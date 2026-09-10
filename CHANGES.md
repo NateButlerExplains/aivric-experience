@@ -744,7 +744,7 @@ console errors.
 
 ---
 
-## Change 13 — Room sound, synthesised
+## Change 13 — Room sound, synthesised  *(removed in change 14)*
 
 Every wing has its own atmosphere and the site ships no audio files. A noise bed and two detuned
 oscillators through a lowpass filter, differing between rooms by PARAMETER rather than by asset:
@@ -777,3 +777,23 @@ The control sits beside the film's own Mute/Unmute in the HUD, borrowing its wor
 **Verified.** Nothing audible or constructed before a gesture; toggling on and off persists across a
 reload; the preference arms and wakes on first interaction; a hidden tab suspends; no console errors
 at 1440x900 or 390x844, and the room walk is unaffected.
+
+
+---
+
+## Change 14 — Remove room sound
+
+Change 13 is out. On review the room-to-room tone changes were not wanted, and the feature came out
+rather than being tuned: a background drone either earns its place immediately or it is something
+the visitor has to think about turning off, and this one was the latter.
+
+Removed cleanly rather than disabled — `js/sound.js` deleted, the HUD control gone, the wiring out
+of `js/main.js`, the styles out of the stylesheet. The film's own Mute/Unmute in `js/ui/intro.js`
+is untouched; that one predates this and belongs to the intro.
+
+Verified by counting again, the same way it was verified going in: **zero `AudioContext`
+constructions** after a click and two room changes, no `#btn-sound` in the document, the remaining
+HUD controls intact, and no console errors at 1440x900 or 390x844.
+
+The synthesis approach is in the history at change 13 if a quieter version is ever wanted — a single
+constant tone with no per-room variation would be a small edit to that file rather than a rebuild.
