@@ -618,3 +618,27 @@ The cup already passed on the previous attempt: pixel-identical to the untouched
 whole body, with the content's top edge stepping down to clear it.
 
 **Files.** `tools/build-mattes.py` · `content/screens.json`.
+
+**Guardian verdict: all five rooms pass.**
+
+| Room | Verdict |
+|---|---|
+| Defense | pass — the pointing hand is present and the arm ends in a hand, not a stump; no halo on either person |
+| Offense | pass — matte registers within ~2px of the analyst's true edge at six sampled points |
+| AIRE | pass — hair silhouette organic and strand-soft, no straight cut; column seams land on the render's real mullions |
+| Client Vision | pass — six panels read as one continuous surface |
+| Executive Decisions | pass — beam bit-identical to the untouched render through its corridor |
+
+**The measurement lesson, twice over.** Verifying that a light beam is undimmed sounds like
+"find the brightest pixel and compare", and that is wrong in two different ways on this one image.
+A wide search window latches onto the glass panel's own bright bezel edges near the bottom — which
+produced a false 13% reading — and an adaptive tracker latches onto the render's own painted
+particle glow inside the panel, which outbids the true beam by about 3 luminance units and produced
+a false 0.896. The honest method is to pin a fixed corridor that provably contains the beam core on
+every row, then compare. Both false readings cost a review round.
+
+**One nitpick left on the record, deliberately not fixed.** On the boardroom panel the content's top
+edge switches on within one or two rows at x 456-468 and x 526-545, a step of about 20%. It sits
+below the render's own texture swing at that bezel line, so it is invisible today, but it is the
+only un-feathered boundary left in the composite. Worth a fixed top-edge feather next time this
+surface is touched — not worth risking a passing room for now.
