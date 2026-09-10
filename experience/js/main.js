@@ -1,15 +1,16 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10q';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10q';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10q';
-import { onRoute, go, parse } from './router.js?v=2026-09-10q';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10q';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10q';
-import { runIntro } from './ui/intro.js?v=2026-09-10q';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10q';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10q';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10q';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10q';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10s';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10s';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-10s';
+import { onRoute, go, parse } from './router.js?v=2026-09-10s';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-10s';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10s';
+import { runIntro } from './ui/intro.js?v=2026-09-10s';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10s';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10s';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10s';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10s';
+import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10s';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -76,7 +77,9 @@ async function main() {
     onRoom: (room) => go({ view: 'room', id: room.id }),
     onExit: () => go({ view: 'building' }),
     onFilm: async () => { await runIntro(); },
+    onWalk: () => { if (isViewerOpen()) closeViewer(); startWalk(); },
   });
+  initWalk(rooms, { onEnd: () => go({ view: 'building' }) });
   initPanel({ onSelectStation: (s) => go({ view: 'station', id: s.id }) });
   // The painted displays inside each room render show that station's own screenshots, and a
   // click on one goes there — the same navigation the pins and the tabs already use.
@@ -130,9 +133,11 @@ async function main() {
   initViewer({ onChange: setActiveMedia });
   document.addEventListener('viewer:close', closeViewer);
 
-  // Keyboard: Escape unwinds one layer at a time — media, then lightbox, then the room itself.
+  // Keyboard: Escape unwinds one layer at a time — the walk, then media, then lightbox, then the
+  // room itself. walk.js handles its own Escape; this just declines to double-handle it.
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (isWalking()) return;
     if (isViewerOpen()) { closeViewer(); return; }
     if (isLightboxOpen()) { closeLightbox(); return; }
     if (getState().inRoom) go({ view: 'building' });

@@ -1,5 +1,5 @@
 // HUD: room buttons, breadcrumb, exit controls.
-import { factsLabel } from '../roomfacts.js?v=2026-09-10q';
+import { factsLabel } from '../roomfacts.js?v=2026-09-10s';
 const navEl = document.getElementById('nav');
 const crumbsEl = document.getElementById('crumbs');
 const roomsEl = document.getElementById('mobile-rooms');
@@ -23,6 +23,15 @@ export function initHud(roomList, h) {
   exit.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>Exit room';
   exit.addEventListener('click', () => handlers.onExit());
   navEl.appendChild(exit);
+
+  // Take the walk: the floor as a path, for keyboard and screen-reader visitors. Sits with the
+  // film because both are "show me the building" rather than "take me to a room".
+  const walk = document.createElement('button');
+  walk.className = 'btn icon'; walk.id = 'btn-walk'; walk.type = 'button';
+  walk.title = 'Take the narrated walk'; walk.setAttribute('aria-label', 'Take the narrated walk');
+  walk.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM9 20l2-6-2-4 3-4 3 2 3 1M9 14l-3 6M14 12l2 8"/></svg>';
+  walk.addEventListener('click', () => handlers.onWalk && handlers.onWalk());
+  navEl.appendChild(walk);
 
   const film = document.createElement('button');
   film.className = 'btn icon'; film.id = 'btn-film'; film.type = 'button'; film.title = 'Replay the film'; film.setAttribute('aria-label', 'Replay the film');

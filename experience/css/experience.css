@@ -1288,3 +1288,35 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   background: rgba(8,15,28,0.96); border: 1px solid var(--line);
   font: 400 12px/1 var(--font-body); color: var(--text);
 }
+
+/* ---- The narrated walk ----
+   A caption bar low on the stage. It is the visible half of the live region: the same sentence a
+   screen reader is saying, for a sighted visitor driving with the keyboard. */
+#walk {
+  position: fixed; z-index: 34;
+  left: 20px; right: calc(var(--panel-w) + 20px); bottom: 20px;
+  display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: end;
+  padding: 14px 18px;
+  background: rgba(8,15,28,0.86); border: 1px solid var(--line); border-radius: 10px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  animation: viewer-in 260ms var(--ease);
+}
+#walk .walk-step {
+  display: block; margin-bottom: 4px;
+  font: 500 11px/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+#walk p { margin: 0; font: 400 15px/1.5 var(--font-body); color: var(--text); }
+#walk-ctl { display: flex; gap: 8px; flex: none; }
+#walk .btn.ghost { border-color: transparent; background: none; color: var(--text-muted); }
+#walk .btn.ghost:hover { border-color: var(--line); color: var(--text); }
+/* The room's prev/next arrows and the hint sit exactly where the bar does, and they are the wrong
+   offer while a walk is running. */
+body.walking #room-nav, body.walking #hint { opacity: 0; pointer-events: none; }
+@media (max-width: 767px) {
+  #walk { left: 10px; right: 10px; bottom: auto; top: calc(40vh - 8px); transform: translateY(-100%);
+          grid-template-columns: 1fr; gap: 10px; padding: 10px 12px; }
+  #walk p { font-size: 13.5px; }
+  #walk-ctl .btn { font-size: 12.5px; padding: 7px 10px; }
+}
+@media (prefers-reduced-motion: reduce) { #walk { animation: none !important; } }

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Bump ?v= on every deploy: without it a CSS or JS fix sits behind the CDN cache for hours. -->
-<link rel="stylesheet" href="css/experience.css?v=2026-09-10q">
+<link rel="stylesheet" href="css/experience.css?v=2026-09-10s">
 </head>
 <body>
 
@@ -83,6 +83,22 @@
   <div class="body" id="panel-body"></div>
 </aside>
 
+<!-- The narrated walk: a caption bar over the stage, and a live region for screen readers.
+     The bar is what a sighted keyboard visitor reads; the live region is what a screen reader
+     says; they carry the same sentence. -->
+<div id="walk" hidden>
+  <div id="walk-body">
+    <span id="walk-step" class="walk-step"></span>
+    <p id="walk-text"></p>
+  </div>
+  <div id="walk-ctl">
+    <button class="btn outline" id="walk-prev" type="button">Back</button>
+    <button class="btn primary" id="walk-next" type="button">Next</button>
+    <button class="btn ghost" id="walk-end" type="button">End walk</button>
+  </div>
+</div>
+<div id="walk-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
 <!-- Inline media viewer: fills the left-hand stage, never covers the station panel -->
 <div id="viewer" hidden>
   <div id="viewer-media"></div>
@@ -138,6 +154,6 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js?v=2026-09-10q"></script>
+<script type="module" src="js/main.js?v=2026-09-10s"></script>
 </body>
 </html>

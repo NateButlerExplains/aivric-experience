@@ -797,3 +797,36 @@ HUD controls intact, and no console errors at 1440x900 or 390x844.
 
 The synthesis approach is in the history at change 13 if a quieter version is ever wanted — a single
 constant tone with no per-room variation would be a small edit to that file rather than a rebuild.
+
+---
+
+## Change 15 — The narrated walk
+
+The whole floor as a path you can take with a keyboard or a screen reader. Not a fallback for
+people who cannot use the pins — a first-class way through the building, with the camera moving
+and the panel changing exactly as they do for everyone else.
+
+Nineteen steps: each room, then each station inside it, then an ending that says what the floor
+was. Each step moves the camera through the same router everything else uses and says where you
+are through a polite live region, **in the same sentence the pins already use for the same room** —
+`factsLabel()` in `js/roomfacts.js`, so the walk and the door plates can never disagree.
+
+**The pace is the visitor's.** Nothing advances on a timer: a screen reader has to finish speaking
+and a person reading the caption has to finish reading. Space, Enter or the right arrow moves on;
+the left arrow goes back; Escape leaves the walk wherever it is and returns to the building.
+
+A caption bar over the stage is the visible half of the live region — the same words, for a sighted
+visitor driving with the keyboard. It hides the room's prev/next arrows and the hint while it runs,
+because those are the wrong offer mid-walk. On a phone it sits over the top of the sheet.
+
+One detail worth recording: a live region only announces when its content CHANGES, so the region is
+cleared and refilled on the next frame each step — two consecutive steps that produced the same
+sentence would otherwise fall silent.
+
+**Files.** `js/walk.js` (new) · `index.html` · `js/ui/hud.js` · `js/main.js` · `css/experience.css`.
+
+**Verified, keyboard only, at 1440x900 and 390x844.** Tab reaches the control, Enter starts, the
+right arrow walks all nineteen steps to the end, every step announces exactly once with no
+consecutive duplicates, the panel's active tab is the station being described on all thirteen
+station steps, and Escape hides the bar, drops the walking state and returns to `#/`. No console
+errors.
