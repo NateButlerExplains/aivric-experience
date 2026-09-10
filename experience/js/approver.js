@@ -16,9 +16,9 @@
 // for time that can be paused, scrubbed or stepped. Including the `is-arriving` gate, which is
 // what keeps the room-entry frame budget where change 02 left it.
 
-import { mountScreen, getScreenElement, unmountScreen } from './screens.js?v=2026-09-09u';
-import { panRoom } from './stage.js?v=2026-09-09u';
-import clock from './clock.js?v=2026-09-09u';
+import { mountScreen, getScreenElement, unmountScreen, applySurfaceMask } from './screens.js?v=2026-09-10b';
+import { panRoom } from './stage.js?v=2026-09-10b';
+import clock from './clock.js?v=2026-09-10b';
 
 const params = new URLSearchParams(location.search);
 const OFF = params.get('screens') === '0';
@@ -65,18 +65,23 @@ function stagesOf(station) {
   });
 }
 
-function card(stage, i) {
+function card(stage, i, clip) {
   const el = document.createElement('div');
   el.className = 'ap';
   el.innerHTML =
+    // Real product footage behind the stage, because four labels changing colour is not a thing
+    // happening. Only the column the work is in ever plays; the rest hold a frame. preload="none"
+    // so entering the room does not fetch four clips at once.
+    (clip ? `<video class="ap-clip" src="${clip}" muted loop playsinline preload="none"></video>` +
+            `<span class="ap-veil"></span>` : '') +
     `<span class="ap-num">${i + 1}</span>` +
-    `<span class="ap-name">${stage.name}</span>` +
+    `<span class="ap-cap"><span class="ap-name">${stage.name}</span>` +
     `<span class="ap-desc">${stage.desc}</span>` +
     // The work item itself. Without something that visibly arrives, fills and hands on, the board
     // only ever reads as four labels changing colour — which is what it did, and it was not enough
     // to see that anything was happening.
     `<span class="ap-item"><i class="ap-dot"></i><em class="ap-what">${ITEM}</em>` +
-      `<span class="ap-bar"><b></b></span></span>` +
+      `<span class="ap-bar"><b></b></span></span></span>` +
     `<span class="ap-state" data-state=""></span>` +
     // On the LAST column, not the first: at most viewports the room fit crops the board's left
     // edge, so a tag on column one is a qualifier nobody sees. Column four is both the one most
@@ -106,12 +111,16 @@ export function showApprover(room, station) {
     const id = mountScreen({
       layer: room.id,
       quad: surface.quad,
-      content: card(stages[i], i),
+      content: card(stages[i], i, surface.clip || null),
       id: `ap-${surface.id}`,
       className: 'screen-live screen-board',
     });
     if (!id) return;
     const el = getScreenElement(id);
+    // The operators sitting at the console rise above the board's bottom edge. Without this the
+    // cards paint straight over their heads — which is exactly what shipped until a review caught
+    // it, because the mattes existed and only livescreens was applying them.
+    applySurfaceMask(el, surface);
     if (surface.dim != null) el.style.setProperty('--ls-dim', String(surface.dim));
     live.push({ id, el, stage: stages[i], i, focus: surface.focus || null });
   });
@@ -132,7 +141,11 @@ export function showApprover(room, station) {
 export function clearApprover() {
   roomId = null;
   if (!live.length) return;
-  for (const s of live) unmountScreen(s.id);
+  for (const s of live) {
+    const v = s.el.querySelector('.ap-clip');
+    if (v) { try { v.pause(); v.removeAttribute('src'); v.load(); } catch { /* already detached */ } }
+    unmountScreen(s.id);
+  }
   live = [];
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   phase = 'idle';
@@ -161,6 +174,22 @@ function paint() {
     // tick, a column it has not reached shows nothing.
     s.el.classList.toggle('has-item', s.i === at && at >= 0 && at < live.length);
     if (s.i !== at) s.el.style.setProperty('--ap-progress', s.i < at ? '1' : '0');
+    playClip(s, state);
+  }
+}
+
+// One clip runs at a time: the stage the work is actually in. A column the work has passed holds
+// its last frame rather than looping, so the wall does not become four competing animations.
+function playClip(s, state) {
+  const v = s.el.querySelector('.ap-clip');
+  if (!v) return;
+  const live = state === 'active' || state === 'waiting';
+  if (live && !clock.reducedMotion) {
+    if (!v.getAttribute('data-loaded')) { v.setAttribute('data-loaded', '1'); v.load(); }
+    const go = v.play();
+    if (go && go.catch) go.catch(() => {});      // autoplay refusal is not an error worth surfacing
+  } else if (!v.paused) {
+    v.pause();
   }
 }
 

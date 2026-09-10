@@ -986,8 +986,8 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 }
 .screen-board .ap {
   position: absolute; inset: 0;
-  padding: 7% 8%;
-  display: flex; flex-direction: column; gap: 0.35em;
+  padding: 0;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 0;
   font-family: var(--font-head);
   color: var(--text-muted);
   /* Authored against the column's own pixel box, so the type scales with the render rather than
@@ -1219,3 +1219,54 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
 }
 #station-extra .ap-intro { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
 #station-extra .ap-line { min-height: 2.6em; }
+
+/* ---- Product footage behind each stage ----
+   Only the column the work is in plays. The veil is what keeps the stage's own type readable over
+   moving footage without dimming the footage into mud. */
+.screen-board .ap-clip {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 600ms var(--ease);
+  filter: brightness(0.82) saturate(0.9);
+}
+.screen-board.is-on .ap-clip { opacity: 0.5; }
+.screen-board[data-state="active"] .ap-clip,
+.screen-board[data-state="waiting"] .ap-clip { opacity: 0.9; }
+.screen-board .ap-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(5,10,19,0.88) 0%, rgba(5,10,19,0.55) 42%, rgba(5,10,19,0.9) 100%);
+  opacity: 0; transition: opacity 600ms var(--ease);
+}
+.screen-board.is-on .ap-veil { opacity: 1; }
+.screen-board .ap { position: absolute; inset: 0; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-board .ap-clip, .screen-board .ap-veil { transition: none !important; }
+}
+
+
+/* ---- Stage card: footage is the hero, the words sit in a solid band under it ----
+   Type laid over moving video was unreadable and dulled the footage; neither won. A caption band
+   is what a real operations wall does, and it keeps both legible. */
+.screen-board .ap-veil {
+  background: linear-gradient(180deg, rgba(5,10,19,0.45) 0%, rgba(5,10,19,0.10) 34%, rgba(5,10,19,0.55) 100%);
+}
+.screen-board .ap-num {
+  position: absolute; left: 6%; top: 5%;
+  font-family: var(--font-body); font-size: 11px; letter-spacing: 0.18em; color: var(--text-dim);
+}
+.screen-board .ap-cap {
+  /* Positioned, because the clip and the veil are absolute and would otherwise paint over a
+     statically-positioned band however opaque it is. */
+  position: relative; z-index: 2;
+  background: rgba(4, 9, 17, 0.93);
+  border-top: 1px solid rgba(150, 190, 235, 0.20);
+  padding: 6% 7%;
+  display: flex; flex-direction: column; gap: 0.3em;
+}
+.screen-board .ap-name { font-size: 19px; }
+.screen-board .ap-desc { font-size: 12px; }
+.screen-board .ap-item { margin-top: 8px; }
+.screen-board .ap-illus {
+  position: absolute; right: 6%; top: 5%; margin: 0;
+}

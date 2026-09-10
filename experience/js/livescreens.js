@@ -22,8 +22,8 @@
 //     back until the camera stops, because that is a genuine per-frame cost; painting a decoded
 //     image is not.
 
-import { mountScreen, getScreenElement, unmountScreen, solveProjective, quadSize } from './screens.js?v=2026-09-09u';
-import clock from './clock.js?v=2026-09-09u';
+import { mountScreen, getScreenElement, unmountScreen, quadSize, applySurfaceMask } from './screens.js?v=2026-09-10b';
+import clock from './clock.js?v=2026-09-10b';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('screens');          // '0' off, 'debug' grid, anything else normal
@@ -194,60 +194,6 @@ function buildContent(stills, surface) {
  * which is the part with uneven browser support.
  * ---------------------------------------------------------------- */
 
-// Image pixels -> the screen's own (0,0)-(w,h) rectangle. This is exactly the inverse of the map
-// screens.js applies, solved the same way, so a traced point lands where it was traced.
-function toLocal(quad, w, h) {
-  const m = solveProjective(quad, [[0, 0], [w, 0], [w, h], [0, h]]);
-  if (!m) return null;
-  const [a, b, c, d, e, f, g, hh] = m;
-  return ([x, y]) => {
-    const wp = g * x + hh * y + 1;
-    return [(a * x + b * y + c) / wp, (d * x + e * y + f) / wp];
-  };
-}
-
-function buildMask(surface, w, h) {
-  const polys = surface.occluders || [];
-  if (!polys.length && !surface.fade) return null;
-  const map = toLocal(surface.quad, w, h);
-  if (!map && polys.length) return null;
-
-  // Feather, in the screen's own local pixels. 1.2% of the short edge was soft enough that the
-  // original render bled a visible halo around a traced silhouette — bright map content leaking
-  // out from behind a dark shoulder. Tighter, with a floor so a small surface still gets a soft
-  // edge rather than a cut-out.
-  const blur = Math.max(1, Math.min(w, h) * 0.005);
-  const shapes = polys.map((pts) => {
-    const p = pts.map(map).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-    return `<polygon points="${p}" fill="#000"/>`;
-  }).join('');
-
-  // `fade` is a plain top-down falloff for a row of heads clipping a board's lower edge — the one
-  // occlusion shape common enough to be worth a shorthand instead of a traced polygon.
-  const fade = surface.fade
-    ? `<linearGradient id="f" x1="0" y1="0" x2="0" y2="1">` +
-        `<stop offset="${(1 - surface.fade).toFixed(3)}" stop-color="#fff"/>` +
-        `<stop offset="1" stop-color="#000"/></linearGradient>`
-    : '';
-
-  // CSS mask-image reads the image's ALPHA, not its luminance, so black-on-white would mask
-  // nothing. The holes have to be real transparency — which is what the inner SVG <mask> (which
-  // *does* work on luminance) produces when the plate is rasterised through it.
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
-      `<defs>${fade}` +
-        `<filter id="b" x="-15%" y="-15%" width="130%" height="130%">` +
-          `<feGaussianBlur stdDeviation="${blur.toFixed(1)}"/></filter>` +
-        `<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}">` +
-          `<rect width="${w}" height="${h}" fill="${surface.fade ? 'url(#f)' : '#fff'}"/>` +
-          `<g filter="url(#b)">${shapes}</g>` +
-        `</mask>` +
-      `</defs>` +
-      `<rect width="${w}" height="${h}" fill="#fff" mask="url(#m)"/>` +
-    `</svg>`;
-  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
-}
-
 function debugContent(surface) {
   const d = document.createElement('div');
   d.className = 'ls-debug';
@@ -289,13 +235,7 @@ export function showRoomScreens(room, station) {
     if (!screenId) return;                              // screens.js rejected the quad and said why
 
     const el = getScreenElement(screenId);
-    // The mask is sized to the screen's own rectangle, which screens.js derives from the quad.
-    const { width: mw, height: mh } = quadSize(surface.quad) || { width: 0, height: 0 };
-    const mask = DEBUG ? null : buildMask(surface, mw, mh);
-    if (mask) {
-      el.style.maskImage = mask; el.style.webkitMaskImage = mask;
-      el.style.maskSize = '100% 100%'; el.style.webkitMaskSize = '100% 100%';
-    }
+    if (!DEBUG) applySurfaceMask(el, surface);
     if (surface.dim != null) el.style.setProperty('--ls-dim', String(surface.dim));
 
     if (clickable) {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Surface geometry for js/livescreens.js. Quads are TL, TR, BR, BL in the render's own image pixels; occluders are traced silhouettes in the same space. Calibrated with tools/calibrate.html. `mount: false` records geometry that is not used yet. A surface with a `driver` is claimed by that feature; livescreens leaves it alone.",
+  "note": "Surface geometry for js/livescreens.js. Quads are TL, TR, BR, BL in the render's own image pixels. `matte` is a baked alpha cut from the render by tools/build-mattes.py, so people standing in front of a display are preserved. `driver` hands a surface to another feature. `mount: false` records geometry that is not used yet.",
   "rooms": {
     "defense": {
       "imageWidth": 2048,
@@ -12,24 +12,24 @@
           "station": "cloudsignals",
           "quad": [
             [
-              440,
-              170.6
+              98,
+              142
             ],
             [
-              894,
-              208.7
+              934,
+              212
             ],
             [
-              894,
-              487.8
+              933,
+              487
             ],
             [
-              440,
-              497.0
+              97,
+              504
             ]
           ],
           "dim": 0.9,
-          "why": "Cropped rather than traced: the left edge clears the man at the wall, the right edge clears the ponytail. Straight cuts along the display plane read as a panel boundary; a traced silhouette did not."
+          "matte": "media/scene/mattes/defense-wall.png"
         },
         {
           "id": "defense-monitor-left",
@@ -38,22 +38,23 @@
           "quad": [
             [
               576,
-              560
+              559
             ],
             [
-              758,
-              550
+              761,
+              548
             ],
             [
-              764,
-              644
+              767,
+              646
             ],
             [
               584,
-              666
+              669
             ]
           ],
-          "dim": 0.94
+          "dim": 0.94,
+          "matte": "media/scene/mattes/defense-monitor-left.png"
         },
         {
           "id": "defense-monitor-right",
@@ -62,22 +63,23 @@
           "quad": [
             [
               767,
+              553
+            ],
+            [
+              893,
               548
             ],
             [
-              893,
-              543.5
+              898,
+              631
             ],
             [
-              893,
-              635.2
-            ],
-            [
-              773,
-              641
+              772,
+              640
             ]
           ],
-          "dim": 0.94
+          "dim": 0.94,
+          "matte": "media/scene/mattes/defense-monitor-right.png"
         }
       ]
     },
@@ -107,7 +109,8 @@
               522.9
             ]
           ],
-          "dim": 0.92
+          "dim": 0.92,
+          "matte": "media/scene/mattes/offense-monitor-right.png"
         },
         {
           "id": "offense-monitor-center",
@@ -132,8 +135,7 @@
             ]
           ],
           "dim": 0.92,
-          "mount": false,
-          "why": "The analyst covers 50-65% of it. Cropping to the clear left third falls under the size floor, and tracing him produced a visible hard edge through a soft shoulder."
+          "matte": "media/scene/mattes/offense-monitor-center.png"
         },
         {
           "id": "offense-monitor-left",
@@ -157,7 +159,8 @@
               525.4
             ]
           ],
-          "dim": 0.92
+          "dim": 0.92,
+          "matte": "media/scene/mattes/offense-monitor-left.png"
         },
         {
           "id": "offense-desk2-monitor-left",
@@ -181,7 +184,8 @@
               523.2
             ]
           ],
-          "dim": 0.9
+          "dim": 0.9,
+          "matte": "media/scene/mattes/offense-desk2-monitor-left.png"
         }
       ]
     },
@@ -236,11 +240,12 @@
           ],
           "dim": 0.8,
           "driver": "approver",
-          "fade": 0.16,
           "focus": {
             "x": 0.158,
             "y": 0.24
-          }
+          },
+          "matte": "media/scene/mattes/aire-board-col1.png",
+          "clip": "media/scene/board/col1.mp4"
         },
         {
           "id": "aire-board-col2",
@@ -266,11 +271,12 @@
           ],
           "dim": 0.8,
           "driver": "approver",
-          "fade": 0.16,
           "focus": {
             "x": 0.336,
             "y": 0.24
-          }
+          },
+          "matte": "media/scene/mattes/aire-board-col2.png",
+          "clip": "media/scene/board/col2.mp4"
         },
         {
           "id": "aire-board-col3",
@@ -296,11 +302,12 @@
           ],
           "dim": 0.8,
           "driver": "approver",
-          "fade": 0.16,
           "focus": {
             "x": 0.481,
             "y": 0.24
-          }
+          },
+          "matte": "media/scene/mattes/aire-board-col3.png",
+          "clip": "media/scene/board/col3.mp4"
         },
         {
           "id": "aire-board-col4",
@@ -329,7 +336,9 @@
           "focus": {
             "x": 0.602,
             "y": 0.24
-          }
+          },
+          "matte": "media/scene/mattes/aire-board-col4.png",
+          "clip": "media/scene/board/col4.mp4"
         },
         {
           "id": "aire-monitor-left",
@@ -406,7 +415,8 @@
             ]
           ],
           "glass": true,
-          "dim": 1.0
+          "dim": 1.0,
+          "matte": "media/scene/mattes/vision-panel-upper-right.png"
         },
         {
           "id": "vision-panel-lower-right",
@@ -431,7 +441,8 @@
             ]
           ],
           "glass": true,
-          "dim": 1.0
+          "dim": 1.0,
+          "matte": "media/scene/mattes/vision-panel-lower-right.png"
         },
         {
           "id": "vision-panel-lower-left",
@@ -456,7 +467,8 @@
             ]
           ],
           "glass": true,
-          "dim": 1.0
+          "dim": 1.0,
+          "matte": "media/scene/mattes/vision-panel-lower-left.png"
         },
         {
           "id": "vision-panel-mid-left",
@@ -501,7 +513,8 @@
                 500
               ]
             ]
-          ]
+          ],
+          "matte": "media/scene/mattes/vision-panel-mid-left.png"
         },
         {
           "id": "vision-panel-mid-right",
@@ -546,7 +559,8 @@
                 500
               ]
             ]
-          ]
+          ],
+          "matte": "media/scene/mattes/vision-panel-mid-right.png"
         },
         {
           "id": "vision-panel-upper-left",
@@ -572,7 +586,8 @@
           "station": "vision-ai-optics",
           "glass": true,
           "dim": 1.0,
-          "why": "The sphere's limb crossing this panel is glowing light, not a hard object; the panel's own glass opacity already lets it through. Only the two glass mullions stay traced, because a mullion really does have a hard edge."
+          "why": "The sphere's limb crossing this panel is glowing light, not a hard object; the panel's own glass opacity already lets it through. Only the two glass mullions stay traced, because a mullion really does have a hard edge.",
+          "matte": "media/scene/mattes/vision-panel-upper-left.png"
         }
       ]
     },
@@ -604,7 +619,13 @@
           ],
           "dim": 0.95,
           "layout": "stack3",
-          "fade": 0.12
+          "matte": "media/scene/mattes/decisions-table-glass.png",
+          "softBands": [
+            [
+              0.53,
+              0.74
+            ]
+          ]
         },
         {
           "id": "decisions-wall-right",

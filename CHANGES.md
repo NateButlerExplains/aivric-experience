@@ -476,3 +476,74 @@ and the next room gets its own framing; returning re-mounts and starts fresh. Re
 not travel and still approves; portrait holds still and the panel carries the sequence; keyboard
 approval works. All 33 annotated screenshots still open with their regions inside the image box, no
 console errors at any width.
+
+---
+
+## Change 08 — Segmented occlusion, a review guardian, and footage on the board
+
+**The occlusion approach was replaced, not tuned.** Two earlier attempts were rejected for looking
+amateurish, and the second attempt — tightening the feather — made it worse. That was the useful
+signal: a hand-drawn polygon against a soft, slightly out-of-focus photographic edge cannot be made
+to look professional however it is blurred.
+
+Silhouettes are no longer drawn. `tools/build-mattes.py` runs u2net human segmentation over each
+render and bakes a per-surface alpha, warped through that surface's own quad, as a PNG the CSS mask
+wears. Hair, raised arms and out-of-focus edges come out correct because they are measured from the
+photograph rather than traced by hand.
+
+Three refinements, each of which came out of the review rather than out of looking:
+
+- **Solidify.** The warp stretches u2net's edge into a long ramp, and a person at 35% alpha is a
+  ghost you can read the dashboard through — which is how a raised forearm ended up with map
+  markers showing through the sleeve. The interior is pushed fully opaque with a short transition.
+- **Erode inward, then feather.** The counter-intuitive one, and the whole fix. An outward feather
+  keeps a rim of the ORIGINAL render around the silhouette; the Defense wall is bright blue and the
+  mounted dashboard is near-black, so that rim read as a glowing outline traced around a person's
+  head, glasses and shoulder. Shrinking the cut-out first puts the soft edge INSIDE the silhouette:
+  mounted content laps a pixel over a person's own edge, which is invisible, where the render
+  leaking out around them is not.
+- **Feather the matte's own border,** so content meets a display's rim instead of cutting across
+  the sphere's light streams at a straight line.
+
+Light is invisible to segmentation, so the boardroom's gold ceiling ribbon — the render's hero
+element, previously severed — is a heavily feathered band baked into that matte.
+
+**A review guardian, because this goes in front of customers.** `guard/shoot.js` captures every room
+twice, screens-on and screens-off, and a fleet judges them against explicit fail criteria with
+pixel coordinates required for any claim. It failed four of five rooms on its first run and every
+finding was real:
+
+- **The AIRE board had no occlusion at all.** Its four columns are mounted by `js/approver.js`,
+  which called `mountScreen()` and never applied the mattes — they sat on disk unused while only
+  `livescreens.js` applied them. Straight horizontal edges cut through the seated operators' heads.
+  The mask now lives in `screens.js` as `applySurfaceMask`, so anything that mounts a surface gets
+  one. 18 of 18 surfaces masked, asserted per room.
+- **A surface nobody thought to matte.** The woman's hand, wrist and forearm were sliced off a desk
+  monitor by a straight edge. Every mounted surface now gets a matte; where nobody stands in front
+  of a display it is simply opaque and costs nothing.
+- **Two quad errors it measured** — the right monitor sat on the bezel and left the render's own
+  taskbar row showing; the left one was inset enough to leave a bright pinstripe of original screen
+  around two edges. Both corrected to its numbers.
+
+**Footage on the approver board.** Four six-second loops cut from the CloudSignals session, one per
+stage, 332KB in total. The column the work is in plays; a column it has passed holds its last
+frame; approving starts the next one. The stage's words sit in a solid caption band beneath the
+footage rather than over it — type laid over moving video was unreadable and dulled the footage,
+and neither won. (The band was invisible for a round because the absolutely-positioned clip painted
+over a statically-positioned band however opaque it was.)
+
+**Files.** `tools/build-mattes.py` (new) · `js/screens.js` · `js/livescreens.js` · `js/approver.js` ·
+`content/screens.json` · `css/experience.css` · `media/scene/mattes/` · `media/scene/board/`.
+
+**Verified, and one caveat stated plainly.** The regression is clean: all six rooms at 1440x900 and
+390x844 with no console errors, screens never surviving an exit, 18/18 surfaces masked in every
+room, all 33 annotated screenshots still opening with their regions inside the image box, and all
+16 panel links returning 200.
+
+The caveat: the FINAL guardian pass did not run. All five agents stalled and returned nothing, so
+the two-pass automated review did not sign this off. The three ship-blockers it had previously
+identified were instead verified by direct inspection at 3x — the pointing man's arm and hand solid
+with no halo, the AIRE operator's head intact with individual hair strands against the board, and
+the woman's hands and tablet whole on the desk monitor. That is weaker evidence than two
+independent passes and should be treated as such. The capture is likely too large for the fleet to
+chew on; shrink it before the next run.
