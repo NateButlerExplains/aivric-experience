@@ -29,7 +29,15 @@
             ]
           ],
           "dim": 0.9,
-          "matte": "media/scene/mattes/defense-wall.png"
+          "matte": "media/scene/mattes/defense-wall.png",
+          "softRects": [
+            [
+              0.406,
+              0.449,
+              0.482,
+              0.548
+            ]
+          ]
         },
         {
           "id": "defense-monitor-left",

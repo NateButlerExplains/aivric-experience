@@ -54,7 +54,7 @@ def quad_size(quad):
     return max(1, round((d(0, 1) + d(3, 2)) / 2)), max(1, round((d(0, 3) + d(1, 2)) / 2))
 
 
-def segment(im, session, tiles=(3, 2), overlap=0.18):
+def segment(im, session, tiles=(5, 4), overlap=0.22):
     """Person matte for a whole render, refined by segmenting overlapping tiles.
 
     u2net resizes its input to 320x320 internally, so on a 2048px render anything only a few pixels

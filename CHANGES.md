@@ -662,3 +662,24 @@ It still has to be a feather rather than a hard cut: no feather at all is what c
 Vision light streams at a straight line.
 
 **Files.** `tools/build-mattes.py` and the rebaked mattes.
+
+**Guardian verdict on the tighter feather: four of five rooms pass.** Client Vision, AIRE,
+Offense and Executive Decisions all clear — the lit-border artifact is gone at every seam, the
+sphere's light still crosses panel edges as a gradient rather than a cliff, and the boardroom's
+beam stays bit-identical.
+
+Defense failed on one thing, and the review's diagnosis was the useful part: the pointing man's
+extended index finger. That is an interior cutout well inside the wall panel, so the matte had
+never traced the fingertip correctly — narrowing the feather only made an existing error visible.
+
+Segmentation was pushed from a 3x2 tiling to 5x4, roughly nine times the effective resolution on
+those pixels, which took the finger from erased to 55% surviving. Not enough: u2net will not
+resolve a finger a few pixels wide against a bright screen. So the finger is cut by hand — a
+`softRect` in the surface's own local box, converted from image coordinates through the same
+homography the matte uses rather than guessed. 100% of the finger now survives, measured against
+the untouched render.
+
+The cost is a soft bloom of the render's own cloud map around the fingertip, where the rectangle is
+necessarily a little larger than the finger. It reads as the display glowing at the point he is
+touching. Recorded here rather than argued: it is the one place in the building where a hole shows
+something other than the person it was cut for.
