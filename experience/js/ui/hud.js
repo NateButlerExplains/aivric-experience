@@ -1,5 +1,5 @@
 // HUD: room buttons, breadcrumb, exit controls.
-import { factsLabel } from '../roomfacts.js?v=2026-09-10g';
+import { factsLabel } from '../roomfacts.js?v=2026-09-10h';
 const navEl = document.getElementById('nav');
 const crumbsEl = document.getElementById('crumbs');
 const roomsEl = document.getElementById('mobile-rooms');

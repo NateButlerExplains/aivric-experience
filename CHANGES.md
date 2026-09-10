@@ -642,3 +642,23 @@ edge switches on within one or two rows at x 456-468 and x 526-545, a step of ab
 below the render's own texture swing at that bezel line, so it is invisible today, but it is the
 only un-feathered boundary left in the composite. Worth a fixed top-edge feather next time this
 surface is touched — not worth risking a passing room for now.
+
+---
+
+## Change 11 — A fixed border feather
+
+The matte's border feather was 3.5% of a surface's short edge, which on the big surfaces meant a
+22-24px ramp: wide enough that the render's own bright screen came back up along every panel edge
+and read as a glowing border. The review had flagged it on the AIRE columns as a 30-40px fade and
+on two Defense monitors as a bright band. The small Offense monitors, at about 6px, were the ones
+that passed cleanly.
+
+So the feather is now a fixed 3px inset with a 2.4px blur for every surface, whatever its size.
+Measured on the AIRE board, inward from a column seam: content used to take 30-40px to reach full
+strength and now reaches it in about 10, while the render behind keeps climbing — so the seam reads
+as a panel edge rather than a lit border.
+
+It still has to be a feather rather than a hard cut: no feather at all is what clipped the Client
+Vision light streams at a straight line.
+
+**Files.** `tools/build-mattes.py` and the rebaked mattes.

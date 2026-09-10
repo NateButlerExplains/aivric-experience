@@ -128,10 +128,16 @@ def main(only=None):
             # exactly on the quad edge, which is what made the Client Vision panels clip the
             # sphere's light streams mid-streak. A few pixels of ramp lets content meet the
             # render's own rim instead of cutting across it.
-            inset = max(2, round(min(w, h) * 0.035))
+            # A FIXED feather, not a fraction of the surface. Scaling it to the short edge gave the
+            # big surfaces a 22-24px ramp — wide enough that the render's own bright screen came
+            # back up along every panel edge and read as a glowing border. The small Offense
+            # monitors, at ~6px, were the ones that passed review cleanly, so that is the figure.
+            # Still enough to stop content ending in a hard line, which is what clipped the Client
+            # Vision light streams when there was no feather at all.
+            inset = 3
             border = Image.new('L', (w, h), 0)
             border.paste(255, (inset, inset, w - inset, h - inset))
-            border = border.filter(ImageFilter.GaussianBlur(inset * 0.7))
+            border = border.filter(ImageFilter.GaussianBlur(2.4))
             alpha = Image.composite(alpha, Image.new('L', (w, h), 0), border) if False else \
                     Image.eval(Image.merge('L', [alpha]), lambda v: v)
             alpha = Image.frombytes('L', (w, h), bytes(
