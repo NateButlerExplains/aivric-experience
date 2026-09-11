@@ -946,3 +946,64 @@ by design — legible type is impossible at 300 px — and the light reads as a 
 shimmer around the sphere; the layout is intact and it settles cleanly.
 
 Built by a three-angle judged workflow with a three-lens guardian (18 agents); recorded above.
+
+---
+
+## Change 18 — Safari, iPhone and Firefox: the cross-browser pass
+
+Everything up to change 17 was verified in Chromium only. The owner will most likely open this in
+Safari. This pass ran the experience in WebKit 26.6 — the same engine as the Safari 26.6.2 on this
+Mac — through thirty identical states in both engines, desktop and phone, and put a two-vote
+adversarial static review over the code for what a run cannot reach: iOS settings, Low Power Mode,
+the notch, Firefox.
+
+**Fixed — the one the owner would have seen first.** In Safari the floor could open zoomed 3.2x
+onto the AIRE room instead of showing the building, and stay there; the Fabric room, which zooms
+off the same scale, opened 2x too far in. WebKit runs module scripts before pending stylesheets
+have applied — Chromium holds them — and the building was fitted 104 ms in, with no stylesheet and
+`#stage` still `position: static` at 1424x2902. No resize followed, so nothing corrected it. It is a
+race, not a certainty, and a warm-cache revisit is exactly the case that loses it. `main.js` now
+waits for the stage to be styled before anything measures it — by checking the style itself once
+a frame, because WebKit also never fires `load` on a `<link>` once parsing has finished, and a gate
+on that event held the floor for its full fallback — and `stage.js` refits whenever the stage's
+own box changes, which also covers a late font, a scrollbar, or iOS collapsing its toolbar.
+
+**Fixed — from the static review, each confirmed by two independent refuters and then forced in
+both engines, with a negative control against the previous commit showing each test fails there:**
+
+- **Every cookie blocked** (a top-level Safari setting on the iPhone): touching `sessionStorage`
+  throws, and unguarded it took the boot down to "Could not load the experience". Guarded; worst
+  case the film plays on every visit.
+- **Muted autoplay refused** (iPhone Low Power Mode, or Safari set to never auto-play): the film sat
+  on its poster and "Play with sound" only flipped `muted` — it now starts the film, with sound,
+  inside the click. Chromium never refuses muted autoplay, so this path had never run.
+- **Landscape iPhone:** `viewport-fit=cover` put the HUD, the panel's text and the viewer's edge
+  under the Dynamic Island. Side safe-area insets on everything set against a side edge; `env()` is
+  0 everywhere else, so no other device moves.
+- **iPhone sheet:** `40vh` is the viewport without the toolbar while `stage.js` measures the
+  dynamic one, so the sheet sat lower than the render it meets. `40dvh` after each `40vh`.
+- **iPhone taps:** no grey tap flash over pins and mapped screens; the hover halo on a live screen
+  is limited to devices with a hover, so a tapped screen no longer stays lit.
+- **Firefox on macOS:** `-moz-osx-font-smoothing` beside the WebKit one, so type is not heavier.
+
+**Left, and why.** The stream glow is a little softer in Chromium than in Safari, which does not
+apply CSS `drop-shadow()` to SVG paths; the fix — SVG filters on dashes animated every frame — risks
+the building view's frame rate in every browser for a difference that is hard to see. Firefox was
+reviewed statically only: no Firefox engine is installed here.
+
+**Known, and deliberately left: the mapped screens bulge in Safari.** Safari 26.6 paints the
+perspective-mapped screens as if the perspective row of their `matrix3d` were not there: each
+screen's top-left corner lands and every other corner overshoots by the perspective divisor, so
+Defense's wall dashboard bulges off the wall and over the man's arm. The geometry Safari reports is
+identical to Chromium's to the pixel; only the paint is wrong. WebKit showed it here in every
+configuration tried — top level or nested, composited or not, with or without masks, and written as
+a tilted plane under `perspective()` — and this pass first mistook it for an artifact of how the
+test tool captures WebKit. It is not: Nate confirmed it by eye in Safari on 2026-09-11, and asked
+for it to be left as it is for now.
+
+**Verified.** 30 states in each engine, 0 console or page errors, 0 failed requests in either.
+Chromium before and after: 27 of 30 states pixel-identical; the three that moved are two video
+playheads and the storage probe, which now boots. WebKit's building camera is 0.625, matching
+Chromium, and floor-ready lands at ~380 ms against Chromium's ~370.
+
+**Files.** `js/main.js` · `js/stage.js` · `js/ui/intro.js` · `css/experience.css`.

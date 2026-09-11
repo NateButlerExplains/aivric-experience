@@ -1,8 +1,8 @@
 // Station panel: tabs for the room's stations, body with copy, CTAs, media gallery, capabilities.
-import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-10u';
+import { openViewer, isViewerOpen, viewerIndex } from './viewer.js?v=2026-09-11a';
 // Shared with the pins, so the panel's badge and the building's plate can never say different
 // words about the same station.
-import { STATUS_LABEL, esc, resolveHref } from '../roomfacts.js?v=2026-09-10u';
+import { STATUS_LABEL, esc, resolveHref } from '../roomfacts.js?v=2026-09-11a';
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('panel-body');

@@ -378,14 +378,30 @@ pinsEl.style.position = 'fixed'; pinsEl.style.inset = '0'; pinsEl.style.zIndex =
 
 // ---- Resize ----
 let resizeT = 0;
-window.addEventListener('resize', () => {
+function scheduleRefit() {
   clearTimeout(resizeT);
   resizeT = setTimeout(() => {
     if (!state.W) return;
     computeBase();
     if (state.inRoom && state.currentRoom) goRoom(state.currentRoom, false); else goBuilding(false);
   }, 60);
-});
+}
+window.addEventListener('resize', scheduleRefit);
+// The stage's own box, not just the window's. Everything here is fitted to #stage, and its box can
+// change with no window resize at all: a stylesheet that applies late (Safari runs module scripts
+// before pending stylesheets — main.js waits for it, this is the backstop), a scrollbar coming or
+// going, iOS collapsing its toolbar. Only a real change refits; the fit writes transforms, never
+// the stage's size, so this cannot loop.
+if (window.ResizeObserver) {
+  let seen = '';
+  new ResizeObserver(() => {
+    const key = `${stage.clientWidth}x${stage.clientHeight}`;
+    if (key === seen) return;
+    const first = !seen;
+    seen = key;
+    if (!first) scheduleRefit();
+  }).observe(stage);
+}
 
 // The portrait band is sized by CSS, so anything that changes the copy around it — Jost arriving
 // and re-wrapping the thesis line, the address bar collapsing, a rotation — changes where the

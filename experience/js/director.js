@@ -13,9 +13,9 @@
 // It never starts while the visitor is doing anything: not in a room, not with a screenshot open,
 // not mid-walk, not during the intro. Idle on the building view is the only door in.
 
-import { go, parse } from './router.js?v=2026-09-10u';
-import { panRoom } from './stage.js?v=2026-09-10u';
-import clock from './clock.js?v=2026-09-10u';
+import { go, parse } from './router.js?v=2026-09-11a';
+import { panRoom } from './stage.js?v=2026-09-11a';
+import clock from './clock.js?v=2026-09-11a';
 
 const params = new URLSearchParams(location.search);
 export const FILM = params.get('film') === '1';

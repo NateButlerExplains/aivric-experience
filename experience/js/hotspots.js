@@ -4,8 +4,8 @@
 // a door plate: one line per station, in the chip's own material. The building can already be
 // SEEN into — the master render is a cutaway — so what a pin was failing to answer was never
 // "what does this room look like", it was "if I go in there, what do I get". That is the plate.
-import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-10u';
-import { roomFacts, factsLabel, esc } from './roomfacts.js?v=2026-09-10u';
+import { toScreen, onLayout, getState, isRoomVisible } from './stage.js?v=2026-09-11a';
+import { roomFacts, factsLabel, esc } from './roomfacts.js?v=2026-09-11a';
 
 const pinsEl = document.getElementById('pins');
 let pins = [];

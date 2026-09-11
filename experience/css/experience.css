@@ -35,7 +35,11 @@ body {
   line-height: 1.5;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;   /* Firefox on macOS dilates light-on-dark type without it */
 }
+/* iOS Safari flashes a grey box over whatever is tapped — a square around a round pin, a grey quad
+   over a mapped screen. The :active and :focus-visible states already carry the feedback. */
+html { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 a { color: inherit; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -539,10 +543,13 @@ body.in-room #panel { transform: translateX(0); }
   #hud .nav .room-btn { display: none; }
   #legend { display: none; }
   #hint { font-size: 13px; bottom: 64px; }
-  #panel { min-width: 0; max-width: none; top: 40vh; border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; }
+  /* 40dvh after 40vh: on an iPhone with its toolbar showing, vh is the viewport WITHOUT the toolbar,
+     and stage.js places the room against the fixed stage — the dynamic viewport — so a vh sheet sat
+     lower than the render it was meant to meet and left a strip of building between them. */
+  #panel { min-width: 0; max-width: none; top: 40vh; top: 40dvh; border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; }
   #panel h2 { font-size: 22px; }
   #panel .body { padding: 18px; }
-  #room-nav { right: 24px; bottom: auto; top: calc(40vh - 52px); }
+  #room-nav { right: 24px; bottom: auto; top: calc(40vh - 52px); top: calc(40dvh - 52px); }
   #panel .tabs { padding: 10px 12px; gap: 5px; }
   #panel .tab { font-size: 12.5px; padding: 7px 10px; }
   /* Smaller than on the desktop: a phone gives the whole building a 375-390 px band to stand in,
@@ -761,7 +768,7 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   /* The sheet owns the bottom of the screen, so the viewer takes the band above it. */
   /* The sheet's top edge is at 40vh, so the viewer gets the band between the HUD and it —
      40vh MINUS the HUD, not 40vh from below the HUD, or it runs under the sheet. */
-  #viewer { right: 0; bottom: auto; height: calc(40vh - var(--hud-h)); padding: 12px 12px 0; }
+  #viewer { right: 0; bottom: auto; height: calc(40vh - var(--hud-h)); height: calc(40dvh - var(--hud-h)); padding: 12px 12px 0; }
   #viewer-bar { padding: 8px 0 10px; gap: 10px; }
   #viewer-cap { display: none; }
   #viewer-back { font-size: 13px; padding: 7px 10px; }
@@ -937,11 +944,17 @@ body.viewing #room-nav { opacity: 0; pointer-events: none; }
   box-shadow: inset 0 0 0 2px rgba(90, 165, 255, 0), 0 0 0 rgba(90, 165, 255, 0);
   transition: box-shadow 260ms var(--ease);
 }
-.screen-live.is-live-link:hover::before,
 .screen-live.is-live-link:focus-visible::before {
   box-shadow: inset 0 0 0 2px rgba(90, 165, 255, 0.85), 0 0 26px rgba(90, 165, 255, 0.35);
 }
-.screen-live.is-live-link:hover .ls-frame { filter: brightness(calc(var(--ls-dim) + 0.12)) saturate(1) contrast(1.04); }
+/* Hover only where there is a hover. iOS applies :hover on tap and keeps it, so a tapped screen
+   stayed haloed and brightened until something else was tapped. */
+@media (hover: hover) {
+  .screen-live.is-live-link:hover::before {
+    box-shadow: inset 0 0 0 2px rgba(90, 165, 255, 0.85), 0 0 26px rgba(90, 165, 255, 0.35);
+  }
+  .screen-live.is-live-link:hover .ls-frame { filter: brightness(calc(var(--ls-dim) + 0.12)) saturate(1) contrast(1.04); }
+}
 
 /* The Client Vision panels are translucent holograms floating in a glass chamber, not displays.
    An opaque screenshot there reads as a sticker stuck to the air. Dropping the whole plate back
@@ -1316,7 +1329,7 @@ body.walking #room-nav, body.walking #hint { opacity: 0; pointer-events: none; }
 /* While the floor plays itself the prompts are the wrong offer; the first real input brings them back. */
 body.directing #room-nav, body.directing #hint { opacity: 0; pointer-events: none; }
 @media (max-width: 767px) {
-  #walk { left: 10px; right: 10px; bottom: auto; top: calc(40vh - 8px); transform: translateY(-100%);
+  #walk { left: 10px; right: 10px; bottom: auto; top: calc(40vh - 8px); top: calc(40dvh - 8px); transform: translateY(-100%);
           grid-template-columns: 1fr; gap: 10px; padding: 10px 12px; }
   #walk p { font-size: 13.5px; }
   #walk-ctl .btn { font-size: 12.5px; padding: 7px 10px; }
@@ -1390,3 +1403,20 @@ body.directing #room-nav, body.directing #hint { opacity: 0; pointer-events: non
 /* Set in a clear band beside a mullion (panels.js clearBand): tighter, and the name may wrap. */
 .screen-plate .pl.is-narrow { padding: 8px; }
 .screen-plate .pl.is-narrow .pl-t { white-space: normal; }
+
+/* ---------------------------------------------------------------------------
+   Landscape iPhone. viewport-fit=cover stays (the portrait sheet and the walk bar use the bottom
+   inset), and it lets the page run under the Dynamic Island and the rounded corners — so anything
+   set against a side edge takes the side inset. Every notched iPhone is at least 812px wide lying
+   down, so this is the desktop layout's block; env() is 0 on every other device, where each value
+   below resolves to the one it replaces. The render itself running under the island is fine: it is
+   the picture, not something to read.
+   --------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  #hud { padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+  #panel .tabs { padding-right: max(14px, env(safe-area-inset-right)); }
+  #panel .body { padding-right: max(26px, env(safe-area-inset-right)); }
+  #legend { left: max(22px, env(safe-area-inset-left)); }
+  #room-nav { left: max(24px, env(safe-area-inset-left)); }
+  #viewer { padding-left: max(20px, env(safe-area-inset-left)); }
+}

@@ -33,10 +33,10 @@
 // Timing is entirely the shared clock's, never setTimeout, so the film export (which steps the
 // clock) and reduced motion both behave.
 
-import { mountScreen, getScreenElement, unmountScreen, applySurfaceMask, quadSize } from './screens.js?v=2026-09-10u';
-import { getScreenGeometry } from './livescreens.js?v=2026-09-10u';
-import clock from './clock.js?v=2026-09-10u';
-import { FILM } from './director.js?v=2026-09-10u';
+import { mountScreen, getScreenElement, unmountScreen, applySurfaceMask, quadSize } from './screens.js?v=2026-09-11a';
+import { getScreenGeometry } from './livescreens.js?v=2026-09-11a';
+import clock from './clock.js?v=2026-09-11a';
+import { FILM } from './director.js?v=2026-09-11a';
 
 const params = new URLSearchParams(location.search);
 const OFF = params.get('panels') === '0' || params.get('screens') === '0';

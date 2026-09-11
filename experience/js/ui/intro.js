@@ -80,9 +80,15 @@ export function runIntro() {
     };
     const onSound = () => {
       video.muted = !video.muted;
-      if (!video.muted && video.ended) {          // unmuting after the end replays with sound
-        ended = false; settle(false);
-        try { video.currentTime = 0; } catch (_) { /* ignore */ }
+      // Unmuting after the end replays with sound. And a film that never started — Safari refuses
+      // even muted autoplay in iPhone Low Power Mode, or when the site is set to never auto-play —
+      // is still sitting on its poster: this click is a gesture, so it may start it, with sound.
+      // Chromium never refuses muted autoplay, which is why this path went unexercised.
+      if (!video.muted && (video.ended || video.paused)) {
+        if (video.ended) {
+          ended = false; settle(false);
+          try { video.currentTime = 0; } catch (_) { /* ignore */ }
+        }
         video.play().catch(() => {});
       }
       labelSound();

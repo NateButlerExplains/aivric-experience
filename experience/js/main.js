@@ -1,18 +1,18 @@
 // Boot: manifest → stage → overlays → HUD/panel → intro → router.
-import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-10u';
-import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-10u';
-import { buildStreams, revealStreams } from './streams.js?v=2026-09-10u';
-import { onRoute, go, parse } from './router.js?v=2026-09-10u';
-import { initHud, updateHud } from './ui/hud.js?v=2026-09-10u';
-import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-10u';
-import { runIntro } from './ui/intro.js?v=2026-09-10u';
-import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-10u';
-import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-10u';
-import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-10u';
-import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-10u';
-import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-10u';
-import { initDirector } from './director.js?v=2026-09-10u';
-import { initPanels, showPanels, clearPanels } from './panels.js?v=2026-09-10u';
+import { loadMaster, goBuilding, goRoom, setCurrentRoom, getState, warmRoom, whenRoomHidden, setPinSpread, settleIn } from './stage.js?v=2026-09-11a';
+import { buildPins, showPins, hidePins } from './hotspots.js?v=2026-09-11a';
+import { buildStreams, revealStreams } from './streams.js?v=2026-09-11a';
+import { onRoute, go, parse } from './router.js?v=2026-09-11a';
+import { initHud, updateHud } from './ui/hud.js?v=2026-09-11a';
+import { initPanel, showRoom, setActiveMedia } from './ui/panel.js?v=2026-09-11a';
+import { runIntro } from './ui/intro.js?v=2026-09-11a';
+import { isLightboxOpen, closeLightbox } from './ui/lightbox.js?v=2026-09-11a';
+import { initViewer, isViewerOpen, closeViewer } from './ui/viewer.js?v=2026-09-11a';
+import { initLiveScreens, initLiveScreenNav, showRoomScreens, clearScreens, getScreenGeometry } from './livescreens.js?v=2026-09-11a';
+import { initApprover, showApprover, clearApprover, approve, replay } from './approver.js?v=2026-09-11a';
+import { initWalk, startWalk, endWalk, isWalking } from './walk.js?v=2026-09-11a';
+import { initDirector } from './director.js?v=2026-09-11a';
+import { initPanels, showPanels, clearPanels } from './panels.js?v=2026-09-11a';
 
 const boot = document.getElementById('boot');
 const stage = document.getElementById('stage');
@@ -64,8 +64,37 @@ function schedulePinReveal(stagger, { delay = 0, settle = true } = {}) {
 
 const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 500));
 
+// Nothing may measure the stage until the stylesheet has made it a fixed, viewport-sized box.
+// Chromium holds module scripts until the stylesheets ahead of them have loaded; WebKit does not.
+// Measured in Safari 26.6: the building was fitted 104 ms in, with no stylesheet applied and
+// #stage still position:static at 1424x2902, so the floor opened at 3.2x on the AIRE room and
+// stayed there — the Fabric room, which zooms off the same scale, inherited it.
+//
+// The test is the style itself, once a frame. Not the <link>'s load event: WebKit had already
+// created link.sheet by DOMContentLoaded, left it unapplied, and never fired load on it at all —
+// waiting on that event held the floor for the whole fallback. Window load (which waits for every
+// stylesheet) and a timeout back the frame check, for a tab that paints no frames while hidden.
+function stylesReady() {
+  const ready = () => getComputedStyle(stage).position === 'fixed';
+  if (ready()) return Promise.resolve();
+  return new Promise((resolve) => {
+    let done = false, timer = 0;
+    const finish = () => {
+      if (done) return;
+      done = true; clearTimeout(timer); window.removeEventListener('load', finish); resolve();
+    };
+    const poll = () => { if (done) return; if (ready()) finish(); else requestAnimationFrame(poll); };
+    requestAnimationFrame(poll);
+    window.addEventListener('load', finish);
+    timer = setTimeout(finish, 4000);
+  });
+}
+
 async function main() {
-  const manifest = await (await fetch('content/experience.json', { cache: 'no-cache' })).json();
+  // The manifest and the stylesheet load in parallel; only the measuring waits for the second.
+  const manifestP = fetch('content/experience.json', { cache: 'no-cache' }).then((r) => r.json());
+  await stylesReady();
+  const manifest = await manifestP;
   const rooms = manifest.rooms;
   const findRoom = (id) => rooms.find((r) => r.id === id);
   const findStation = (id) => { for (const r of rooms) { const s = r.stations.find((x) => x.id === id); if (s) return { room: r, station: s }; } return null; };
@@ -157,10 +186,15 @@ async function main() {
 
   // First reveal (with or without film)
   const first = parse();
-  const skipIntro = params.get('skipintro') === '1' || first.view !== 'building' || sessionStorage.getItem('aivric-intro') === '1';
+  // Storage can throw. With every cookie blocked (a top-level Safari setting on the iPhone, and in
+  // Chromium and Firefox too) touching sessionStorage at all is a SecurityError, and unguarded it
+  // took the whole boot down to "Could not load the experience". Worst case now: the film plays
+  // on every visit.
+  const seenIntro = () => { try { return sessionStorage.getItem('aivric-intro') === '1'; } catch { return false; } };
+  const skipIntro = params.get('skipintro') === '1' || first.view !== 'building' || seenIntro();
   boot.classList.add('out');
   if (!skipIntro) { await runIntro(); }
-  sessionStorage.setItem('aivric-intro', '1');
+  try { sessionStorage.setItem('aivric-intro', '1'); } catch { /* storage blocked: see seenIntro */ }
   stage.style.opacity = '1';
   // The composition arrives with the building rather than after it: the lockup and the room list
   // fade up (css `body.floor-ready`) while the master eases back into its frame (settleIn).
